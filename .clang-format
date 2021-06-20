@@ -1,0 +1,177 @@
+########################################################################################################################
+#
+# Global formatting definitions
+#
+########################################################################################################################
+BasedOnStyle: Google
+Language: Cpp
+Standard: c++17
+ColumnLimit: 120
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ContinuationIndentWidth: 8
+MaxEmptyLinesToKeep: 1
+
+########################################################################################################################
+#
+# Formatting of inter-language constructions
+#
+########################################################################################################################
+
+# preprocessor
+IndentPPDirectives: AfterHash
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex: '^"'
+    Priority: 1
+    CaseSensitive: true
+  - Regex: '^<'
+    Priority: 2
+    CaseSensitive: true
+SortIncludes: CaseInsensitive
+AlignConsecutiveMacros: None
+AlignEscapedNewlines: DontAlign
+
+# parentheses
+SpaceBeforeParens: Never
+SpaceInEmptyParentheses: false
+SpacesInParentheses: false
+
+# bracket
+AlignAfterOpenBracket: Align
+
+# square bracket
+SpaceBeforeSquareBrackets: false
+SpacesInSquareBrackets: false
+
+# block
+AllowShortBlocksOnASingleLine: Empty
+KeepEmptyLinesAtTheStartOfBlocks: true
+SpaceInEmptyBlock: false
+
+# comment
+SpacesBeforeTrailingComments: 1
+AlignTrailingComments: true
+SpacesInLineCommentPrefix:
+  Minimum: 1
+  Maximum: 1
+
+# brace
+BraceWrapping:
+  AfterCaseLabel: false
+  AfterClass: false
+  AfterControlStatement: Never
+  AfterEnum: false
+  AfterFunction: false
+  AfterNamespace: false
+  AfterExternBlock: false
+  AfterStruct: false
+  AfterUnion: false
+  BeforeCatch: false
+  BeforeElse: false
+  BeforeLambdaBody: false
+  SplitEmptyFunction: false
+  SplitEmptyNamespace: false
+  SplitEmptyRecord: false
+  IndentBraces: false
+BreakBeforeBraces: Attach
+
+# string literal
+BreakStringLiterals: false
+
+########################################################################################################################
+#
+# Formatting of specific C/C++ language constructions
+#
+########################################################################################################################
+
+# namespace and using
+CompactNamespaces: false
+FixNamespaceComments: true
+NamespaceIndentation: None
+SortUsingDeclarations: true
+
+# template
+AlwaysBreakTemplateDeclarations: Yes
+BreakBeforeConceptDeclarations: true
+IndentRequires: false
+SpaceAfterTemplateKeyword: false
+SpacesInAngles: false
+
+# switch
+AllowShortCaseLabelsOnASingleLine: false
+IndentCaseLabels: false
+IndentCaseBlocks: false
+SpaceBeforeCaseColon: false
+
+# enum
+AllowShortEnumsOnASingleLine: true
+
+# function
+AllowShortFunctionsOnASingleLine: Empty
+AllowAllParametersOfDeclarationOnNextLine: true
+AlwaysBreakAfterReturnType: None
+
+# parameter, operand and argument
+AlignOperands: Align
+BinPackParameters: false
+BinPackArguments: false
+AllowAllArgumentsOnNextLine: true
+
+# lambda
+AllowShortLambdasOnASingleLine: Empty
+
+# if
+AllowShortIfStatementsOnASingleLine: Never
+SpacesInConditionalStatement: false
+
+# loop
+AllowShortLoopsOnASingleLine: true
+SpaceBeforeRangeBasedForLoopColon: true
+
+# logical and ternary
+SpaceAfterLogicalNot: false
+BreakBeforeTernaryOperators: true
+
+# bit fields
+AlignConsecutiveBitFields: AcrossEmptyLinesAndComments
+
+# declaration
+AlignConsecutiveDeclarations: None
+
+# assignment
+AlignConsecutiveAssignments: None
+SpaceBeforeAssignmentOperators: true
+
+# class
+AccessModifierOffset: -4
+BreakInheritanceList: AfterColon
+EmptyLineBeforeAccessModifier: Always
+SpaceBeforeInheritanceColon: true
+
+# constructor initializer
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+AllowAllConstructorInitializersOnNextLine: true
+BreakConstructorInitializers: AfterColon
+ConstructorInitializerIndentWidth: 8
+SpaceBeforeCtorInitializerColon: true
+
+# C++11 brace list
+Cpp11BracedListStyle: true
+SpaceBeforeCpp11BracedList: true
+
+# C-style cast
+SpaceAfterCStyleCast: true
+SpacesInCStyleCastParentheses: false
+
+# extern block
+IndentExternBlock: NoIndent
+
+# pointer
+DerivePointerAlignment: false
+PointerAlignment: Right
+SpaceAroundPointerQualifiers: Default
+
+# goto
+IndentGotoLabels: false
