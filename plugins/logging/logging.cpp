@@ -70,7 +70,7 @@ LogLevel nanoservices::log_getLevelByName(const char *name) noexcept {
     return _defaultLevel;
 }
 
-void nanoservices::log(stringstream &message, LogLevel level) noexcept {
+void nanoservices::log(const stringstream &message, const LogLevel level) noexcept {
     function<string()> strfunc = [&message]() {
         return message.str();
     };

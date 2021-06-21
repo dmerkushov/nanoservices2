@@ -22,11 +22,11 @@ namespace nanoservices {
  * <ul>
  * <li>ALL, OFF - the lowest and the highest levels, accordingly. NOT ADVISED to be used when calling log functions.
  * Only advised to be used when setting the desired logging volubility via configuration. So when setting to ALL, all
- * the logging messages will appear in the log, and when setting to OFF, no messages will appear in the log. <li>TRACE,
- * DEBUG, INFO, WARN, ERROR, FATAL - levels advised to be used both in configuration and in the code
+ * the logging messages will appear in the log, and when setting to OFF, no messages will appear in the log.
+ * <li>TRACE, DEBUG, INFO, WARN, ERROR, FATAL - levels advised to be used both in configuration and in the code
  * </ul>
  */
-enum LogLevel : uint32_t {
+enum class LogLevel : uint32_t {
     ALL = 0,
     TRACE = 100,
     DEBUG = 200,
@@ -71,7 +71,7 @@ struct LogRecord {
  * @param level
  * @return
  */
-const char *log_getLevelName(LogLevel level) noexcept;
+const char *log_getLevelName(const LogLevel level) noexcept;
 
 /**
  * Get the log level by its name. If the name is empty or unknown, returns the default log level, which is INFO
@@ -101,7 +101,7 @@ LogLevel log_getLevel() noexcept;
  * @brief Set the logging level
  * @param level INFO by default
  */
-void log_setLevel(LogLevel level = _defaultLevel) noexcept;
+void log_setLevel(const LogLevel level = _defaultLevel) noexcept;
 
 /**
  * @brief Is the logging active for the given level? By default, no, so the user may skip building the logging data.
@@ -109,21 +109,21 @@ void log_setLevel(LogLevel level = _defaultLevel) noexcept;
  * @return If logging for the given level is active
  * @see LogLevel
  */
-bool log_active(LogLevel level = _defaultLevel) noexcept;
+bool log_active(const LogLevel level = _defaultLevel) noexcept;
 
 /**
  * @brief Log an event at the given log level
  * @param message Description of the event
  * @param level the level of the event. INFO by default
  */
-void log(std::string &message, LogLevel level = _defaultLevel) noexcept;
+void log(const std::string &message, const LogLevel level = _defaultLevel) noexcept;
 
 /**
  * @brief Log an event at the given log level
  * @param message Description of the event
  * @param level the level of the event. INFO by default
  */
-void log(std::stringstream &message, LogLevel level = _defaultLevel) noexcept;
+void log(const std::stringstream &message, const LogLevel level = _defaultLevel) noexcept;
 
 /**
  * @brief Log a message produced by the supplied function (log message producer - LMP), with a log level check before
@@ -133,7 +133,7 @@ void log(std::stringstream &message, LogLevel level = _defaultLevel) noexcept;
  * @param level the level of the message. INFO by default
  */
 template<class MessageType>
-void log(std::function<MessageType()> &logMessageProducer, LogLevel level = _defaultLevel) noexcept {
+void log(const std::function<MessageType()> &logMessageProducer, const LogLevel level = _defaultLevel) noexcept {
     static_assert(nanoservices::is_string_or_stringstream<MessageType>,
                   "Log message producer function returns neither std::string nor std::stringstream");
 

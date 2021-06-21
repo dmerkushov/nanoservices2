@@ -18,9 +18,9 @@ shared_ptr<string> nanoservices::str_trim_copy(shared_ptr<string> str) noexcept 
     const auto strEnd = str->find_last_not_of(whitespace);
     const auto strRange = strEnd - strBegin + 1;
 
-    string *trimmed = new string(str->substr(strBegin, strRange));
+    auto trimmed = make_shared<string>(str->substr(strBegin, strRange));
 
-    return shared_ptr<string>(trimmed);
+    return trimmed;
 }
 
 shared_ptr<string> nanoservices::str_toUpper_copy(shared_ptr<string> str) noexcept {
@@ -29,9 +29,9 @@ shared_ptr<string> nanoservices::str_toUpper_copy(shared_ptr<string> str) noexce
         return use_facet<ctype<char>>(locale).toupper(ch);
     };
 
-    string *uppered = new string(*str);
+    auto uppered = make_shared<string>(*str);
 
     std::transform(uppered->begin(), uppered->end(), uppered->begin(), to_upper);
 
-    return shared_ptr<string>(uppered);
+    return uppered;
 }

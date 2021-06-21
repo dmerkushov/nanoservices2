@@ -35,7 +35,7 @@ std::shared_ptr<std::string> str_toUpper_copy(std::shared_ptr<std::string>) noex
  */
 template<typename ToCheck>
 constexpr bool is_string_or_stringstream =
-        std::is_same<ToCheck, std::string>::value || std::is_same<ToCheck, std::stringstream>::value;
+        std::is_same_v<ToCheck, std::string> || std::is_same_v<ToCheck, std::stringstream>;
 ;
 } // namespace nanoservices
 
