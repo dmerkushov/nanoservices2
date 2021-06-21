@@ -9,103 +9,104 @@
 
 #include <chrono>
 #include <functional>
-#include <memory>
 #include <map>
-#include <string>
+#include <memory>
 #include <sstream>
-
+#include <string>
 //#include "../../core/exception/NsException.h"
 
 namespace nanoservices {
 
-    /**
-     * Logging levels enum. Levels are:
-     * <ul>
-     * <li>ALL, OFF - the lowest and the highest levels, accordingly. NOT ADVISED to be used when calling log functions. Only advised to be used when setting the desired logging volubility via configuration. So when setting to ALL, all the logging messages will appear in the log, and when setting to OFF, no messages will appear in the log.
-     * <li>TRACE, DEBUG, INFO, WARN, ERROR, FATAL - levels advised to be used both in configuration and in the code
-     * </ul>
-     */
-    enum LogLevel : uint32_t {
-        ALL = 0,
-        TRACE = 100,
-        DEBUG = 200,
-        INFO = 300,
-        WARN = 400,
-        ERROR = 500,
-        FATAL = 600,
-        OFF = UINT32_MAX
-    };
+/**
+ * Logging levels enum. Levels are:
+ * <ul>
+ * <li>ALL, OFF - the lowest and the highest levels, accordingly. NOT ADVISED to be used when calling log functions.
+ * Only advised to be used when setting the desired logging volubility via configuration. So when setting to ALL, all
+ * the logging messages will appear in the log, and when setting to OFF, no messages will appear in the log. <li>TRACE,
+ * DEBUG, INFO, WARN, ERROR, FATAL - levels advised to be used both in configuration and in the code
+ * </ul>
+ */
+enum LogLevel : uint32_t {
+    ALL = 0,
+    TRACE = 100,
+    DEBUG = 200,
+    INFO = 300,
+    WARN = 400,
+    ERROR = 500,
+    FATAL = 600,
+    OFF = UINT32_MAX
+};
+
+/**
+ * The default logging level
+ * @see nanoservices::LogLevel
+ */
+extern const LogLevel _defaultLevel;
+
+struct LogRecord {
 
     /**
-     * The default logging level
-     * @see nanoservices::LogLevel
+     * @brief Time point of the event
      */
-    extern const LogLevel _defaultLevel;
+    const std::chrono::time_point<std::chrono::system_clock> timePoint;
 
-    struct LogRecord {
+    /**
+     * @brief Log level for the event
+     */
+    const LogLevel logLevel;
 
-        /**
-         * @brief Time point of the event
-         */
-        const std::chrono::time_point<std::chrono::system_clock> timePoint;
+    /**
+     * @brief Logger name that has logged the event. By default, an empty string
+     */
+    std::shared_ptr<std::string> loggerName;
 
-        /**
-         * @brief Log level for the event
-         */
-        const LogLevel logLevel;
+    /**
+     * @brief The event message.
+     */
+    std::shared_ptr<std::string> message;
 
-        /**
-         * @brief Logger name that has logged the event. By default, an empty string
-         */
-        std::shared_ptr<std::string> loggerName;
-
-        /**
-         * @brief The event message.
-         */
-        std::shared_ptr<std::string> message;
-
-        /**
-         * @brief An exception that is bound to the event; may be an empty shared pointer
-         */
-//  std::shared_ptr<NsException> exception;
-
-    };
+    /**
+     * @brief An exception that is bound to the event; may be an empty shared pointer
+     */
+    // std::shared_ptr<NsException> exception;
+};
 
 /**
  * Get the name of the log level
  * @param level
  * @return
  */
-    const char *log_getLevelName(LogLevel level) noexcept;
+const char *log_getLevelName(LogLevel level) noexcept;
 
 /**
  * Get the log level by its name. If the name is empty or unknown, returns the default log level, which is INFO
  * @param name
  * @return
  */
-    LogLevel log_getLevelByName(std::string &name) noexcept;
+LogLevel log_getLevelByName(const char *) noexcept;
 
 /**
- * @brief Initialize the logging engine. Called after the configuration is loaded, so logging may be configured via the configuration engine.
+ * @brief Initialize the logging engine. Called after the configuration is loaded, so logging may be configured via the
+ * configuration engine.
  */
-    void log_initialize() noexcept;
+void log_initialize() noexcept;
 
 /**
  * @brief Finalize the logging engine.
  */
-    void log_finalize() noexcept;
+void log_finalize() noexcept;
 
 /**
  * @brief Get the current logging level
  * @return
  */
-    LogLevel log_getLevel() noexcept;
+LogLevel log_getLevel() noexcept;
 
 /**
  * @brief Set the logging level
  * @param level INFO by default
  */
-    void log_setLevel(LogLevel level = _defaultLevel) noexcept;
+void log_setLevel(LogLevel level = _defaultLevel) noexcept;
 
 /**
  * @brief Is the logging active for the given level? By default, no, so the user may skip building the logging data.
@@ -113,21 +114,21 @@ namespace nanoservices {
  * @return If logging for the given level is active
  * @see LogLevel
  */
-    bool log_active(LogLevel level = _defaultLevel) noexcept;
+bool log_active(LogLevel level = _defaultLevel) noexcept;
 
 /**
  * @brief Log an event at the given log level
  * @param message Description of the event
  * @param level the level of the event. INFO by default
  */
-    void log(std::string &message, LogLevel level = _defaultLevel) noexcept;
+void log(std::string &message, LogLevel level = _defaultLevel) noexcept;
 
 /**
  * @brief Log an event at the given log level
  * @param message Description of the event
  * @param level the level of the event. INFO by default
  */
-    void log(std::stringstream &message, LogLevel level = _defaultLevel) noexcept;
+void log(std::stringstream &message, LogLevel level = _defaultLevel) noexcept;
 
 /**
  * @brief Log a message produced by the supplied function (log message producer - LMP), with a log level check before
@@ -149,6 +150,6 @@ void log(std::function<MessageType()> &logMessageProducer, LogLevel level = _def
     log(msg, level);
 }
 
-}
+} // namespace nanoservices
 
-#endif //LOGGING_H_
+#endif // LOGGING_H_

@@ -4,8 +4,8 @@
 
 #include "../configuration.h"
 
-#include <map>
 #include <algorithm>
+#include <map>
 
 using namespace std;
 using namespace nanoservices;
@@ -13,15 +13,14 @@ using namespace nanoservices;
 static map<string, shared_ptr<string>, less<>> properties;
 
 void nanoservices::conf_initialize(int argc, char **argv) noexcept {
-    // argv[0] is the executable name, argv[1] and agrv[2] are required for at least one configuration property
-    // So, minimum argc to fill up configuration is 3
-    if (argc < 3) {
+    // argv[0] is the executable name, argv[1] and agrv[2] are required for at
+    // least one configuration property So, minimum argc to fill up configuration
+    // is 3
+    if(argc < 3) {
         return;
     }
 
-    for (
-            int i = 1; i < argc - 1; i += 2
-            ) {
+    for(int i = 1; i < argc - 1; i += 2) {
         string name(argv[i]);
         string value(argv[i + 1]);
         properties[name] = make_shared<string>(value);
@@ -33,7 +32,7 @@ void nanoservices::conf_finalize() noexcept {
 }
 
 shared_ptr<string> nanoservices::conf_getProperty(const char *propertyName) noexcept {
-    if (propertyName == nullptr) {
+    if(propertyName == nullptr) {
         return make_shared<string>();
     }
 
@@ -41,10 +40,9 @@ shared_ptr<string> nanoservices::conf_getProperty(const char *propertyName) noex
 
     auto search = properties.find(name);
 
-    if (search != properties.end()) {
+    if(search != properties.end()) {
         return search->second;
     } else {
         return make_shared<string>();
     }
 }
-

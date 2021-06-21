@@ -2,8 +2,8 @@
 // Created by dmerkushov on 3/20/21.
 //
 
-#include "../logging.h"
 #include "../../configuration/configuration.h"
+#include "../logging.h"
 
 #include <ctime>
 #include <iostream>
@@ -17,11 +17,11 @@ const int STRFTIME_BUFFER_SIZE = 24;
 
 void nanoservices::log_initialize() noexcept {
     shared_ptr<string> desiredLogLevel = conf_getProperty("logLevel");
-    if (desiredLogLevel->empty()) {
+    if(desiredLogLevel->empty()) {
         return;
     }
 
-    LogLevel logLevel = log_getLevelByName(*desiredLogLevel);
+    LogLevel logLevel = log_getLevelByName(desiredLogLevel->c_str());
     log_setLevel(logLevel);
 }
 
@@ -42,7 +42,7 @@ bool nanoservices::log_active(LogLevel level) noexcept {
 }
 
 void nanoservices::log(std::string &message, LogLevel level) noexcept {
-    if (!log_active(level)) {
+    if(!log_active(level)) {
         return;
     }
 
@@ -55,9 +55,8 @@ void nanoservices::log(std::string &message, LogLevel level) noexcept {
 
     strftime(curtimebuf, STRFTIME_BUFFER_SIZE, "%Y-%m-%d %H:%M:%S", timeinfo);
 
-    //TODO strftime()
+    // TODO strftime()
 
-    cout << curtimebuf << ' '
-         << log_getLevelName(level) << ": " << message << endl;
+    cout << curtimebuf << ' ' << log_getLevelName(level) << ": " << message << endl;
     cout.flush();
 }

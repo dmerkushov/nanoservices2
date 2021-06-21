@@ -23,82 +23,65 @@
 
 #include "NsException.h"
 
-#include <sstream>
-#include <typeinfo>
 #include <cstring>
 #include <execinfo.h>
+#include <sstream>
+#include <typeinfo>
 
 #define NOPOSDESCRIPTION "No position description provided"
 
 using namespace nanoservices;
 using namespace std;
 
-NsException::NsException(string cause) noexcept:
-        exception(),
-        _shortDescription(cause),
-        _stacktrace(NOPOSDESCRIPTION) {
+NsException::NsException(string cause) noexcept : exception(), _message(message), _stacktrace(NOPOSDESCRIPTION) {
     init();
 }
 
-NsException::NsException(string position, string cause) noexcept:
-        exception(),
-        _shortDescription(cause),
-        _stacktrace(position) {
+NsException::NsException(string position, string cause) noexcept :
+        exception(), _message(message), _stacktrace(position) {
     init();
 }
 
-NsException::NsException(string position, stringstream &cause) noexcept:
-        exception(),
-        _shortDescription(cause.str()),
-        _stacktrace(position) {
+NsException::NsException(string position, stringstream &cause) noexcept :
+        exception(), _message(message.str()), _stacktrace(position) {
     init();
 }
 
-NsException::NsException(stringstream &cause) noexcept:
-        exception(),
-        _shortDescription(cause.str()),
-        _stacktrace(NOPOSDESCRIPTION) {
+NsException::NsException(stringstream &cause) noexcept :
+        exception(), _message(message.str()), _stacktrace(NOPOSDESCRIPTION) {
     init();
 }
 
-NsException::NsException(string position, string cause, const NsException &cause) noexcept:
-        exception(),
-        _shortDescription(cause),
-        _stacktrace(position) {
+NsException::NsException(string position, string message, const NsException &cause) noexcept :
+        exception(), _shortDescription(message), _stacktrace(position) {
     init(cause.stacktrace(), cause.shortDescription(), cause.fullDescription());
 }
 
-NsException::NsException(string position, stringstream &cause, const NsException &cause) noexcept:
-        exception(),
-        _shortDescription(cause.str()),
-        _stacktrace(position) {
+NsException::NsException(string position, stringstream &cause, const NsException &cause) noexcept :
+        exception(), _message(message.str()), _stacktrace(position) {
     init(cause.stacktrace(), cause.shortDescription(), cause.fullDescription());
 }
 
-NsException::NsException(string position, const NsException &cause) noexcept:
-        exception(),
-        _shortDescription(cause.shortDescription()),
-        _stacktrace(position) {
+NsException::NsException(string position, const NsException &cause) noexcept :
+        exception(), _message(message.shortDescription()), _stacktrace(position) {
     init(cause.stacktrace(), cause.shortDescription(), cause.fullDescription());
 }
 
-NsException::NsException(const NsException &rootEx) noexcept:
-        exception(),
-        _shortDescription(rootEx.shortDescription()),
-        _stacktrace(NOPOSDESCRIPTION) {
+NsException::NsException(const NsException &rootEx) noexcept :
+        exception(), _shortDescription(rootEx.shortDescription()), _stacktrace(NOPOSDESCRIPTION) {
     init(rootEx.stacktrace(), rootEx.shortDescription(), rootEx.fullDescription());
 }
 
-NsException::NsException(const string &position, const stringstream &shortDescription, const string &rootStacktrace,
-                         const string &rootShortDescription, const string &rootFullDescription) noexcept:
-        exception(),
-        _shortDescription(shortDescription.str()),
-        _stacktrace(position) {
+NsException::NsException(const string &position,
+                         const stringstream &shortDescription,
+                         const string &rootStacktrace,
+                         const string &rootShortDescription,
+                         const string &rootFullDescription) noexcept :
+        exception(), _shortDescription(shortDescription.str()), _stacktrace(position) {
     init(rootStacktrace, rootShortDescription, rootFullDescription);
 }
 
-NsException::~NsException() noexcept {
-}
+NsException::~NsException() noexcept {}
 
 const char *NsException::what() const noexcept {
     return _fullDescription.c_str();
@@ -123,10 +106,8 @@ void NsException::init(const string &rootExStack, const string &rootExShort, con
 
     std::stringstream ss;
     ss << _stacktrace << " - ";
-    if (stacktraceSize >= 3) {
-        for (unsigned int i = 2; i < stacktraceSize; i++) {
-            ss << stacktraceArr[i] << endl;
-        }
+    if(stacktraceSize >= 3) {
+        for(unsigned int i = 2; i < stacktraceSize; i++) { ss << stacktraceArr[i] << endl; }
     }
 
     _stacktrace = ss.str();
@@ -138,13 +119,11 @@ void NsException::init(const string &rootExStack, const string &rootExShort, con
     stringstream wss;
     try {
         wss << typeid(*this).name();
-    } catch (std::bad_typeid &bti) {
-        wss << "(Unknown exception class)";
-    }
+    } catch(std::bad_typeid &bti) { wss << "(Unknown exception class)"; }
     wss << " : " << _shortDescription << endl;
     wss << _stacktrace;
 
-    if (rootExFull != "") {
+    if(rootExFull != "") {
         wss << endl << endl;
         wss << "\tCaused by:" << endl;
         wss << rootExFull;
@@ -154,3 +133,16 @@ void NsException::init(const string &rootExStack, const string &rootExShort, con
 
     _rootExceptionFullDescription = rootExFull;
 }
+
+// void nanoservices::log(string &message, NsException &exception, LogLevel
+// level) noexcept { 	stringstream ss; 	ss << message << endl; 	ss <<
+// "Exception:"
+//<< endl; 	ss << exception.fullDescription();
+//
+//	log(ss, level);
+//}
+//
+// void nanoservices::log(stringstream &message, NsException &exception,
+// LogLevel level) noexcept { 	string s = message.str(); 	log(s,
+// exception, level);
+//}

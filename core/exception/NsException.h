@@ -24,95 +24,127 @@
 #ifndef NSEXCEPTION_H
 #define NSEXCEPTION_H
 
-#include <string>
-#include <sstream>
 #include <exception>
+#include <sstream>
+#include <string>
 #include <vector>
 
 #ifndef NSE_POSITION
-# define NSE_POSITION (std::string("") + __FILE__ + ":" + std::to_string(__LINE__) + ": in " + __PRETTY_FUNCTION__)
+#    define NSE_POSITION (std::string("") + __FILE__ + ":" + std::to_string(__LINE__) + ": in " + __PRETTY_FUNCTION__)
 #endif
 
 #ifndef NSE_STACKTRACE_SIZE_MAX
-# define NSE_STACKTRACE_SIZE_MAX (200)
+#    define NSE_STACKTRACE_SIZE_MAX (200)
 #endif
 
 namespace nanoservices {
 
-    class NsException : public std::exception {
-    public:
-        NsException(std::string position, std::string shortDescription, const NsException &cause) noexcept;
+class NsException : public std::exception {
+public:
+    NsException(std::string position, std::string message, const NsException &cause) noexcept;
 
-        NsException(std::string position, std::stringstream &shortDescription, const NsException &cause) noexcept;
+    NsException(std::string position, std::stringstream &message, const NsException &cause) noexcept;
 
-        NsException(std::string position, const NsException &cause) noexcept;
+    NsException(std::string position, const NsException &cause) noexcept;
 
-        NsException(
-                const std::string &position, const std::stringstream &shortDescription,
-                const std::string &rootStacktrace, const std::string &rootShortDescription,
-                const std::string &rootFullDescription
-        ) noexcept;
+    NsException(const std::string &position,
+                const std::stringstream &message,
+                const std::string &rootStacktrace,
+                const std::string &rootmessage,
+                const std::string &rootFullDescription) noexcept;
 
-        NsException(const NsException &rootEx) noexcept;
+    NsException(const NsException &rootEx) noexcept;
 
-        NsException(std::string position, std::string shortDescription) noexcept;
+    NsException(std::string position, std::string message) noexcept;
 
-        NsException(std::string position, std::stringstream &shortDescription) noexcept;
+    NsException(std::string position, std::stringstream &message) noexcept;
 
-        NsException(std::string shortDescription) noexcept;
+    NsException(std::string message) noexcept;
 
-        NsException(std::stringstream &shortDescription) noexcept;
+    NsException(std::stringstream &message) noexcept;
 
-        virtual ~NsException() noexcept;
+    virtual ~NsException() noexcept;
 
-        /**
-         * Inherited from std::exception
-         * @return The full description of the exception
-         */
-        const char *what() const noexcept override;
+    /**
+     * Inherited from std::exception
+     * @return The full description of the exception
+     */
+    const char *what() const noexcept override;
 
-        /**
-         *
-         * @return Stacktrace of the exception
-         */
-        const std::string &stacktrace() const noexcept;
+    /**
+     *
+     * @return Stacktrace of the exception
+     */
+    const std::string &stacktrace() const noexcept;
 
-        /**
-         *
-         * @return Short description of the exception
-         */
-        const std::string &shortDescription() const noexcept;
+    /**
+     * @brief Get the message of the exception
+     * @return
+     */
+    const std::string &message() const noexcept;
 
-        /**
-         *
-         * @return Full description of the exception; the same string as would be constructed if calling what()
-         */
-        const std::string &fullDescription() const noexcept;
+    /**
+     * @brief Get the short description of the exception: only the message.
+     * file, line, and function name, and the message of the cause exception, if
+     * any
+     * @return
+     */
+    const std::string &shortDescription() const noexcept;
 
-        /**
-         *
-         * @return Full description of the root exception; empty string if no root exception provided
-         */
-        const std::string &rootExceptionFullDescription() const noexcept;
+    /**
+     * @brief Get the full description of the exception:
+     * <ul>
+     * <li>the message,
+     * <li>file, line, function name of the exception creation point,
+     * <li>the stacktrace
+     * <li>the same, recursively, for the cause exception (if any)
+     * </ul>
+     * @return Full description of the exception; the same string as would be
+     * constructed if calling what()
+     */
+    const std::string &fullDescription() const noexcept;
 
-    private:
-        std::string _shortDescription;
-        std::string _fullDescription;
-        std::string _stacktrace;
-        std::string _rootExceptionFullDescription;
+    /**
+     *
+     * @return Full description of the root exception; empty string if no root
+     * exception provided
+     */
+    const std::string &rootExceptionFullDescription() const noexcept;
 
-        /**
-         * Utility method to use in the constructors
-         * @param rootExStack
-         * @param rootExShort
-         * @param rootExFull
-         */
-        void init(
-                const std::string &rootExStack = "", const std::string &rootExShort = "",
-                const std::string &rootExFull = ""
-        ) noexcept;
-    };
-}
+private:
+    std::string _message;
+    std::string _fullDescription;
+    std::string _stacktrace;
+    std::string _rootExceptionFullDescription;
+
+    /**
+     * Utility method to use in the constructors
+     * @param rootExStack
+     * @param rootExShort
+     * @param rootExFull
+     */
+    void init(const std::string &rootExStack = "",
+              const std::string &rootExShort = "",
+              const std::string &rootExFull = "") noexcept;
+};
+
+///**
+// * @brief Log an event with an exception at the given log level
+// * @param message Description of the event
+// * @param exception The exception
+// * @param level the level of the event. ERROR by default
+// */
+// void log(std::string &message, NsException &exception, LogLevel level =
+// LogLevel::ERROR) noexcept;
+//
+///**
+// * @brief Log an event with an exception at the given log level
+// * @param message Description of the event
+// * @param exception The exception
+// * @param level the level of the event. ERROR by default
+// */
+// void log(std::stringstream &message, NsException &exception, LogLevel level =
+// LogLevel::ERROR) noexcept;
+} // namespace nanoservices
 
 #endif /* NSEXCEPTION_H */
-

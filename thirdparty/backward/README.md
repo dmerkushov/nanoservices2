@@ -11,43 +11,38 @@ Backward will spice it up for you:
 
 ![pretty stackstrace](doc/pretty.png)
 
-There is not much to say. Of course it will be able to display the code
-snippets only if the source files are accessible (else see trace #4 in the
-example).
+There is not much to say. Of course it will be able to display the code snippets only if the source files are
+accessible (else see trace #4 in the example).
 
-All "Source" lines and code snippet prefixed by a pipe "|" are frames inline
-the next frame.
-You can see that for the trace #1 in the example, the function
-`you_shall_not_pass()` was inlined in the function `...read2::do_test()` by the
-compiler.
+All "Source" lines and code snippet prefixed by a pipe "|" are frames inline the next frame. You can see that for the
+trace #1 in the example, the function
+`you_shall_not_pass()` was inlined in the function `...read2::do_test()` by the compiler.
 
 ## Installation
 
 #### Install backward.hpp
 
-Backward is a header only library. So installing Backward is easy, simply drop
-a copy of `backward.hpp` along with your other source files in your C++ project.
-You can also use a git submodule or really any other way that best fits your
+Backward is a header only library. So installing Backward is easy, simply drop a copy of `backward.hpp` along with your
+other source files in your C++ project. You can also use a git submodule or really any other way that best fits your
 environment, as long as you can include `backward.hpp`.
 
 #### Install backward.cpp
 
-If you want Backward to automatically print a stack trace on most common fatal
-errors (segfault, abort, un-handled exception...), simply add a copy of
+If you want Backward to automatically print a stack trace on most common fatal errors (segfault, abort, un-handled
+exception...), simply add a copy of
 `backward.cpp` to your project, and don't forget to tell your build system.
 
-The code in `backward.cpp` is trivial anyway, you can simply copy what it's
-doing at your convenience. 
+The code in `backward.cpp` is trivial anyway, you can simply copy what it's doing at your convenience.
 
-Note for [folly](https://github.com/facebook/folly) library users: must define `backward::SignalHandling sh;` after `folly::init(&argc, &argv);`.
+Note for [folly](https://github.com/facebook/folly) library users: must define `backward::SignalHandling sh;`
+after `folly::init(&argc, &argv);`.
 
 ## Configuration & Dependencies
 
 ### Integration with CMake
 
-If you are using CMake and want to use its configuration abilities to save
-you the trouble, you can easily integrate Backward, depending on how you obtained
-the library.
+If you are using CMake and want to use its configuration abilities to save you the trouble, you can easily integrate
+Backward, depending on how you obtained the library.
 
 #### As a subdirectory:
 
@@ -78,14 +73,15 @@ find_package(Backward)
 target_link_libraries(mytarget PUBLIC Backward::Backward)
 ```
 
-Notice that this is equivalent to using the the approach that uses `add_subdirectory()`,
-however it uses cmake's [imported target](https://cmake.org/Wiki/CMake/Tutorials/Exporting_and_Importing_Targets) mechanism.
+Notice that this is equivalent to using the the approach that uses `add_subdirectory()`, however it uses
+cmake's [imported target](https://cmake.org/Wiki/CMake/Tutorials/Exporting_and_Importing_Targets) mechanism.
 
 #### Installation through a regular package manager
 
 In this case you have obtained Backward through a package manager.
 
 Packages currently available:
+
 - [conda-forge](https://anaconda.org/conda-forge/backward-cpp)
 
 ```
@@ -95,16 +91,15 @@ find_package(Backward)
 # through an IMPORTED target.
 target_link_libraries(mytarget PUBLIC Backward::Backward)
 ```
+
 ### Libraries to unwind the stack
 
-On Linux and macOS, backtrace can back-trace or "walk" the stack using the
-following libraries:
+On Linux and macOS, backtrace can back-trace or "walk" the stack using the following libraries:
 
 #### unwind
 
-Unwind comes from libgcc, but there is an equivalent inside clang itself. With
-unwind, the stacktrace is as accurate as it can possibly be, since this is
-used by the C++ runtine in gcc/clang for stack unwinding on exception.
+Unwind comes from libgcc, but there is an equivalent inside clang itself. With unwind, the stacktrace is as accurate as
+it can possibly be, since this is used by the C++ runtine in gcc/clang for stack unwinding on exception.
 
 Normally libgcc is already linked to your program by default.
 
@@ -112,47 +107,39 @@ Normally libgcc is already linked to your program by default.
 
 	apt-get install binutils-dev (or equivalent)
 
-Libunwind provides, in some cases, a more accurate stacktrace as it knows
-to decode signal handler frames and lets us edit the context registers when
-unwinding, allowing stack traces over bad function references.
+Libunwind provides, in some cases, a more accurate stacktrace as it knows to decode signal handler frames and lets us
+edit the context registers when unwinding, allowing stack traces over bad function references.
 
 For best results make sure you are using libunwind 1.3 or later, which added
 `unw_init_local2` and support for handling signal frames.
 
-CMake will warn you when configuring if your libunwind version doesn't support
-signal frames.
+CMake will warn you when configuring if your libunwind version doesn't support signal frames.
 
-On macOS clang provides a libunwind API compatible library as part of its
-environment, so no third party libraries are necessary.
+On macOS clang provides a libunwind API compatible library as part of its environment, so no third party libraries are
+necessary.
 
 ### Compile with debug info
 
-You need to compile your project with generation of debug symbols enabled,
-usually `-g` with clang++ and g++.
+You need to compile your project with generation of debug symbols enabled, usually `-g` with clang++ and g++.
 
-Note that you can use `-g` with any level of optimization, with modern debug
-information encoding like DWARF, it only takes space in the binary (it's not
-loaded in memory until your debugger or Backward makes use of it, don't worry),
-and it doesn't impact the code generation (at least on GNU/Linux x86\_64 for
-what I know).
+Note that you can use `-g` with any level of optimization, with modern debug information encoding like DWARF, it only
+takes space in the binary (it's not loaded in memory until your debugger or Backward makes use of it, don't worry), and
+it doesn't impact the code generation (at least on GNU/Linux x86\_64 for what I know).
 
-If you are missing debug information, the stack trace will lack details about
-your sources.
+If you are missing debug information, the stack trace will lack details about your sources.
 
 ### Libraries to read the debug info
 
-Backward supports pretty printed stack traces on GNU/Linux, macOS and Windows,
-it will compile fine under other platforms but will not do anything. **Pull
-requests are welcome :)**
+Backward supports pretty printed stack traces on GNU/Linux, macOS and Windows, it will compile fine under other
+platforms but will not do anything. **Pull requests are welcome :)**
 
 Also, by default you will get a really basic stack trace, based on the
 `backtrace_symbols` API:
 
 ![default trace](doc/nice.png)
 
-You will need to install some dependencies to get the ultimate stack trace.
-Three libraries are currently supported, the only difference is which one is the
-easiest for you to install, so pick your poison:
+You will need to install some dependencies to get the ultimate stack trace. Three libraries are currently supported, the
+only difference is which one is the easiest for you to install, so pick your poison:
 
 #### libbfd from the [GNU/binutils](http://www.gnu.org/software/binutils/)
 
@@ -160,11 +147,9 @@ easiest for you to install, so pick your poison:
 
 And do not forget to link with the lib: `g++/clang++ -lbfd -ldl ...`
 
-This library requires dynamic loading. Which is provided by the library `dl`.
-Hence why we also link with `-ldl`.
+This library requires dynamic loading. Which is provided by the library `dl`. Hence why we also link with `-ldl`.
 
-Then define the following before every inclusion of `backward.hpp` (don't
-forget to update `backward.cpp` as well):
+Then define the following before every inclusion of `backward.hpp` (don't forget to update `backward.cpp` as well):
 
 	#define BACKWARD_HAS_BFD 1
 
@@ -176,9 +161,8 @@ And do not forget to link with the lib and inform Backward to use it:
 
 	#define BACKWARD_HAS_DW 1
 
-Of course you can simply add the define (`-DBACKWARD_HAS_...=1`) and the
-linkage details in your build system and even auto-detect which library is
-installed, it's up to you.
+Of course you can simply add the define (`-DBACKWARD_HAS_...=1`) and the linkage details in your build system and even
+auto-detect which library is installed, it's up to you.
 
 #### [libdwarf](https://sourceforge.net/projects/libdwarf/) and [libelf](http://www.mr511.de/software/english.html)
 
@@ -188,34 +172,28 @@ And do not forget to link with the lib and inform Backward to use it:
 
 	#define BACKWARD_HAS_DWARF 1
 
-There are several alternative implementations of libdwarf and libelf that
-are API compatible so it's possible, although it hasn't been tested, to
-replace the ones used when developing backward (in bold, below):
+There are several alternative implementations of libdwarf and libelf that are API compatible so it's possible, although
+it hasn't been tested, to replace the ones used when developing backward (in bold, below):
 
 * **_libelf_** by [Michael "Tired" Riepe](http://www.mr511.de/software/english.html)
 * **_libdwarf_** by [David Anderson](https://www.prevanders.net/dwarf.html)
 * libelf from [elfutils](https://fedorahosted.org/elfutils/)
 * libelf and libdwarf from FreeBSD's [ELF Tool Chain](https://sourceforge.net/p/elftoolchain/wiki/Home/) project
 
+Of course you can simply add the define (`-DBACKWARD_HAS_...=1`) and the linkage details in your build system and even
+auto-detect which library is installed, it's up to you.
 
-Of course you can simply add the define (`-DBACKWARD_HAS_...=1`) and the
-linkage details in your build system and even auto-detect which library is
-installed, it's up to you.
-
-That's it, you are all set, you should be getting nice stack traces like the
-one at the beginning of this document.
+That's it, you are all set, you should be getting nice stack traces like the one at the beginning of this document.
 
 ## API
 
-If you don't want to limit yourself to the defaults offered by `backward.cpp`,
-and you want to take some random stack traces for whatever reason and pretty
-print them the way you love or you decide to send them all to your buddies over
+If you don't want to limit yourself to the defaults offered by `backward.cpp`, and you want to take some random stack
+traces for whatever reason and pretty print them the way you love or you decide to send them all to your buddies over
 the Internet, you will appreciate the simplicity of Backward's API.
 
 ### Stacktrace
 
-The StackTrace class lets you take a "snapshot" of the current stack.
-You can use it like this:
+The StackTrace class lets you take a "snapshot" of the current stack. You can use it like this:
 
 ```c++
 using namespace backward;
@@ -251,8 +229,8 @@ class StackTrace { public:
 ### TraceResolver
 
 The `TraceResolver` does the heavy lifting, and intends to transform a simple
-`Trace` from its address into a fully detailed `ResolvedTrace` with the
-filename of the source, line numbers, inlined functions and so on.
+`Trace` from its address into a fully detailed `ResolvedTrace` with the filename of the source, line numbers, inlined
+functions and so on.
 
 You can use it like this:
 
@@ -287,8 +265,8 @@ class TraceResolver { public:
 
 ### SnippetFactory
 
-The SnippetFactory is a simple helper class to automatically load and cache
-source files in order to extract code snippets.
+The SnippetFactory is a simple helper class to automatically load and cache source files in order to extract code
+snippets.
 
 ```c++
 class SnippetFactory { public:
@@ -315,8 +293,7 @@ class SnippetFactory { public:
 
 ### Printer
 
-A simpler way to pretty print a stack trace to the terminal. It will
-automatically resolve the traces for you:
+A simpler way to pretty print a stack trace to the terminal. It will automatically resolve the traces for you:
 
 ```c++
 using namespace backward;
@@ -360,11 +337,10 @@ class Printer { public:
 		std::ostream& print(ST& st, std::ostream& os);
 ```
 
-
 ### SignalHandling
 
-A simple helper class that registers for you the most common signals and other
-callbacks to segfault, hardware exception, un-handled exception etc.
+A simple helper class that registers for you the most common signals and other callbacks to segfault, hardware
+exception, un-handled exception etc.
 
 `backward.cpp` simply uses it like that:
 
@@ -372,8 +348,8 @@ callbacks to segfault, hardware exception, un-handled exception etc.
 backward::SignalHandling sh;
 ```
 
-Creating the object registers all the different signals and hooks. Destroying
-this object doesn't do anything. It exposes only one method:
+Creating the object registers all the different signals and hooks. Destroying this object doesn't do anything. It
+exposes only one method:
 
 ```c++
 bool loaded() const // true if loaded with success
@@ -381,8 +357,8 @@ bool loaded() const // true if loaded with success
 
 ### Trace object
 
-To keep the memory footprint of a loaded `StackTrace` on the low-side, there a
-hierarchy of trace object, from a minimal `Trace `to a `ResolvedTrace`.
+To keep the memory footprint of a loaded `StackTrace` on the low-side, there a hierarchy of trace object, from a
+minimal `Trace `to a `ResolvedTrace`.
 
 #### Simple trace
 
@@ -395,8 +371,8 @@ struct Trace {
 
 #### Resolved trace
 
-A `ResolvedTrace` should contains a maximum of details about the location of
-the trace in the source code. Note that not all fields might be set.
+A `ResolvedTrace` should contains a maximum of details about the location of the trace in the source code. Note that not
+all fields might be set.
 
 ```c++
 struct ResolvedTrace: public Trace {
@@ -433,10 +409,8 @@ struct ResolvedTrace: public Trace {
 
 François-Xavier Bourlet <bombela@gmail.com>
 
-Copyright 2013-2017 Google Inc. All Rights Reserved.
-MIT License.
+Copyright 2013-2017 Google Inc. All Rights Reserved. MIT License.
 
 ### Disclaimer
 
-Although this project is owned by Google Inc. this is not a Google supported or
-affiliated project.
+Although this project is owned by Google Inc. this is not a Google supported or affiliated project.
