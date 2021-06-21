@@ -147,4 +147,12 @@ private:
 // LogLevel::ERROR) noexcept;
 } // namespace nanoservices
 
+struct LogRecordWithException : LogRecord {
+
+    /**
+     * @brief An exception that is bound to the event; may be an empty shared pointer
+     */
+    std::shared_ptr<NsException> exception;
+};
+
 #endif /* NSEXCEPTION_H */

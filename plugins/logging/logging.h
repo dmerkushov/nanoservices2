@@ -64,11 +64,6 @@ struct LogRecord {
      * @brief The event message.
      */
     std::shared_ptr<std::string> message;
-
-    /**
-     * @brief An exception that is bound to the event; may be an empty shared pointer
-     */
-    // std::shared_ptr<NsException> exception;
 };
 
 /**
