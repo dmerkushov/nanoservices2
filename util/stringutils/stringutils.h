@@ -6,27 +6,37 @@
 #define NANOSERVICES2_STRINGUTILS_H
 
 #include <memory>
+#include <sstream>
 #include <string>
 
 namespace nanoservices {
 
-    /**
-     * Whitespace chars to be used
-     */
-    static const std::string whitespace(" \t");
+/**
+ * Whitespace chars to be used
+ */
+static const std::string whitespace(" \t");
 
 /**
- * Trim a string (remove leading and trailing whitespaces: spaces and tabs). Quite slow (may be rewritten for better performance)
+ * Trim a string (remove leading and trailing whitespaces: spaces and tabs). Quite slow (may be rewritten for better
+ * performance)
  * @return
  */
-    std::shared_ptr<std::string> str_trim_copy(std::shared_ptr<std::string>) noexcept;
+std::shared_ptr<std::string> str_trim_copy(std::shared_ptr<std::string>) noexcept;
 
 /**
  * Convert string to uppercase. Quite slow (may be rewritten for better performance)
  * @return
  */
-    std::shared_ptr<std::string> str_toUpper_copy(std::shared_ptr<std::string>) noexcept;
+std::shared_ptr<std::string> str_toUpper_copy(std::shared_ptr<std::string>) noexcept;
 
-}
+/**
+ * @brief For use in static asserts: check whether the operand type is either string or stringstream
+ * @tparam ToCheck
+ */
+template<typename ToCheck>
+constexpr bool is_string_or_stringstream =
+        std::is_same<ToCheck, std::string>::value || std::is_same<ToCheck, std::stringstream>::value;
+;
+} // namespace nanoservices
 
-#endif //NANOSERVICES2_STRINGUTILS_H
+#endif // NANOSERVICES2_STRINGUTILS_H

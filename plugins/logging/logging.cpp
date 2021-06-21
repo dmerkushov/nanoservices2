@@ -70,42 +70,8 @@ LogLevel nanoservices::log_getLevelByName(std::string &name) noexcept {
 }
 
 void nanoservices::log(stringstream &message, LogLevel level) noexcept {
-    if (!log_active(level)) {
-        return;
-    }
-
-    string descriptionStr = message.str();
-    log(descriptionStr, level);
+    function<string()> strfunc = [&message]() {
+        return message.str();
+    };
+    log(strfunc, level);
 }
-
-void nanoservices::log(function<string()> const &logMessageProducer, LogLevel level) noexcept {
-    if (!log_active(level)) {
-        return;
-    }
-
-    string msg = logMessageProducer();
-    log(msg, level);
-}
-
-void nanoservices::log(function<stringstream()> logMessageProducer, LogLevel level) noexcept {
-    if (!log_active(level)) {
-        return;
-    }
-
-    stringstream msg = logMessageProducer();
-    log(msg, level);
-}
-
-//void nanoservices::log(string &message, NsException &exception, LogLevel level) noexcept {
-//	stringstream ss;
-//	ss << message << endl;
-//	ss << "Exception:" << endl;
-//	ss << exception.fullDescription();
-//
-//	log(ss, level);
-//}
-//
-//void nanoservices::log(stringstream &message, NsException &exception, LogLevel level) noexcept {
-//	string s = message.str();
-//	log(s, exception, level);
-//}

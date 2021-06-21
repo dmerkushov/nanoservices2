@@ -12,7 +12,7 @@ using namespace std;
 
 shared_ptr<string> nanoservices::str_trim_copy(shared_ptr<string> str) noexcept {
     const auto strBegin = str->find_first_not_of(whitespace);
-    if (strBegin == std::string::npos)
+    if(strBegin == std::string::npos)
         return make_shared<string>(""); // no content
 
     const auto strEnd = str->find_last_not_of(whitespace);
@@ -25,7 +25,9 @@ shared_ptr<string> nanoservices::str_trim_copy(shared_ptr<string> str) noexcept 
 
 shared_ptr<string> nanoservices::str_toUpper_copy(shared_ptr<string> str) noexcept {
     locale locale;
-    auto to_upper = [&locale](char ch) { return use_facet<ctype<char> >(locale).toupper(ch); };
+    auto to_upper = [&locale](char ch) {
+        return use_facet<ctype<char>>(locale).toupper(ch);
+    };
 
     string *uppered = new string(*str);
 

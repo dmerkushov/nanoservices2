@@ -9,7 +9,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 #
 # Do not comment these lines.
 ############################
-list(APPEND SRC core/main.cpp)
+list(APPEND SRC main.cpp)
 #list(APPEND SRC core/exception/NsException.cpp)
 
 ############################

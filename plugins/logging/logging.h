@@ -5,6 +5,8 @@
 #ifndef LOGGING_H_
 #define LOGGING_H_
 
+#include "../../util/stringutils/stringutils.h"
+
 #include <chrono>
 #include <functional>
 #include <memory>
@@ -127,38 +129,25 @@ namespace nanoservices {
  */
     void log(std::stringstream &message, LogLevel level = _defaultLevel) noexcept;
 
-    /**
-     * @brief Log a message produced by the supplied function (log message producer - LMP), with a log level check before the LMP invocation. Note that the LMP may not throw
-     * @param logMessageProducer The function producing the log message. May be a lambda
-     * @param level the level of the message. INFO by default
-     */
-    void log(std::function<std::string()> logMessageProducer, LogLevel level = _defaultLevel) noexcept;
+/**
+ * @brief Log a message produced by the supplied function (log message producer - LMP), with a log level check before
+ * the LMP invocation. Note that the LMP may not throw
+ * @param logMessageProducer The function producing the log message. May produce a string or a stringstream. May be a
+ * lambda
+ * @param level the level of the message. INFO by default
+ */
+template<class MessageType>
+void log(std::function<MessageType()> &logMessageProducer, LogLevel level = _defaultLevel) noexcept {
+    static_assert(nanoservices::is_string_or_stringstream<MessageType>,
+                  "Log message producer function returns neither std::string nor std::stringstream");
 
-    /**
-     * @brief Log a message produced by the supplied function (log message producer - LMP), with a log level check before the LMP invocation. Note that the LMP may not throw
-     * @param logMessageProducer The function producing the log message. May be a lambda
-     * @param level the level of the message. INFO by default
-     */
-    void log(
-            std::function<std::stringstream()> logMessageProducer,
-            LogLevel level = _defaultLevel
-    ) noexcept;
+    if(!log_active(level)) {
+        return;
+    }
 
-///**
-// * @brief Log an event with an exception at the given log level
-// * @param message Description of the event
-// * @param exception The exception
-// * @param level the level of the event. ERROR by default
-// */
-//void log(std::string &message, NsException &exception, LogLevel level = LogLevel::ERROR) noexcept;
-//
-///**
-// * @brief Log an event with an exception at the given log level
-// * @param message Description of the event
-// * @param exception The exception
-// * @param level the level of the event. ERROR by default
-// */
-//void log(std::stringstream &message, NsException &exception, LogLevel level = LogLevel::ERROR) noexcept;
+    MessageType msg = logMessageProducer();
+    log(msg, level);
+}
 
 }
 
