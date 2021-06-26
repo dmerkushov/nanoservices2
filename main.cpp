@@ -19,11 +19,44 @@ int main(int argc, char **argv) noexcept {
         str += *name;
         return str;
     };
-    log(logLambda, LogLevel::DEBUG);
+
+    double avgWorkingTime = 0.0;
+    int64_t currentWorkingTime;
+
+    for(int i = 0; i < 30; i++) {
+        chrono::time_point start = chrono::system_clock::now();
+        log(logLambda, LogLevel::DEBUG);
+        chrono::time_point end = chrono::system_clock::now();
+
+        currentWorkingTime = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+
+        avgWorkingTime = ((avgWorkingTime * i) + currentWorkingTime) / (i + 1);
+
+        cout << "Logging worked for " << currentWorkingTime << " ns" << endl;
+        cout.flush();
+    }
+
+    cout << "Average working time " << avgWorkingTime << " ns" << endl << endl << endl << endl;
+
+    avgWorkingTime = 0.0;
 
     stringstream logSS;
-    logSS << "Logging via stringstream: Hello, World! And especitally " << *name;
-    log(logSS, LogLevel::DEBUG);
+    logSS << "Logging via stringstream: Hello, World! And especially " << *name;
+
+    for(int i = 0; i < 30; i++) {
+        chrono::time_point start = chrono::system_clock::now();
+        log(logSS, LogLevel::DEBUG);
+        chrono::time_point end = chrono::system_clock::now();
+
+        currentWorkingTime = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+
+        avgWorkingTime = ((avgWorkingTime * i) + currentWorkingTime) / (i + 1);
+
+        cout << "Logging worked for " << currentWorkingTime << " ns" << endl;
+        cout.flush();
+    }
+
+    cout << "Average working time " << avgWorkingTime << " ns" << endl << endl << endl << endl;
 
     return 0;
 }

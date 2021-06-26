@@ -22,8 +22,8 @@ namespace nanoservices {
  * <ul>
  * <li>ALL, OFF - the lowest and the highest levels, accordingly. NOT ADVISED to be used when calling log functions.
  * Only advised to be used when setting the desired logging volubility via configuration. So when setting to ALL, all
- * the logging messages will appear in the log, and when setting to OFF, no messages will appear in the log.
- * <li>TRACE, DEBUG, INFO, WARN, ERROR, FATAL - levels advised to be used both in configuration and in the code
+ * the logging messages will appear in the log, and when setting to OFF, no messages will appear in the log. <li>TRACE,
+ * DEBUG, INFO, WARN, ERROR, FATAL - levels advised to be used both in configuration and in the code
  * </ul>
  */
 enum class LogLevel : uint32_t {
