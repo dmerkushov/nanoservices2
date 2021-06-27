@@ -63,7 +63,7 @@ public:
     /**
      * @brief Get a value of a configuration property
      * @details The implementation is provided in configuration.cpp, that makes use of
-     * nanoservices::NsConfiguration::getProperty(std::string&). Configuration engine plugins are not intended to
+     * nanoservices::NsConfiguration::getProperty(const std::string&). Configuration engine plugins are not intended to
      * implement this method.
      * @param propertyName name of the property
      * @return The value of the named property. If the property is absent, or its name is too long (see
