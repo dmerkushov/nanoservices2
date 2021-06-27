@@ -76,8 +76,3 @@ list(APPEND SRC plugins/monitoring/monitoring_none.cpp)
 #list(APPEND SRC plugins/optional/monitoring/zipkin/monitoring_zipkin.cpp)
 
 add_executable(nanoservices2 ${SRC})
-
-ADD_CUSTOM_COMMAND(
-        TARGET nanoservices2 POST_BUILD
-        COMMAND mv compile_commands.json ..
-)
