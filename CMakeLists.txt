@@ -1,8 +1,9 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.19)
 project(nanoservices2)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_VERBOSE_MAKEFILE ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 ############################
 # CORE DEFINITIONS
@@ -75,3 +76,8 @@ list(APPEND SRC plugins/monitoring/monitoring_none.cpp)
 #list(APPEND SRC plugins/optional/monitoring/zipkin/monitoring_zipkin.cpp)
 
 add_executable(nanoservices2 ${SRC})
+
+ADD_CUSTOM_COMMAND(
+        TARGET nanoservices2 POST_BUILD
+        COMMAND mv compile_commands.json ..
+)
