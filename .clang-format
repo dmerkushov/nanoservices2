@@ -46,7 +46,7 @@ SpaceBeforeSquareBrackets: false
 SpacesInSquareBrackets: false
 
 # block
-AllowShortBlocksOnASingleLine: Empty
+AllowShortBlocksOnASingleLine: Never
 KeepEmptyLinesAtTheStartOfBlocks: true
 SpaceInEmptyBlock: false
 
@@ -110,7 +110,7 @@ SpaceBeforeCaseColon: false
 AllowShortEnumsOnASingleLine: true
 
 # function
-AllowShortFunctionsOnASingleLine: Empty
+AllowShortFunctionsOnASingleLine: None
 AllowAllParametersOfDeclarationOnNextLine: true
 AlwaysBreakAfterReturnType: None
 
@@ -121,7 +121,7 @@ BinPackArguments: false
 AllowAllArgumentsOnNextLine: true
 
 # lambda
-AllowShortLambdasOnASingleLine: Empty
+AllowShortLambdasOnASingleLine: None
 
 # if
 AllowShortIfStatementsOnASingleLine: Never

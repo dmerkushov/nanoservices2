@@ -17,7 +17,7 @@ static LogLevel _currentLevel = LogLevel::INFO;
 const int STRFTIME_BUFFER_SIZE = 32;
 
 void nanoservices::log_initialize() noexcept {
-    shared_ptr<string> desiredLogLevel = conf_getProperty("logLevel");
+    shared_ptr<string> desiredLogLevel = NsConfiguration::getProperty("logLevel");
     if(desiredLogLevel->empty()) {
         return;
     }
