@@ -58,5 +58,8 @@ int main(int argc, char **argv) noexcept {
 
     cout << "Average working time " << avgWorkingTime << " ns" << endl << endl << endl << endl;
 
+    log_finalize();
+    conf_finalize();
+
     return 0;
 }
