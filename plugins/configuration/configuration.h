@@ -56,8 +56,7 @@ public:
      * https://cmake.org/cmake/help/v3.6/command/add_definitions.html ). Otherwise, a duplicate definition error will be
      * raised by the linker.
      * @param propertyName name of the property
-     * @return The value of the named property. If the property is absent, or its name is too long (see
-     * nanoservices::NsConfiguration::MAX_PROPERTYNAME_LEN_CONSTCHARPTR), returns an empty shared pointer.
+     * @return The value of the named property. If the property is absent, returns an empty shared pointer.
      */
     static std::shared_ptr<std::string> getProperty(const std::string &propertyName) noexcept;
 
