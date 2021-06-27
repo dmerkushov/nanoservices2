@@ -1,8 +1,8 @@
-name: Build
+name: Run SonarCloud check on push to main or PR
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     types: [ opened, synchronize, reopened ]
 jobs:
