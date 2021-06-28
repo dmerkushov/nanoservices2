@@ -17,31 +17,127 @@
 
 namespace nanoservices {
 
-/**
- * Logging levels enum. Levels are:
- * <ul>
- * <li>ALL, OFF - the lowest and the highest levels, accordingly. NOT ADVISED to be used when calling log functions.
- * Only advised to be used when setting the desired logging volubility via configuration. So when setting to ALL, all
- * the logging messages will appear in the log, and when setting to OFF, no messages will appear in the log. <li>TRACE,
- * DEBUG, INFO, WARN, ERROR, FATAL - levels advised to be used both in configuration and in the code
- * </ul>
- */
-enum class LogLevel : uint32_t {
-    ALL = 0,
-    TRACE = 100,
-    DEBUG = 200,
-    INFO = 300,
-    WARN = 400,
-    ERROR = 500,
-    FATAL = 600,
-    OFF = UINT32_MAX
-};
+struct LogRecord;
 
-/**
- * The default logging level
- * @see nanoservices::LogLevel
- */
-extern const LogLevel _defaultLevel;
+class Logger {
+public:
+    /**
+     * Logging levels enum. Levels are:
+     * <ul>
+     * <li>ALL, OFF - the lowest and the highest levels, respectively. NOT ADVISED to be used when calling log
+     * functions. Only advised to be used when setting the desired logging volubility via configuration. So when setting
+     * to ALL, all the logging messages will appear in the log, and when setting to OFF, no messages will appear in the
+     * log. <li>TRACE, DEBUG, INFO, WARN, ERROR, FATAL - levels advised to be used both in configuration and in the code
+     * </ul>
+     */
+    enum class LogLevel : uint32_t {
+        ALL = 0,
+        TRACE = 100,
+        DEBUG = 200,
+        INFO = 300,
+        WARN = 400,
+        ERROR = 500,
+        FATAL = 600,
+        OFF = UINT32_MAX
+    };
+
+private:
+    /**
+     * @brief The current log level of the logger
+     */
+    LogLevel _level;
+
+    /**
+     * @brief Name of the logger
+     */
+    std::shared_ptr<std::string> _name;
+
+    /**
+     * @brief Write the supplied log record to the log.
+     * @details One of the three methods to be implemented by the logging plugin. Others are: Logger::initialize() and
+     * Logger::finalize().
+     *
+     * No log level check is needed, it is done beforehand in user-callable methods.
+     * @param logRecord
+     */
+    void writeToLog(LogRecord &logRecord) noexcept;
+
+public:
+    /**
+     * @brief The default log level
+     */
+    static const LogLevel defaultLevel;
+
+    /**
+     * @brief Initialize the logging engine.
+     * @details One of the three methods to be implemented by the logging plugin. Others are:
+     * Logger::writeToLog(LogRecord&) and Logger::finalize()
+     */
+    static void initialize() noexcept;
+
+    /**
+     * @brief Finalize the logging engine.
+     * @details One of the three methods to be implemented by the logging plugin. Others are:
+     * Logger::writeToLog(LogRecord&) and Logger::initialize()
+     */
+    static void finalize() noexcept;
+
+    /**
+     * @brief Create a logger with the default name and the configured log level, or, if there is no configured log
+     * level, the default log level.
+     * @details The name for the logger will be "DEFAULT".
+     *
+     * In configuration, the property named "nanoservices.logging.{name}.logLevel" provides the name of the
+     * log level for the logger ("{name}" is substituted by the logger name). If no such property is found, the
+     * property named "nanoservices.logging.logLevel" is used. If no such property is found, too, the log level is
+     * set to the default value, Logger::defaultLevel.
+     */
+    Logger() noexcept;
+
+    /**
+     * @brief Create a logger with the given name and the configured log level, or, if there is no configured log level,
+     * the default log level.
+     * @details In configuration, the property named "nanoservices.logging.{name}.logLevel" provides the name of the
+     * log level for the logger ("{name}" is substituted by the logger name). If no such property is found, the
+     * property named "nanoservices.logging.logLevel" is used. If no such property is found, too, the log level is
+     * set to the default value, Logger::defaultLevel.
+     * @param name
+     */
+    Logger(std::string &name) noexcept;
+
+    /**
+     * @brief Create a logger with the default name and the given log level
+     * @details The name for the logger will be "DEFAULT"
+     * @param logLevel
+     */
+    Logger(LogLevel logLevel) noexcept;
+
+    /**
+     * @brief Create a logger with the given name and log level
+     * @param name
+     * @param logLevel
+     */
+    Logger(std::string &name, LogLevel logLevel) noexcept;
+
+    /**
+     * @brief Set the given log level for the logger
+     * @param logLevel
+     */
+    void setLevel(LogLevel logLevel) noexcept;
+
+    /**
+     * @brief Get the current log level for the logger
+     * @return
+     */
+    LogLevel level() noexcept;
+
+    /**
+     * @brief Is the given level currently loggable by the logger?
+     * @param logLevel
+     * @return
+     */
+    bool isLoggable(LogLevel logLevel) noexcept;
+};
 
 struct LogRecord {
 
@@ -53,7 +149,7 @@ struct LogRecord {
     /**
      * @brief Log level for the event
      */
-    const LogLevel logLevel;
+    const Logger::LogLevel logLevel;
 
     /**
      * @brief Logger name that has logged the event. By default, an empty string
