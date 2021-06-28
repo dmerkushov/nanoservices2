@@ -103,14 +103,14 @@ public:
      * set to the default value, Logger::defaultLevel.
      * @param name
      */
-    Logger(std::string &name) noexcept;
+    explicit Logger(std::string &name) noexcept;
 
     /**
      * @brief Create a logger with the default name and the given log level
      * @details The name for the logger will be "DEFAULT"
      * @param logLevel
      */
-    Logger(LogLevel logLevel) noexcept;
+    explicit Logger(LogLevel logLevel) noexcept;
 
     /**
      * @brief Create a logger with the given name and log level
