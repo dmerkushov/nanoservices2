@@ -215,7 +215,7 @@ public:
         static_assert(nanoservices::is_string_or_stringstream_or_strproducerfunc<MT>,
                       "Log message must be either std::string or std::stringstream or a string producer function");
 
-        log(message, LogLevel::TRACE);
+        log(message, LogLevel::TRACE, exception);
     }
 
     /**
