@@ -9,7 +9,9 @@
 using namespace std;
 using namespace nanoservices;
 
-const LogLevel nanoservices::_defaultLevel = LogLevel::INFO;
+const std::string nanoservices::DEFAULT_LOGGER_NAME = "defaultLogger";
+
+const Logger::LogLevel Logger::defaultLevel = LogLevel::INFO;
 
 const char *nanoservices::log_getLevelName(LogLevel level) noexcept {
     if(level >= LogLevel::OFF) {

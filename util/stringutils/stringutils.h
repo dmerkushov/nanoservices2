@@ -5,9 +5,11 @@
 #ifndef NANOSERVICES2_STRINGUTILS_H
 #define NANOSERVICES2_STRINGUTILS_H
 
+#include <functional>
 #include <memory>
 #include <sstream>
 #include <string>
+#include <type_traits>
 
 namespace nanoservices {
 
@@ -36,6 +38,17 @@ std::shared_ptr<std::string> str_toUpper_copy(std::shared_ptr<std::string>) noex
 template<typename ToCheck>
 constexpr bool is_string_or_stringstream =
         std::is_same_v<ToCheck, std::string> || std::is_same_v<ToCheck, std::stringstream>;
+
+/**
+ * @brief For use in static asserts: check whether the operand type is either string or stringstream or a function
+ * producing any of them
+ * @tparam ToCheck
+ */
+template<typename ToCheck>
+constexpr bool is_string_or_stringstream_or_strproducerfunc =
+        std::is_same_v<ToCheck, std::string> || std::is_same_v<ToCheck, std::stringstream> ||
+        std::is_same_v<ToCheck, std::function<std::string()>> ||
+        std::is_same_v<ToCheck, std::function<std::stringstream()>>;
 ;
 } // namespace nanoservices
 

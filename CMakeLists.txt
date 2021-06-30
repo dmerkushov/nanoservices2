@@ -77,6 +77,9 @@ list(APPEND SRC plugins/logging/stdout/logging_stdout.cpp)
 # Log using the ELK (ElasticSearch, Logstash, Kibana) stack. See the plugin documentation for more info
 #list(APPEND SRC plugins/logging/elk/logging_elk.cpp)
 
+# Log using Fluentd. See the plugin documentation for more info
+#list(APPEND STD plugins/logging/fluentd/logging_fluentd.cpp)
+
 ############################
 # MONITORING ENGINE
 #
