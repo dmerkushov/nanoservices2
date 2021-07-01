@@ -37,7 +37,7 @@ The code in `backward.cpp` is trivial anyway, you can simply copy what it's doin
 Note for [folly](https://github.com/facebook/folly) library users: must define `backward::SignalHandling sh;`
 after `folly::init(&argc, &argv);`.
 
-## NsConfiguration & Dependencies
+## Configuration & Dependencies
 
 ### Integration with CMake
 

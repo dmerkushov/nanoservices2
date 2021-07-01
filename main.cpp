@@ -9,10 +9,10 @@ using namespace std;
 using namespace nanoservices;
 
 int main(int argc, char **argv) noexcept {
-    NsConfiguration::initialize(argc, argv);
+    Configuration::initialize(argc, argv);
     log_initialize();
 
-    shared_ptr<string> name = NsConfiguration::getProperty("name");
+    shared_ptr<string> name = Configuration::getProperty("name");
 
     function<string()> logLambda = [name]() {
         string str("Logging via lambda: Hello, World! And especially ");
@@ -59,7 +59,7 @@ int main(int argc, char **argv) noexcept {
     cout << "Average working time " << avgWorkingTime << " ns" << endl << endl << endl << endl;
 
     log_finalize();
-    NsConfiguration::finalize();
+    Configuration::finalize();
 
     return 0;
 }

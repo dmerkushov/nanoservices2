@@ -10,17 +10,17 @@
 using namespace std;
 using namespace nanoservices;
 
-map<string, shared_ptr<string>, less<>> NsConfiguration::_properties;
+map<string, shared_ptr<string>, less<>> Configuration::_properties;
 
 #ifndef NANOSERVICES_CONF_PLUGIN_IMPLEMENTS_GETPROPERTY_STRING
-shared_ptr<string> NsConfiguration::getProperty(const string &propertyName) noexcept {
+shared_ptr<string> Configuration::getProperty(const string &propertyName) noexcept {
     if(propertyName == "") {
         return make_shared<string>();
     }
 
     shared_ptr<string> result;
     try {
-        result = NsConfiguration::_properties.at(propertyName);
+        result = Configuration::_properties.at(propertyName);
     } catch(const std::out_of_range &) {
         result = make_shared<string>();
     }
@@ -29,7 +29,7 @@ shared_ptr<string> NsConfiguration::getProperty(const string &propertyName) noex
 }
 #endif
 
-shared_ptr<string> NsConfiguration::getProperty(const char *propertyName) noexcept {
+shared_ptr<string> Configuration::getProperty(const char *propertyName) noexcept {
     if(propertyName == nullptr) {
         return make_shared<string>();
     }

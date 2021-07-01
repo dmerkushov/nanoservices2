@@ -12,6 +12,7 @@
 #include <functional>
 #include <map>
 #include <memory>
+#include <mutex>
 #include <sstream>
 #include <string>
 
@@ -82,6 +83,16 @@ private:
     std::shared_ptr<std::string> _name;
 
     /**
+     * @brief Mutex to control access to the loggers map
+     */
+    static std::mutex _name2LoggerMapMutex;
+
+    /**
+     * @brief Map logger names to loggers
+     */
+    static std::map<std::string, std::shared_ptr<Logger>> _name2LoggerMap;
+
+    /**
      * @brief Create a logger with the given name and the configured log level, or, if there is no configured log level,
      * the default log level.
      * @details In configuration, the property named "nanoservices.logging.{name}.level" provides the name of the
@@ -90,12 +101,12 @@ private:
      * set to the default value, Logger::defaultLevel.
      * @param name
      */
-    explicit Logger(std::string &name) noexcept;
+    explicit Logger(const std::string &name) noexcept;
 
     /**
      * @brief Write the supplied log record to the log.
-     * @details One of the three methods to be implemented by the logging plugin. Others are: Logger::initialize() and
-     * Logger::finalize().
+     * @details One of the three methods to be implemented by the logging plugin. Others are: Logger::initialize()
+     * and Logger::finalize().
      * @details No log level check is needed in this method, it is done beforehand in user-callable methods.
      * @details This method must guarantee the following: for any two subsequent entries into this method, the
      * corresponding log records in the resulting log will follow the same order (if applicable).
@@ -103,7 +114,7 @@ private:
      * @details This method must be thread-safe.
      * @param logRecord The log record to be logged
      */
-    void doLog(LogRecord &logRecord) noexcept;
+    void doLog(const LogRecord &logRecord) noexcept;
 
 public:
     /**
@@ -115,8 +126,8 @@ public:
      * @brief Initialize the logging engine.
      * @details One of the three methods to be implemented by the logging plugin. Others are:
      * Logger::doLog(LogRecord&) and Logger::finalize().
-     * @details This method is called exactly once at the start of the nanoservice. The method call is not required to
-     * be thread-safe.
+     * @details This method is called exactly once at the start of the nanoservice. The method call is not required
+     * to be thread-safe.
      */
     static void initialize() noexcept;
 
@@ -130,22 +141,6 @@ public:
     static void finalize() noexcept;
 
     /**
-     * @brief Get the default logger.
-     * @details The returned logger will have the name set by nanoservices::DEFAULT_LOGGER_NAME (case sensitive) and the
-     * configured log level for that name.
-     * @details In configuration, the property named "nanoservices.logging.{name}.level" provides the name of the
-     * log level for the logger ("{name}" is substituted by the logger name). If no such property is found, the
-     * property named "nanoservices.logging.level" is used. If no such property is found, too, the log level is
-     * set to the default value, Logger::defaultLevel.
-     * @details If such a logger had been already constructed, the same instance is pointed to by the returned shared
-     * pointer.
-     * @details The returned shared pointer is guaranteed to be not empty.
-     * @details This method is thread-safe.
-     * @return
-     */
-    static std::shared_ptr<Logger> getDefaultLogger() noexcept;
-
-    /**
      * @brief Get a logger by its name.
      * @details The returned logger will have the supplied name (case sensitive) and the configured log level for
      * that name.
@@ -153,14 +148,14 @@ public:
      * log level for the logger ("{name}" is substituted by the logger name). If no such property is found, the
      * property named "nanoservices.logging.level" is used. If no such property is found, too, the log level is
      * set to the default value, Logger::defaultLevel.
-     * @details If such a logger had been already constructed, the same instance is pointed to by the returned shared
-     * pointer.
+     * @details If such a logger had been already constructed, the same instance is pointed to by the returned
+     * shared pointer.
      * @details The returned shared pointer is guaranteed to be not empty.
      * @details This method is thread-safe.
      * @param name
      * @return
      */
-    static std::shared_ptr<Logger> getLoggerByName(std::string &name) noexcept;
+    static std::shared_ptr<Logger> getLogger(const std::string &name = DEFAULT_LOGGER_NAME) noexcept;
 
     /**
      * @brief Get a log level by its name
@@ -177,14 +172,14 @@ public:
      * @param level
      * @return Name of the log level in uppercase
      */
-    static const char *levelName(LogLevel level) noexcept;
+    static const char *levelName(const LogLevel level) noexcept;
 
     /**
      * @brief Set the given log level for the logger
      * @details This method is thread-safe.
      * @param logLevel
      */
-    void setLevel(LogLevel logLevel) noexcept;
+    void setLevel(const LogLevel logLevel) noexcept;
 
     /**
      * @brief Get the current log level for the logger
@@ -199,7 +194,7 @@ public:
      * @param logLevel
      * @return
      */
-    bool isLoggable(LogLevel logLevel) noexcept;
+    bool isLoggable(const LogLevel logLevel) noexcept;
 
     /**
      * @brief Send a message to the log with the TRACE level
@@ -207,8 +202,8 @@ public:
      * @details This method is not intended to be implemented by the plugin.
      * @tparam message type must be either std::string or std::stringstream
      * @param message or message producer function
-     * @param exception an optional exception parameter. If not empty, the exception message will be added to the log.
-     * message, delimited by std::endl.
+     * @param exception an optional exception parameter. If not empty, the exception message will be added to the
+     * log. message, delimited by std::endl.
      */
     template<class MT>
     void trace(MT &message, std::shared_ptr<std::exception> exception = nullptr) noexcept {

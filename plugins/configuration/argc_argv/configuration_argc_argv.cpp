@@ -9,7 +9,7 @@
 using namespace std;
 using namespace nanoservices;
 
-void nanoservices::NsConfiguration::initialize(int argc, char **argv) noexcept {
+void nanoservices::Configuration::initialize(int argc, char **argv) noexcept {
     // argv[0] is the executable name, argv[1] and agrv[2] are required for at
     // least one configuration property So, minimum argc to fill up configuration
     // is 3
@@ -20,10 +20,10 @@ void nanoservices::NsConfiguration::initialize(int argc, char **argv) noexcept {
     for(int i = 1; i < argc - 1; i += 2) {
         string name(argv[i]);
         string value(argv[i + 1]);
-        NsConfiguration::_properties[name] = make_shared<string>(value);
+        Configuration::_properties[name] = make_shared<string>(value);
     }
 }
 
-void nanoservices::NsConfiguration::finalize() noexcept {
+void nanoservices::Configuration::finalize() noexcept {
     // Do nothing
 }
