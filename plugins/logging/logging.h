@@ -7,21 +7,47 @@
 
 #include "../../util/stringutils/stringutils.h"
 
+#include <cassert>
 #include <chrono>
 #include <exception>
 #include <functional>
+#include <iostream>
 #include <map>
 #include <memory>
 #include <mutex>
+#include <regex>
 #include <sstream>
 #include <string>
+#include <type_traits>
 
 namespace nanoservices {
 
 /**
  * @brief The name for the default logger
  */
-extern const std::string DEFAULT_LOGGER_NAME;
+extern const std::string LOGGING_LOGGER_NAME_DEFAULT;
+
+/**
+ * @brief The name of the default logging level
+ */
+extern const std::string LOGGING_LOGGER_LEVELNAME_DEFAULT;
+
+/**
+ * @brief The concept denotes a loggable entity: any of
+ * <ul>
+ * <li>anything convertible to std::string
+ * <li>std::stringstream
+ * <li>a string or stringstream producer: a function that returns any of
+ * <ul>
+ * <li>anything convertible to std::string
+ * <li>std::stringstream
+ * </ul>
+ * when called without parameters
+ * </ul>
+ * @tparam MT
+ */
+template<class MT>
+concept Loggable = StringOrSStream<MT> || StringOrSStreamProducer<MT>;
 
 class Logger {
 public:
@@ -90,7 +116,7 @@ private:
     /**
      * @brief Map logger names to loggers
      */
-    static std::map<std::string, std::shared_ptr<Logger>> _name2LoggerMap;
+    static std::map<std::string, std::shared_ptr<Logger>, std::less<>> _name2LoggerMap;
 
     /**
      * @brief Create a logger with the given name and the configured log level, or, if there is no configured log level,
@@ -114,14 +140,9 @@ private:
      * @details This method must be thread-safe.
      * @param logRecord The log record to be logged
      */
-    void doLog(const LogRecord &logRecord) noexcept;
+    void doLog(const LogRecord &logRecord) const noexcept;
 
 public:
-    /**
-     * @brief The default log level
-     */
-    static const LogLevel defaultLevel;
-
     /**
      * @brief Initialize the logging engine.
      * @details One of the three methods to be implemented by the logging plugin. Others are:
@@ -155,7 +176,7 @@ public:
      * @param name
      * @return
      */
-    static std::shared_ptr<Logger> getLogger(const std::string &name = DEFAULT_LOGGER_NAME) noexcept;
+    static std::shared_ptr<Logger> getLogger(const std::string &name = LOGGING_LOGGER_NAME_DEFAULT) noexcept;
 
     /**
      * @brief Get a log level by its name
@@ -186,7 +207,7 @@ public:
      * @details This method is thread-safe.
      * @return
      */
-    LogLevel level() noexcept;
+    LogLevel level() const noexcept;
 
     /**
      * @brief Is the given level currently loggable by the logger?
@@ -194,133 +215,161 @@ public:
      * @param logLevel
      * @return
      */
-    bool isLoggable(const LogLevel logLevel) noexcept;
+    bool isLoggable(const LogLevel logLevel) const noexcept;
 
     /**
-     * @brief Send a message to the log with the TRACE level
+     * @brief Send a message to the log at the TRACE level
      * @details This method is thread-safe.
      * @details This method is not intended to be implemented by the plugin.
-     * @tparam message type must be either std::string or std::stringstream
+     * @tparam MT message type must be either std::string, or std::stringstream, or a string producer function
      * @param message or message producer function
      * @param exception an optional exception parameter. If not empty, the exception message will be added to the
-     * log. message, delimited by std::endl.
+     * log. message, delimited by std::endl. The exception message is retrieved by running std::exception::what()
      */
-    template<class MT>
+    template<Loggable MT>
     void trace(MT &message, std::shared_ptr<std::exception> exception = nullptr) noexcept {
-        static_assert(nanoservices::is_string_or_stringstream_or_strproducerfunc<MT>,
-                      "Log message must be either std::string or std::stringstream or a string producer function");
+        if(!isLoggable(LogLevel::TRACE)) {
+            return;
+        }
 
         log(message, LogLevel::TRACE, exception);
     }
 
     /**
-     * @brief Send a message to the log with the DEBUG level
+     * @brief Send a message to the log at the DEBUG level
      * @details This method is thread-safe.
-     * @param message
+     * @details This method is not intended to be implemented by the plugin.
+     * @tparam MT message type must be either std::string, or std::stringstream, or a string producer function
+     * @param message or message producer function
+     * @param exception an optional exception parameter. If not empty, the exception message will be added to the
+     * log. message, delimited by std::endl. The exception message is retrieved by running std::exception::what()
      */
-    void debug(std::string &message) noexcept;
+    template<Loggable MT>
+    void debug(MT &message, std::shared_ptr<std::exception> exception = nullptr) noexcept {
+        if(!isLoggable(LogLevel::DEBUG)) {
+            return;
+        }
+
+        log(message, LogLevel::DEBUG, exception);
+    }
 
     /**
-     * @brief Send a message to the log with the INFO level
+     * @brief Send a message to the log at the INFO level
      * @details This method is thread-safe.
-     * @param message
+     * @details This method is not intended to be implemented by the plugin.
+     * @tparam MT message type must be either std::string, or std::stringstream, or a string producer function
+     * @param message or message producer function
+     * @param exception an optional exception parameter. If not empty, the exception message will be added to the
+     * log. message, delimited by std::endl. The exception message is retrieved by running std::exception::what()
      */
-    void info(std::string &message) noexcept;
+    template<Loggable MT>
+    void info(MT &message, std::shared_ptr<std::exception> exception = nullptr) noexcept {
+        if(!isLoggable(LogLevel::INFO)) {
+            return;
+        }
+
+        log(message, LogLevel::INFO, exception);
+    }
 
     /**
-     * @brief Send a message to the log with the WARN level
+     * @brief Send a message to the log at the WARN level
      * @details This method is thread-safe.
-     * @param message
+     * @details This method is not intended to be implemented by the plugin.
+     * @tparam MT message type must be either std::string, or std::stringstream, or a string producer function
+     * @param message or message producer function
+     * @param exception an optional exception parameter. If not empty, the exception message will be added to the
+     * log. message, delimited by std::endl. The exception message is retrieved by running std::exception::what()
      */
-    void warn(std::string &message) noexcept;
+    template<Loggable MT>
+    void warn(MT &message, std::shared_ptr<std::exception> exception = nullptr) noexcept {
+        if(!isLoggable(LogLevel::WARN)) {
+            return;
+        }
+
+        log(message, LogLevel::WARN, exception);
+    }
 
     /**
-     * @brief Send a message to the log with the ERROR level
+     * @brief Send a message to the log at the ERROR level
      * @details This method is thread-safe.
-     * @param message
+     * @details This method is not intended to be implemented by the plugin.
+     * @tparam MT message type must be either std::string, or std::stringstream, or a string producer function
+     * @param message or message producer function
+     * @param exception an optional exception parameter. If not empty, the exception message will be added to the
+     * log. message, delimited by std::endl. The exception message is retrieved by running std::exception::what()
      */
-    void error(std::string &message) noexcept;
+    template<Loggable MT>
+    void error(MT &message, std::shared_ptr<std::exception> exception = nullptr) noexcept {
+        if(!isLoggable(LogLevel::ERROR)) {
+            return;
+        }
+
+        log(message, LogLevel::ERROR, exception);
+    }
 
     /**
-     * @brief Send a message to the log with the FATAL level
+     * @brief Send a message to the log at the FATAL level
      * @details This method is thread-safe.
-     * @param message
+     * @details This method is not intended to be implemented by the plugin.
+     * @tparam MT message type must be either std::string, or std::stringstream, or a string producer function
+     * @param message or message producer function
+     * @param exception an optional exception parameter. If not empty, the exception message will be added to the
+     * log. message, delimited by std::endl. The exception message is retrieved by running std::exception::what()
      */
-    void fatal(std::string &message) noexcept;
+    template<Loggable MT>
+    void fatal(MT &message, std::shared_ptr<std::exception> exception = nullptr) noexcept {
+        if(!isLoggable(LogLevel::FATAL)) {
+            return;
+        }
 
-    /**
-     * @brief Send a message to the log with the FATAL level, with addition of an exception description via
-     * std::exception::what()
-     * @details The exception description is acquired by calling std::exception::what()
-     * @details This method is thread-safe.
-     * @param message
-     */
-    void fatal(std::string &message, std::exception &exception) noexcept;
+        log(message, LogLevel::FATAL, exception);
+    }
 
     /**
      * @brief Send a message to the log with the given level and with the given timepoint recorded
-     * @tparam type of the message. Must be either std::string or std::stringstream
+     * @tparam MT type of the message
      * @param message
      * @param exception if not nullptr, its message will be added to the log message, delimited by std::endl
      * @param level
      * @param timePoint
      */
-    template<class MT>
+    template<Loggable MT>
     void log(const MT &message,
-             const std::exception *exception = nullptr,
-             const LogLevel level = Logger::defaultLevel,
-             std::chrono::time_point<std::chrono::system_clock> timePoint = std::chrono::system_clock::now()) noexcept {
-        static_assert(nanoservices::is_string_or_stringstream<MT>,
-                      "Message is neither std::string nor std::stringstream");
+             const LogLevel level = Logger::levelByName(LOGGING_LOGGER_LEVELNAME_DEFAULT.c_str()),
+             const std::shared_ptr<std::exception> exception = nullptr,
+             const std::chrono::time_point<std::chrono::system_clock> timePoint =
+                     std::chrono::system_clock::now()) noexcept {
 
         if(!Logger::isLoggable(level)) {
             return;
         }
 
-        std::stringstream msgSS;
-        if constexpr(std::is_same_v<MT, std::string>) {
-            msgSS << message;
-        } else if constexpr(std::is_same_v<MT, std::stringstream>) {
-            msgSS = message;
-        }
-
-        if(exception != nullptr) {
-            msgSS << std::endl << exception->what();
-        }
+        static_assert(
+                String<MT> || SStream<MT> || StringProducer<MT> || SStreamProducer<MT>,
+                "Will not be able to create a message: MT is unexpected. Check the Loggable<MT> concept for any additions");
 
         LogRecord logRecord;
+        if constexpr(String<MT>) {
+            logRecord.message = std::make_shared<std::string>(message);
+        } else if constexpr(SStream<MT>) {
+            logRecord.message = std::make_shared<std::string>(message.str());
+        } else if constexpr(StringProducer<MT>) {
+            logRecord.message = std::make_shared<std::string>(message());
+        } else if constexpr(SStreamProducer<MT>) {
+            logRecord.message = std::make_shared<std::string>(message().str());
+        }
+
+        if(exception) {
+            std::stringstream msgSS;
+            msgSS << *logRecord.message << std::endl << exception->what();
+            logRecord.message = std::make_shared<std::string>(msgSS.str());
+        }
+
         logRecord.level = level;
         logRecord.timePoint = timePoint;
-        logRecord.message = std::make_shared<std::string>(msgSS.str());
         logRecord.loggerName = this->_name;
 
         doLog(logRecord);
-    }
-
-    /**
-     * @brief Send a message to the log with the given level and with the given timepoint recorded. The message is
-     * retrieved from the supplied producer function.
-     * @tparam MT type of the message. Must be either std::string or std::stringstream
-     * @param messageProducer
-     * @param exception
-     * @param level
-     * @param timePoint
-     */
-    template<class MT>
-    void log(const std::function<MT()> &messageProducer,
-             const std::exception *exception = nullptr,
-             const LogLevel level = Logger::defaultLevel,
-             std::chrono::time_point<std::chrono::system_clock> timePoint = std::chrono::system_clock::now()) noexcept {
-        static_assert(nanoservices::is_string_or_stringstream<MT>,
-                      "Log message producer function returns neither std::string nor std::stringstream");
-
-        if(!Logger::isLoggable(level)) {
-            return;
-        }
-
-        MT message = messageProducer();
-
-        log(message, exception, level, timePoint);
     }
 };
 

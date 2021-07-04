@@ -12,9 +12,13 @@
 using namespace std;
 using namespace nanoservices;
 
-const std::string nanoservices::DEFAULT_LOGGER_NAME = "defaultLogger";
+const string nanoservices::LOGGING_LOGGER_NAME_DEFAULT = "defaultLogger";
 
-const Logger::LogLevel Logger::defaultLevel = LogLevel::INFO;
+const string nanoservices::LOGGING_LOGGER_LEVELNAME_DEFAULT = "INFO";
+
+map<string, shared_ptr<Logger>, less<>> Logger::_name2LoggerMap;
+
+mutex Logger::_name2LoggerMapMutex;
 
 Logger::Logger(const std::string &name) noexcept {
     // Set name
@@ -26,22 +30,34 @@ Logger::Logger(const std::string &name) noexcept {
     if(!levelName) {
         levelName = Configuration::getProperty("nanoservices.logging.level");
         if(!levelName) {
-            levelName = std::make_shared<std::string>(Logger::levelName(Logger::defaultLevel));
+            levelName = std::make_shared<std::string>(LOGGING_LOGGER_LEVELNAME_DEFAULT);
         }
     }
     this->setLevel(Logger::levelByName(levelName->c_str()));
 }
 
 shared_ptr<Logger> Logger::getLogger(const std::string &name) noexcept {
-    std::scoped_lock<std::mutex> lock(_name2LoggerMapMutex);
+    std::scoped_lock<std::mutex> lock(Logger::_name2LoggerMapMutex);
 
-    shared_ptr<Logger> loggerSharedPtr = _name2LoggerMap[name];
+    shared_ptr<Logger> loggerSharedPtr = Logger::_name2LoggerMap[name];
     if(!loggerSharedPtr) {
         loggerSharedPtr = shared_ptr<Logger>(new Logger(name));
-        _name2LoggerMap[name] = loggerSharedPtr;
+        Logger::_name2LoggerMap[name] = loggerSharedPtr;
     }
 
     return loggerSharedPtr;
+}
+
+void Logger::setLevel(const LogLevel logLevel) noexcept {
+    this->_level = logLevel;
+}
+
+bool Logger::isLoggable(const LogLevel logLevel) const noexcept {
+    return logLevel >= this->level();
+}
+
+Logger::LogLevel Logger::level() const noexcept {
+    return this->_level;
 }
 
 Logger::LogLevel Logger::levelByName(const char *name) noexcept {
@@ -72,10 +88,10 @@ Logger::LogLevel Logger::levelByName(const char *name) noexcept {
         return LogLevel::ALL;
     }
 
-    return defaultLevel;
+    return levelByName(LOGGING_LOGGER_LEVELNAME_DEFAULT.c_str());
 }
 
-const char *nanoservices::log_getLevelName(LogLevel level) noexcept {
+const char *Logger::levelName(const LogLevel level) noexcept {
     if(level >= LogLevel::OFF) {
         return "OFF";
     }
@@ -101,11 +117,4 @@ const char *nanoservices::log_getLevelName(LogLevel level) noexcept {
         return "ALL";
     }
     return "UNKNOWN";
-}
-
-void nanoservices::log(const stringstream &message, const LogLevel level) noexcept {
-    function<string()> strfunc = [&message]() {
-        return message.str();
-    };
-    log(strfunc, level);
 }

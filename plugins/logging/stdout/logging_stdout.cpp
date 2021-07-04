@@ -10,47 +10,24 @@
 #include <iostream>
 
 using namespace std;
+using namespace chrono;
 using namespace nanoservices;
-
-static LogLevel _currentLevel = LogLevel::INFO;
 
 const int STRFTIME_BUFFER_SIZE = 32;
 
-void nanoservices::log_initialize() noexcept {
-    shared_ptr<string> desiredLogLevel = Configuration::getProperty("level");
-    if(desiredLogLevel->empty()) {
-        return;
-    }
-
-    LogLevel logLevel = log_getLevelByName(desiredLogLevel->c_str());
-    log_setLevel(logLevel);
-}
-
-void nanoservices::log_finalize() noexcept {
+void Logger::initialize() noexcept {
     // Do nothing
 }
 
-LogLevel nanoservices::log_getLevel() noexcept {
-    return _currentLevel;
+void Logger::finalize() noexcept {
+    // Do nothing
 }
 
-void nanoservices::log_setLevel(const LogLevel level) noexcept {
-    _currentLevel = level;
-}
-
-bool nanoservices::log_active(const LogLevel level) noexcept {
-    return level >= _currentLevel;
-}
-
-void nanoservices::log(const string &message, LogLevel level) noexcept {
-    if(!log_active(level)) {
-        return;
-    }
-
-    chrono::time_point tp = chrono::system_clock::now();
+void Logger::doLog(const LogRecord &logRecord) const noexcept {
+    time_point mutableTP = logRecord.timePoint;
 
     // Put the time information into a struct
-    time_t rawtime = chrono::system_clock::to_time_t(tp);
+    time_t rawtime = system_clock::to_time_t(mutableTP);
     struct tm timeinfo;
     localtime_r(&rawtime, &timeinfo);
 
@@ -61,12 +38,13 @@ void nanoservices::log(const string &message, LogLevel level) noexcept {
     strftime(curtimebuf, STRFTIME_BUFFER_SIZE, "%Y-%m-%d %H:%M:%S", &timeinfo);
 
     // Remove the seconds (and bigger) parts, then only milliseconds of each second will remain in the time point
-    chrono::seconds seconds = chrono::duration_cast<chrono::seconds>(tp.time_since_epoch());
-    tp -= seconds;
+    seconds sec = duration_cast<seconds>(mutableTP.time_since_epoch());
+    mutableTP -= sec;
 
-    chrono::microseconds micros = chrono::duration_cast<chrono::microseconds>(tp.time_since_epoch());
+    microseconds micros = duration_cast<microseconds>(mutableTP.time_since_epoch());
 
     // Sonar will argue on using cout for logging. But this logging implementation is a cout one!
-    cout << curtimebuf << '.' << micros.count() << ' ' << log_getLevelName(level) << ": " << message << endl;
+    cout << curtimebuf << '.' << micros.count() << ' ' << *logRecord.loggerName << ' '
+         << Logger::levelName(logRecord.level) << ": " << *logRecord.message << endl;
     cout.flush();
 }

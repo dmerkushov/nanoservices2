@@ -22,7 +22,8 @@ shared_ptr<string> Configuration::getProperty(const string &propertyName) noexce
     try {
         result = Configuration::_properties.at(propertyName);
     } catch(const std::out_of_range &) {
-        result = make_shared<string>();
+        result = nullptr;
+        Configuration::_properties[propertyName] = result;
     }
 
     return result;
