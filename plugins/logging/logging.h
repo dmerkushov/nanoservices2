@@ -47,7 +47,7 @@ extern const std::string LOGGING_LOGGER_LEVELNAME_DEFAULT;
  * @tparam MT
  */
 template<class MT>
-concept Loggable = StringOrSStream<MT> || StringOrSStreamProducer<MT>;
+concept LogMessage = StringOrSStream<MT> || StringOrSStreamProducer<MT>;
 
 class Logger {
 public:
@@ -226,7 +226,7 @@ public:
      * @param exception an optional exception parameter. If not empty, the exception message will be added to the
      * log. message, delimited by std::endl. The exception message is retrieved by running std::exception::what()
      */
-    template<Loggable MT>
+    template<LogMessage MT>
     void trace(MT &message, std::shared_ptr<std::exception> exception = nullptr) noexcept {
         if(!isLoggable(LogLevel::TRACE)) {
             return;
@@ -244,7 +244,7 @@ public:
      * @param exception an optional exception parameter. If not empty, the exception message will be added to the
      * log. message, delimited by std::endl. The exception message is retrieved by running std::exception::what()
      */
-    template<Loggable MT>
+    template<LogMessage MT>
     void debug(MT &message, std::shared_ptr<std::exception> exception = nullptr) noexcept {
         if(!isLoggable(LogLevel::DEBUG)) {
             return;
@@ -262,7 +262,7 @@ public:
      * @param exception an optional exception parameter. If not empty, the exception message will be added to the
      * log. message, delimited by std::endl. The exception message is retrieved by running std::exception::what()
      */
-    template<Loggable MT>
+    template<LogMessage MT>
     void info(MT &message, std::shared_ptr<std::exception> exception = nullptr) noexcept {
         if(!isLoggable(LogLevel::INFO)) {
             return;
@@ -280,7 +280,7 @@ public:
      * @param exception an optional exception parameter. If not empty, the exception message will be added to the
      * log. message, delimited by std::endl. The exception message is retrieved by running std::exception::what()
      */
-    template<Loggable MT>
+    template<LogMessage MT>
     void warn(MT &message, std::shared_ptr<std::exception> exception = nullptr) noexcept {
         if(!isLoggable(LogLevel::WARN)) {
             return;
@@ -298,7 +298,7 @@ public:
      * @param exception an optional exception parameter. If not empty, the exception message will be added to the
      * log. message, delimited by std::endl. The exception message is retrieved by running std::exception::what()
      */
-    template<Loggable MT>
+    template<LogMessage MT>
     void error(MT &message, std::shared_ptr<std::exception> exception = nullptr) noexcept {
         if(!isLoggable(LogLevel::ERROR)) {
             return;
@@ -316,7 +316,7 @@ public:
      * @param exception an optional exception parameter. If not empty, the exception message will be added to the
      * log. message, delimited by std::endl. The exception message is retrieved by running std::exception::what()
      */
-    template<Loggable MT>
+    template<LogMessage MT>
     void fatal(MT &message, std::shared_ptr<std::exception> exception = nullptr) noexcept {
         if(!isLoggable(LogLevel::FATAL)) {
             return;
@@ -333,12 +333,12 @@ public:
      * @param level
      * @param timePoint
      */
-    template<Loggable MT>
+    template<LogMessage MT>
     void log(const MT &message,
              const LogLevel level = Logger::levelByName(LOGGING_LOGGER_LEVELNAME_DEFAULT.c_str()),
              const std::shared_ptr<std::exception> exception = nullptr,
              const std::chrono::time_point<std::chrono::system_clock> timePoint =
-                     std::chrono::system_clock::now()) noexcept {
+                     std::chrono::system_clock::now()) const noexcept {
 
         if(!Logger::isLoggable(level)) {
             return;
@@ -346,7 +346,7 @@ public:
 
         static_assert(
                 String<MT> || SStream<MT> || StringProducer<MT> || SStreamProducer<MT>,
-                "Will not be able to create a message: MT is unexpected. Check the Loggable<MT> concept for any additions");
+                "Will not be able to create a message: MT is unexpected. Check the LogMessage<MT> concept for any additions");
 
         LogRecord logRecord;
         if constexpr(String<MT>) {
