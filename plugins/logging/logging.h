@@ -157,7 +157,8 @@ public:
      * @details One of the three methods to be implemented by the logging plugin. Others are:
      * Logger::doLog(LogRecord&) and Logger::initialize().
      * @details This method is not guaranteed to be called, but if called, it is called exactly once when the
-     * nanoservice is finishing. The method call is not required to be thread-safe.
+     * nanoservice is finishing, right before finalizing the configuration engine.
+     * @details The method is not required to be thread-safe.
      */
     static void finalize() noexcept;
 
@@ -168,11 +169,12 @@ public:
      * @details In configuration, the property named "nanoservices.logging.{name}.level" provides the name of the
      * log level for the logger ("{name}" is substituted by the logger name). If no such property is found, the
      * property named "nanoservices.logging.level" is used. If no such property is found, too, the log level is
-     * set to the default value, Logger::defaultLevel.
+     * set to the default value, nanoservices::LOGGING_LOGGER_LEVELNAME_DEFAULT.
      * @details If such a logger had been already constructed, the same instance is pointed to by the returned
      * shared pointer.
      * @details The returned shared pointer is guaranteed to be not empty.
-     * @details This method is thread-safe.
+     * @details This method is thread-safe, but it uses a blocking std::map to access loggers by their names. For best
+     * performance, a rare use of this method is recommended.
      * @param name
      * @return
      */
@@ -198,9 +200,16 @@ public:
     /**
      * @brief Set the given log level for the logger
      * @details This method is thread-safe.
-     * @param logLevel
+     * @param level
      */
-    void setLevel(const LogLevel logLevel) noexcept;
+    void setLevel(const LogLevel level = Logger::levelByName(LOGGING_LOGGER_LEVELNAME_DEFAULT.c_str())) noexcept;
+
+    /**
+     * @brief Set the given log level for the logger
+     * @details This method is thread-safe.
+     * @param levelName
+     */
+    void setLevel(const char *levelName = LOGGING_LOGGER_LEVELNAME_DEFAULT.c_str()) noexcept;
 
     /**
      * @brief Get the current log level for the logger

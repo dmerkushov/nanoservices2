@@ -4,7 +4,6 @@
 
 #include "logging.h"
 
-#include "../../util/stringutils/stringutils.h"
 #include "../configuration/configuration.h"
 
 #include <mutex>
@@ -33,7 +32,7 @@ Logger::Logger(const std::string &name) noexcept {
             levelName = std::make_shared<std::string>(LOGGING_LOGGER_LEVELNAME_DEFAULT);
         }
     }
-    this->setLevel(Logger::levelByName(levelName->c_str()));
+    setLevel(levelName->c_str());
 }
 
 shared_ptr<Logger> Logger::getLogger(const std::string &name) noexcept {
@@ -48,8 +47,12 @@ shared_ptr<Logger> Logger::getLogger(const std::string &name) noexcept {
     return loggerSharedPtr;
 }
 
-void Logger::setLevel(const LogLevel logLevel) noexcept {
-    this->_level = logLevel;
+void Logger::setLevel(const LogLevel level) noexcept {
+    this->_level = level;
+}
+
+void Logger::setLevel(const char *levelName) noexcept {
+    setLevel(Logger::levelByName(levelName));
 }
 
 bool Logger::isLoggable(const LogLevel logLevel) const noexcept {
@@ -116,5 +119,6 @@ const char *Logger::levelName(const LogLevel level) noexcept {
     if(level >= LogLevel::ALL) {
         return "ALL";
     }
-    return "UNKNOWN";
+
+    return LOGGING_LOGGER_LEVELNAME_DEFAULT.c_str();
 }
