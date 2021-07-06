@@ -31,7 +31,8 @@ shared_ptr<string> nanoservices::str_toUpper_copy(shared_ptr<string> str) noexce
 
     auto uppered = make_shared<string>(*str);
 
-    // We use gcc-9.3.0, so Sonar's advising to use the ranges library is not relevant
+    // We use gcc-9.3.0, so Sonar's advising to use the ranges library is not relevant:
+    // gcc-9.3.0 does not yet include the ranges library
     std::transform(uppered->begin(), uppered->end(), uppered->begin(), to_upper);
 
     return uppered;

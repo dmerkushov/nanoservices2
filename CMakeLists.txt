@@ -11,7 +11,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # Do not comment these lines.
 ############################
 list(APPEND SRC main.cpp)
-#list(APPEND SRC core/exception/NsException.cpp)
+list(APPEND SRC core/exception/NsException.cpp)
 
 ############################
 # BASIC PLUGIN DEFINITIONS

@@ -21,49 +21,42 @@
  * Created on February 21, 2019, 6:39 PM
  */
 
-#ifndef NSEXCEPTION_H
-#define NSEXCEPTION_H
+#ifndef NSEXCEPTION_H_
+#define NSEXCEPTION_H_
 
 #include <exception>
 #include <sstream>
 #include <string>
 #include <vector>
 
-#ifndef NSE_POSITION
-#    define NSE_POSITION (std::string("") + __FILE__ + ":" + std::to_string(__LINE__) + ": in " + __PRETTY_FUNCTION__)
-#endif
+#define NS_POSITION_FOR_EXCEPT \
+    ((std::string("") + __FILE__ + ":" + std::to_string(__LINE__) + ": in " + __PRETTY_FUNCTION__).c_str())
 
-#ifndef NSE_STACKTRACE_SIZE_MAX
-#    define NSE_STACKTRACE_SIZE_MAX (200)
+#ifndef NS_EXCEPTION
+#    define NS_EXCEPTION(message) NsException(NS_POSITION_FOR_EXCEPT, message)
+#    define NS_EXCEPTION(message, cause) NsException(NS_POSITION_FOR_EXCEPT, message, cause)
 #endif
 
 namespace nanoservices {
 
 class NsException : public std::exception {
+private:
+    /**
+     * @brief The maximum size of the stacktrace kept in an exception
+     */
+    static const size_t STACKTRACE_SIZE_MAX;
+
+    std::string _message;
+    std::string _fullDescription;
+    std::string _stacktrace;
+    std::string _rootExceptionFullDescription;
+
 public:
-    NsException(std::string position, std::string message, const NsException &cause) noexcept;
+    NsException(const char *position, const char *message) noexcept;
 
-    NsException(std::string position, std::stringstream &message, const NsException &cause) noexcept;
+    NsException(const char *position, const char *message, const std::exception &cause) noexcept;
 
-    NsException(std::string position, const NsException &cause) noexcept;
-
-    NsException(const std::string &position,
-                const std::stringstream &message,
-                const std::string &rootStacktrace,
-                const std::string &rootmessage,
-                const std::string &rootFullDescription) noexcept;
-
-    NsException(const NsException &rootEx) noexcept;
-
-    NsException(std::string position, std::string message) noexcept;
-
-    NsException(std::string position, std::stringstream &message) noexcept;
-
-    NsException(std::string message) noexcept;
-
-    NsException(std::stringstream &message) noexcept;
-
-    virtual ~NsException() noexcept;
+    ~NsException() noexcept override;
 
     /**
      * Inherited from std::exception
@@ -112,11 +105,6 @@ public:
     const std::string &rootExceptionFullDescription() const noexcept;
 
 private:
-    std::string _message;
-    std::string _fullDescription;
-    std::string _stacktrace;
-    std::string _rootExceptionFullDescription;
-
     /**
      * Utility method to use in the constructors
      * @param rootExStack

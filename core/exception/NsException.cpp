@@ -33,6 +33,8 @@
 using namespace nanoservices;
 using namespace std;
 
+const size_t NsException::STACKTRACE_SIZE_MAX = 200;
+
 NsException::NsException(string cause) noexcept : exception(), _message(message), _stacktrace(NOPOSDESCRIPTION) {
     init();
 }
@@ -81,7 +83,8 @@ NsException::NsException(const string &position,
     init(rootStacktrace, rootShortDescription, rootFullDescription);
 }
 
-NsException::~NsException() noexcept {}
+NsException::~NsException() noexcept {
+}
 
 const char *NsException::what() const noexcept {
     return _fullDescription.c_str();
@@ -100,14 +103,16 @@ const string &NsException::fullDescription() const noexcept {
 }
 
 void NsException::init(const string &rootExStack, const string &rootExShort, const string &rootExFull) noexcept {
-    void **addressArr = new void *[NSE_STACKTRACE_SIZE_MAX];
-    size_t stacktraceSize = backtrace(addressArr, NSE_STACKTRACE_SIZE_MAX);
+    void **addressArr = new void *[STACKTRACE_SIZE_MAX];
+    size_t stacktraceSize = backtrace(addressArr, STACKTRACE_SIZE_MAX);
     char **stacktraceArr = backtrace_symbols(addressArr, stacktraceSize);
 
     std::stringstream ss;
     ss << _stacktrace << " - ";
     if(stacktraceSize >= 3) {
-        for(unsigned int i = 2; i < stacktraceSize; i++) { ss << stacktraceArr[i] << endl; }
+        for(unsigned int i = 2; i < stacktraceSize; i++) {
+            ss << stacktraceArr[i] << endl;
+        }
     }
 
     _stacktrace = ss.str();
@@ -119,7 +124,9 @@ void NsException::init(const string &rootExStack, const string &rootExShort, con
     stringstream wss;
     try {
         wss << typeid(*this).name();
-    } catch(std::bad_typeid &bti) { wss << "(Unknown exception class)"; }
+    } catch(std::bad_typeid &bti) {
+        wss << "(Unknown exception class)";
+    }
     wss << " : " << _shortDescription << endl;
     wss << _stacktrace;
 
