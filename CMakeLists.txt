@@ -26,8 +26,6 @@ list(APPEND SRC plugins/logging/logging.cpp)
 #
 # Do not comment these lines.
 ############################
-# Readable stack traces (used in NsException)
-list(APPEND SRC thirdparty/backward/backward.cpp)
 
 ############################
 # UTILITY DEFINITIONS

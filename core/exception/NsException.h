@@ -25,6 +25,7 @@
 #define NSEXCEPTION_H_
 
 #include <exception>
+#include <memory>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -33,8 +34,8 @@
     ((std::string("") + __FILE__ + ":" + std::to_string(__LINE__) + ": in " + __PRETTY_FUNCTION__).c_str())
 
 #ifndef NS_EXCEPTION
-#    define NS_EXCEPTION(message) NsException(NS_POSITION_FOR_EXCEPT, message)
-#    define NS_EXCEPTION(message, cause) NsException(NS_POSITION_FOR_EXCEPT, message, cause)
+#    define NS_EXCEPTION(message) NsException(std::make_shared<std::string>(NS_POSITION_FOR_EXCEPT), message)
+#    define NS_EXCEPTION2(message, cause) NsException(NS_POSITION_FOR_EXCEPT, message, cause)
 #endif
 
 namespace nanoservices {
@@ -46,10 +47,10 @@ private:
      */
     static const size_t STACKTRACE_SIZE_MAX;
 
-    std::string _message;
-    std::string _fullDescription;
-    std::string _stacktrace;
-    std::string _rootExceptionFullDescription;
+    const std::shared_ptr<std::string> _message;
+    const std::shared_ptr<std::string> _position;
+    const std::shared_ptr<std::string> _stacktrace;
+    const std::shared_ptr<std::exception> _cause;
 
 public:
     NsException(const char *position, const char *message) noexcept;
@@ -59,7 +60,8 @@ public:
     ~NsException() noexcept override;
 
     /**
-     * Inherited from std::exception
+     * @brief Inherited from std::exception
+     * @details
      * @return The full description of the exception
      */
     const char *what() const noexcept override;
