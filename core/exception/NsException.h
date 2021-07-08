@@ -35,17 +35,20 @@
     ((std::string("") + __FILE__ + ":" + std::to_string(__LINE__) + ": in " + __PRETTY_FUNCTION__).c_str())
 
 #ifndef NS_EXCEPTION
-#    define NS_EXCEPTION(message) NsException(std::make_shared<std::string>(NS_POSITION_FOR_EXCEPT), message)
+#    define NS_EXCEPTION(message) NsException(std::make_shared<std::string>(NS_POSITION_FOR_EXCEPT), (message))
 #    define NS_EXCEPTION_WITHCAUSE(message, cause) \
-        NsException(std::make_shared<std::string>(NS_POSITION_FOR_EXCEPT), message, cause)
+        NsException(std::make_shared<std::string>(NS_POSITION_FOR_EXCEPT), (message), (cause))
 #endif
 
 namespace nanoservices {
 
+/**
+ * @brief An immutable exception class for all over nanoservices
+ */
 class NsException : public std::exception {
 private:
     /**
-     * @brief The maximum size of the stacktrace kept in an exception
+     * @brief The maximum number of stacktrace elements of the stacktrace kept in an exception
      */
     static const size_t STACKTRACE_SIZE_MAX;
 
@@ -64,15 +67,10 @@ public:
     /**
      * @brief Inherited from std::exception
      * @details
-     * @return The full description of the exception
+     * @return The full description of the exception, including position, message and the stacktrace. If a cause is set,
+     * then the result of the what() call for the causing exception is appended.
      */
     const char *what() const noexcept override;
-
-    /**
-     *
-     * @return Stacktrace of the exception
-     */
-    const std::string &stacktrace() const noexcept;
 
     /**
      * @brief Get the message of the exception
@@ -81,32 +79,22 @@ public:
     const std::string &message() const noexcept;
 
     /**
-     * @brief Get the short description of the exception: only the message.
-     * file, line, and function name, and the message of the cause exception, if
-     * any
+     *
+     * @return Stacktrace of the exception
+     */
+    const std::string &stacktrace() const noexcept;
+
+    /**
+     * @brief Get the position where the NsException was constructed
      * @return
      */
-    const std::string &shortDescription() const noexcept;
+    const std::string &position() const noexcept;
 
     /**
-     * @brief Get the full description of the exception:
-     * <ul>
-     * <li>the message,
-     * <li>file, line, function name of the exception creation point,
-     * <li>the stacktrace
-     * <li>the same, recursively, for the cause exception (if any)
-     * </ul>
-     * @return Full description of the exception; the same string as would be
-     * constructed if calling what()
+     * @brief Get the causing exception
+     * @return A shared pointer to the causing exception, or an empty shared pointer if none is set as a cause
      */
-    const std::string &fullDescription() const noexcept;
-
-    /**
-     *
-     * @return Full description of the root exception; empty string if no root
-     * exception provided
-     */
-    const std::string &rootExceptionFullDescription() const noexcept;
+    const std::shared_ptr<std::exception> cause() const noexcept;
 
 private:
     /**
@@ -120,4 +108,6 @@ private:
               const std::string &rootExFull = "") noexcept;
 };
 
-#endif /* NSEXCEPTION_H */
+} // namespace nanoservices
+
+#endif // NSEXCEPTION_H_

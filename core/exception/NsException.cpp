@@ -104,8 +104,8 @@ const string &NsException::fullDescription() const noexcept {
 
 void NsException::init(const string &rootExStack, const string &rootExShort, const string &rootExFull) noexcept {
     void **addressArr = new void *[STACKTRACE_SIZE_MAX];
-    size_t stacktraceSize = backtrace(addressArr, STACKTRACE_SIZE_MAX);
-    char **stacktraceArr = backtrace_symbols(addressArr, stacktraceSize);
+    size_t stacktraceSize = ::backtrace(addressArr, STACKTRACE_SIZE_MAX);
+    char **stacktraceArr = ::backtrace_symbols(addressArr, stacktraceSize);
 
     std::stringstream ss;
     ss << _stacktrace << " - ";
