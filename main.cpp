@@ -1,3 +1,4 @@
+#include "core/exception/NsException.h"
 #include "plugins/configuration/configuration.h"
 #include "plugins/logging/logging.h"
 
@@ -8,10 +9,18 @@
 using namespace std;
 using namespace nanoservices;
 
-int main(int argc, char **argv) noexcept {
+void myfunc() {
+    throw NS_EXCEPTION("My exception");
+}
+
+int main(int argc, char **argv) {
     Configuration::initialize(argc, argv);
     Logger::initialize();
     shared_ptr<Logger> logger = Logger::getLogger();
+
+    logger->info("+main()");
+
+    ::myfunc();
 
     shared_ptr<string> name = Configuration::getProperty("name");
 
