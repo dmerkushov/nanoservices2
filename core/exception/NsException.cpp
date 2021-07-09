@@ -39,31 +39,9 @@ NsException::NsException(const std::shared_ptr<std::string> message,
                          const std::shared_ptr<std::exception> cause) noexcept :
         _message(message), _position(position), _cause(cause) {
 
-    // Collect the stack trace
-    try {
-        void **addressArr = new void *[STACKTRACE_SIZE_MAX];
-        size_t stacktraceSize = ::backtrace(addressArr, STACKTRACE_SIZE_MAX);
-        char **stacktraceArr = ::backtrace_symbols(addressArr, stacktraceSize);
-        if(stacktraceSize >= 3) {
-            stringstream sss;
-            for(unsigned int i = 2; i < stacktraceSize; i++) {
-                sss << (i - 1) << ": " << stacktraceArr[i] << endl;
-            }
-            _stacktrace = make_shared<string>(sss.str());
-        } else {
-            _stacktrace = nullptr;
-        }
-        ::free(stacktraceArr);
-    } catch(const exception &) {
-        _stacktrace = nullptr;
-    }
-
     // Collect info for what()
     stringstream wss;
     wss << "Exception at " << *_position << ": " << *_message;
-    if(_stacktrace) {
-        wss << endl << *_stacktrace;
-    }
     if(_cause) {
         wss << endl << "Caused by: " << _cause->what();
     }
@@ -88,8 +66,4 @@ std::shared_ptr<std::exception> NsException::cause() const noexcept {
 
 std::shared_ptr<std::string> NsException::position() const noexcept {
     return _position;
-}
-
-std::shared_ptr<std::string> NsException::stacktrace() const noexcept {
-    return _stacktrace;
 }

@@ -52,7 +52,6 @@ private:
 
     std::shared_ptr<std::string> _message;
     std::shared_ptr<std::string> _position;
-    std::shared_ptr<std::string> _stacktrace;
     std::shared_ptr<std::exception> _cause;
 
     std::shared_ptr<std::string> _what;
@@ -79,12 +78,6 @@ public:
      * @return
      */
     std::shared_ptr<std::string> message() const noexcept;
-
-    /**
-     *
-     * @return Stacktrace of the exception
-     */
-    std::shared_ptr<std::string> stacktrace() const noexcept;
 
     /**
      * @brief Get the position where the NsException was constructed
