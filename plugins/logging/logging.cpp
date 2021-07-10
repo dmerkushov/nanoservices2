@@ -40,6 +40,7 @@ shared_ptr<Logger> Logger::getLogger(const std::string &name) noexcept {
 
     shared_ptr<Logger> loggerSharedPtr = Logger::_name2LoggerMap[name];
     if(!loggerSharedPtr) {
+        // Sonar will argue about not using make_shared, but we need to call a private constructor here
         loggerSharedPtr = shared_ptr<Logger>(new Logger(name));
         Logger::_name2LoggerMap[name] = loggerSharedPtr;
     }
@@ -64,7 +65,8 @@ Logger::LogLevel Logger::level() const noexcept {
 }
 
 Logger::LogLevel Logger::levelByName(const char *name) noexcept {
-    auto trimmedAndUppered = str_toUpper_copy(str_trim_copy(make_shared<string>(name)));
+    string nameStr(name);
+    auto trimmedAndUppered = str_toUpper_copy(*str_trim_copy(nameStr));
 
     if(*trimmedAndUppered == "OFF") {
         return LogLevel::OFF;

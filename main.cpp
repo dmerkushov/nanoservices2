@@ -9,18 +9,12 @@
 using namespace std;
 using namespace nanoservices;
 
-void myfunc() {
-    throw NS_EXCEPTION("My exception");
-}
-
 int main(int argc, char **argv) {
     Configuration::initialize(argc, argv);
     Logger::initialize();
     shared_ptr<Logger> logger = Logger::getLogger();
 
     logger->info("+main()");
-
-    ::myfunc();
 
     shared_ptr<string> name = Configuration::getProperty("name");
 
@@ -34,14 +28,14 @@ int main(int argc, char **argv) {
     int64_t currentWorkingTime;
     int64_t fullWorkingTime = 0;
 
-    int iterations = 30;
+    int iterations = 1000;
 
-    for(int i = 0; i < iterations; i++) {
+    for(int i = 0; i < iterations + 1; i++) {
         chrono::time_point start = chrono::system_clock::now();
-        logger->log(
-                [name]() {
+        logger->log( // logLambda,
+                [name, i]() {
                     stringstream ss;
-                    ss << "hello World and espicially " << *name;
+                    ss << "hello World and espicially " << (name != nullptr ? *name : "you") << " " << i;
                     return ss;
                 },
                 Logger::LogLevel::FATAL);
@@ -49,7 +43,10 @@ int main(int argc, char **argv) {
 
         currentWorkingTime = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
 
-        fullWorkingTime += currentWorkingTime;
+        // Skipping the first long-lasting call
+        if(i > 0) {
+            fullWorkingTime += currentWorkingTime;
+        }
 
         cout << "Logging worked for " << currentWorkingTime << " ns" << endl;
         cout.flush();
@@ -59,27 +56,30 @@ int main(int argc, char **argv) {
 
     cout << "Average working time " << avgWorkingTime << " ns" << endl << endl << endl << endl;
 
-    fullWorkingTime = 0;
-
-    stringstream logSS;
-    logSS << "Logging via stringstream: Hello, World! And especially " << *name;
-
-    for(int i = 0; i < iterations; i++) {
-        chrono::time_point start = chrono::system_clock::now();
-        logger->debug(logSS);
-        chrono::time_point end = chrono::system_clock::now();
-
-        currentWorkingTime = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-
-        fullWorkingTime += currentWorkingTime;
-
-        cout << "Logging worked for " << currentWorkingTime << " ns" << endl;
-        cout.flush();
-    }
-
-    avgWorkingTime = fullWorkingTime * 1.0 / iterations;
-
-    cout << "Average working time " << avgWorkingTime << " ns" << endl << endl << endl << endl;
+    // fullWorkingTime = 0;
+    //
+    // stringstream logSS;
+    // logSS << "Logging via stringstream: Hello, World! And especially " << *name;
+    //
+    // for(int i = 0; i < iterations + 1; i++) {
+    //     chrono::time_point start = chrono::system_clock::now();
+    //     logger->debug(logSS);
+    //     chrono::time_point end = chrono::system_clock::now();
+    //
+    //     currentWorkingTime = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+    //
+    //     // Skipping the first long-lasting call
+    //     if(i > 0) {
+    //         fullWorkingTime += currentWorkingTime;
+    //     }
+    //
+    //     cout << "Logging worked for " << currentWorkingTime << " ns" << endl;
+    //     cout.flush();
+    // }
+    //
+    // avgWorkingTime = fullWorkingTime * 1.0 / iterations;
+    //
+    // cout << "Average working time " << avgWorkingTime << " ns" << endl << endl << endl << endl;
 
     Logger::finalize();
     Configuration::finalize();

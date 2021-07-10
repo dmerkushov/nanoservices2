@@ -35,11 +35,11 @@ shared_ptr<string> Configuration::getProperty(const char *propertyName) noexcept
         return make_shared<string>();
     }
 
-    if(strncmp("", propertyName, 1) == 0) {
+    if(::strncmp("", propertyName, 1) == 0) {
         return make_shared<string>();
     }
 
-    if(strnlen(propertyName, MAX_PROPERTYNAME_LEN_CONSTCHARPTR + 1) == MAX_PROPERTYNAME_LEN_CONSTCHARPTR + 1) {
+    if(::strnlen(propertyName, MAX_PROPERTYNAME_LEN_CONSTCHARPTR + 1) == MAX_PROPERTYNAME_LEN_CONSTCHARPTR + 1) {
         return make_shared<string>();
     }
 
