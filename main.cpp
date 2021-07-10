@@ -27,6 +27,10 @@ int main(int argc, char **argv) {
     double avgWorkingTime = 0.0;
     int64_t currentWorkingTime;
     int64_t fullWorkingTime = 0;
+    int64_t maxWorkingTime = 0;
+    int maxWTIter = 0;
+    int minWTIter = 0;
+    int64_t minWorkingTime = INT64_MAX;
 
     int iterations = 1000;
 
@@ -43,9 +47,17 @@ int main(int argc, char **argv) {
 
         currentWorkingTime = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
 
-        // Skipping the first long-lasting call
+        // Skip the first long-lasting call
         if(i > 0) {
             fullWorkingTime += currentWorkingTime;
+            if(currentWorkingTime > maxWorkingTime) {
+                maxWorkingTime = currentWorkingTime;
+                maxWTIter = i;
+            }
+            if(currentWorkingTime < minWorkingTime) {
+                minWorkingTime = currentWorkingTime;
+                minWTIter = i;
+            }
         }
 
         cout << "Logging worked for " << currentWorkingTime << " ns" << endl;
@@ -54,7 +66,9 @@ int main(int argc, char **argv) {
 
     avgWorkingTime = fullWorkingTime * 1.0 / iterations;
 
-    cout << "Average working time " << avgWorkingTime << " ns" << endl << endl << endl << endl;
+    cout << "Average working time " << avgWorkingTime << " ns" << endl;
+    cout << "Max " << maxWorkingTime << " on iteration " << maxWTIter << endl;
+    cout << "Min " << minWorkingTime << " on iteration " << minWTIter << endl;
 
     // fullWorkingTime = 0;
     //
