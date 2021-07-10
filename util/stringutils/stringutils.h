@@ -23,13 +23,13 @@ static const std::string whitespace(" \t");
  * performance)
  * @return
  */
-std::shared_ptr<std::string> str_trim_copy(std::shared_ptr<std::string>) noexcept;
+std::shared_ptr<std::string> str_trim_copy(std::string_view str) noexcept;
 
 /**
  * Convert string to uppercase. Quite slow (may be rewritten for better performance)
  * @return
  */
-std::shared_ptr<std::string> str_toUpper_copy(std::shared_ptr<std::string>) noexcept;
+std::shared_ptr<std::string> str_toUpper_copy(std::string_view str) noexcept;
 
 /**
  * @brief The concept requires that the given type is convertible to std::string
