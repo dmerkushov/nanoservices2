@@ -1,9 +1,16 @@
-cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 3.12)
 project(nanoservices2)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_VERBOSE_MAKEFILE ON)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+if (UNIX)
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        set(CMAKE_CXX_COMPILER g++-10)
+        set(CMAKE_CXX_COMPILER_VERSION 10.3.0)
+        set(CMAKE_CXX_FLAGS -fconcepts)
+    endif ()
+endif ()
 
 ############################
 # CORE DEFINITIONS
