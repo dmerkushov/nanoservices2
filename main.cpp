@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
     int minWTIter = 0;
     int64_t minWorkingTime = INT64_MAX;
 
-    int iterations = 1000;
+    int iterations = 100000;
 
     for(int i = 0; i < iterations + 1; i++) {
         chrono::time_point start = chrono::system_clock::now();
