@@ -24,7 +24,6 @@
 #include "NsException.h"
 
 #include <cstring>
-#include <execinfo.h>
 #include <memory>
 #include <sstream>
 #include <typeinfo>
@@ -38,14 +37,6 @@ NsException::NsException(const std::shared_ptr<std::string> message,
                          const std::shared_ptr<std::string> position,
                          const std::shared_ptr<std::exception> cause) noexcept :
         _message(message), _position(position), _cause(cause) {
-
-    // Collect info for what()
-    stringstream wss;
-    wss << "Exception at " << *_position << ": " << *_message;
-    if(_cause) {
-        wss << endl << "Caused by: " << _cause->what();
-    }
-    _what = make_shared<string>(wss.str());
 }
 
 NsException::NsException(const char *message, const std::shared_ptr<std::string> position) noexcept :
@@ -53,6 +44,15 @@ NsException::NsException(const char *message, const std::shared_ptr<std::string>
 }
 
 const char *NsException::what() const noexcept {
+    if(!_what) {
+        // Collect info for what()
+        stringstream wss;
+        wss << "Exception at " << *_position << ": " << *_message;
+        if(_cause) {
+            wss << endl << "Caused by: " << _cause->what();
+        }
+        _what = make_shared<string>(wss.str());
+    }
     return _what->c_str();
 }
 

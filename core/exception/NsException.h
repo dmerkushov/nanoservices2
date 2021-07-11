@@ -54,7 +54,7 @@ private:
     std::shared_ptr<std::string> _position;
     std::shared_ptr<std::exception> _cause;
 
-    std::shared_ptr<std::string> _what;
+    mutable std::shared_ptr<std::string> _what;
 
 public:
     NsException(const char *message, const std::shared_ptr<std::string> position) noexcept;
