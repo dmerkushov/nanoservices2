@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
         logger->log( // logLambda,
                 [name, i]() {
                     stringstream ss;
-                    ss << "hello World and espicially " << (name != nullptr ? *name : "you") << " " << i;
+                    ss << "hello World and especially " << (name != nullptr ? *name : "you") << " " << i;
                     return ss;
                 },
                 Logger::LogLevel::FATAL);
