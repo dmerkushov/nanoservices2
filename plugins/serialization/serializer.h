@@ -2,8 +2,8 @@
 // Created by dmerkushov on 12.07.2021.
 //
 
-#ifndef NANOSERVICES2_MARSHALLER_H
-#define NANOSERVICES2_MARSHALLER_H
+#ifndef NANOSERVICES2_SERIALIZER_H
+#define NANOSERVICES2_SERIALIZER_H
 
 #include <memory>
 #include <string>
@@ -25,18 +25,22 @@ enum class RecordType {
     UNSIGNED_INT_64,
     FLOAT,
     DOUBLE,
-    RECORD_LIST,
-    RECORD_MAP
+    ENUM_VALUE,
+    LIST,
+    MAP
 };
 
-template<typename T>
 struct TypedRecord {
     RecordType type;
     std::string name;
-    std::shared_ptr<T> record;
+    std::shared_ptr<void> record;
 };
 
-// TODO Serializable concept
+template<typename T>
+concept Serializable = requires {
+    { &T::__nanoservices2_serializer_serialize() } -> std::vector<std::shared_ptr<TypedRecord>>;
+    { T::__nanoservices2_serializer_deserialize(TypedRecord &) } -> std::shared_ptr<T>;
+};
 
 template<Serializable S>
 class SerializedEntity {
@@ -58,4 +62,4 @@ public:
 
 } // namespace nanoservices
 
-#endif // NANOSERVICES2_MARSHALLER_H
+#endif // NANOSERVICES2_SERIALIZER_H
