@@ -39,8 +39,20 @@ struct TypedRecord {
 template<typename T>
 concept Serializable = requires {
     { &T::__nanoservices2_serializer_serialize() } -> std::vector<std::shared_ptr<TypedRecord>>;
-    { T::__nanoservices2_serializer_deserialize(TypedRecord &) } -> std::shared_ptr<T>;
+    { &T::__nanoservices2_serializer_deserialize(TypedRecord &) } -> void;
 };
+
+#ifndef NANOSERVICES2_PREPARE_SERIALIZABLE
+#    define NANOSERVICES2_PREPARE_SERIALIZABLE(...) \
+\
+    public: \
+        std::vector<std::shared_ptr<TypedRecord>> __nanoservices2_serializer_serialize() { \
+            return nanoservices::serialize("__VA_ARGS__", __VA_ARGS__); \
+        } \
+        void __nanoservices2_serializer_deserialize(TypedRecord &typedRecord) { \
+            // TODO Implement deserialization
+}
+#endif
 
 template<Serializable S>
 class SerializedEntity {
