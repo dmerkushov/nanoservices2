@@ -1,6 +1,7 @@
 #include "core/exception/NsException.h"
 #include "plugins/configuration/configuration.h"
 #include "plugins/logging/logging.h"
+#include "plugins/serialization/serializer.h"
 
 #include <functional>
 #include <iostream>
@@ -9,6 +10,14 @@
 using namespace std;
 using namespace nanoservices;
 
+class MyClass {
+public:
+    int32_t myField1 = 52;
+    int32_t myField2 = 8967;
+
+    NANOSERVICES2_MAKE_SERIALIZABLE(myField1, myField2)
+};
+
 int main(int argc, char **argv) {
     Configuration::initialize(argc, argv);
     Logger::initialize();
@@ -16,84 +25,18 @@ int main(int argc, char **argv) {
 
     logger->info("+main()");
 
-    shared_ptr<string> name = Configuration::getProperty("name");
+    MyClass myClass;
+    auto serialized = myClass.__nanoservices2_serializer_serialize();
 
-    auto logLambda = [name]() {
-        string str("Logging via lambda: Hello, World! And especially ");
-        str += *name;
-        return str;
-    };
+    stringstream msgSS0;
+    msgSS0 << "Serialized data 0: " << *(static_pointer_cast<int32_t>(serialized->at(0)->data));
+    logger->info(msgSS0);
 
-    double avgWorkingTime = 0.0;
-    int64_t currentWorkingTime;
-    int64_t fullWorkingTime = 0;
-    int64_t maxWorkingTime = 0;
-    int maxWTIter = 0;
-    int minWTIter = 0;
-    int64_t minWorkingTime = INT64_MAX;
+    stringstream msgSS1;
+    msgSS1 << "Serialized data 1: " << *(static_pointer_cast<int32_t>(serialized->at(1)->data));
+    logger->info(msgSS1);
 
-    int iterations = 100000;
-
-    for(int i = 0; i < iterations + 1; i++) {
-        chrono::time_point start = chrono::system_clock::now();
-        logger->log( // logLambda,
-                [name, i]() {
-                    stringstream ss;
-                    ss << "hello World and especially " << (name != nullptr ? *name : "you") << " " << i;
-                    return ss;
-                },
-                Logger::LogLevel::FATAL);
-        chrono::time_point end = chrono::system_clock::now();
-
-        currentWorkingTime = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-
-        // Skip the first long-lasting call
-        if(i > 0) {
-            fullWorkingTime += currentWorkingTime;
-            if(currentWorkingTime > maxWorkingTime) {
-                maxWorkingTime = currentWorkingTime;
-                maxWTIter = i;
-            }
-            if(currentWorkingTime < minWorkingTime) {
-                minWorkingTime = currentWorkingTime;
-                minWTIter = i;
-            }
-        }
-
-        cout << "Logging worked for " << currentWorkingTime << " ns" << endl;
-        cout.flush();
-    }
-
-    avgWorkingTime = fullWorkingTime * 1.0 / iterations;
-
-    cout << "Average working time " << avgWorkingTime << " ns" << endl;
-    cout << "Max " << maxWorkingTime << " on iteration " << maxWTIter << endl;
-    cout << "Min " << minWorkingTime << " on iteration " << minWTIter << endl;
-
-    // fullWorkingTime = 0;
-    //
-    // stringstream logSS;
-    // logSS << "Logging via stringstream: Hello, World! And especially " << *name;
-    //
-    // for(int i = 0; i < iterations + 1; i++) {
-    //     chrono::time_point start = chrono::system_clock::now();
-    //     logger->debug(logSS);
-    //     chrono::time_point end = chrono::system_clock::now();
-    //
-    //     currentWorkingTime = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-    //
-    //     // Skipping the first long-lasting call
-    //     if(i > 0) {
-    //         fullWorkingTime += currentWorkingTime;
-    //     }
-    //
-    //     cout << "Logging worked for " << currentWorkingTime << " ns" << endl;
-    //     cout.flush();
-    // }
-    //
-    // avgWorkingTime = fullWorkingTime * 1.0 / iterations;
-    //
-    // cout << "Average working time " << avgWorkingTime << " ns" << endl << endl << endl << endl;
+    logger->info("-main()");
 
     Logger::finalize();
     Configuration::finalize();
