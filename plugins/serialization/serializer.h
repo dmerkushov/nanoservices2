@@ -5,6 +5,8 @@
 #ifndef NANOSERVICES2_SERIALIZER_H
 #define NANOSERVICES2_SERIALIZER_H
 
+#include "../../thirdparty/swansontec/map-macro/map.h"
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -53,7 +55,7 @@ concept Serializable = requires {
 \
     public: \
         std::shared_ptr<std::vector<std::shared_ptr<SerializerRecord>>> __nanoservices2_serializer_serialize() { \
-            return nanoservices::Serializer::serialize(__VA_ARGS__); \
+            return CALL_SERIALIZE(__VA_ARGS__); \
         } \
         template<typename... FieldTypes> \
         void __nanoservices2_serializer_doDeserialize(FieldTypes) void __nanoservices2_serializer_deserialize( \
