@@ -30,6 +30,9 @@ enum class RecordType {
     MAP
 };
 
+// TODO Try https://stackoverflow.com/questions/1872220/is-it-possible-to-iterate-over-arguments-in-variadic-macros
+// Add something like macroutils.h for these macro tricks
+
 struct SerializerRecord {
     RecordType type;
     std::shared_ptr<void> data;
@@ -40,7 +43,9 @@ concept Serializable = requires {
     {
         &T::__nanoservices2_serializer_serialize()
         } -> std::convertible_to<std::shared_ptr<std::vector<std::shared_ptr<SerializerRecord>>>>;
-    // { &T::__nanoservices2_serializer_deserialize(SerializerRecord &) } -> void;
+    {
+        &T::__nanoservices2_serializer_deserialize(std::shared_ptr<std::vector<std::shared_ptr<SerializerRecord>>>)
+        } -> void;
 };
 
 #ifndef NANOSERVICES2_MAKE_SERIALIZABLE
@@ -49,6 +54,11 @@ concept Serializable = requires {
     public: \
         std::shared_ptr<std::vector<std::shared_ptr<SerializerRecord>>> __nanoservices2_serializer_serialize() { \
             return nanoservices::Serializer::serialize(__VA_ARGS__); \
+        } \
+        template<typename... FieldTypes> \
+        void __nanoservices2_serializer_doDeserialize(FieldTypes) void __nanoservices2_serializer_deserialize( \
+                std::shared_ptr<std::vector<std::shared_ptr<SerializerRecord>>> serializedVector) { \
+            return nanoservices::Serializer::deserialize(serializedVector, __VA_ARGS__); \
         }
 #endif
 // TODO Implement deserialization
@@ -65,6 +75,13 @@ private:
         return record;
     }
 
+    template<typename T>
+    static void deserializeField(T *fieldPtr, std::shared_ptr<SerializerRecord> serializerRecord) {
+        if constexpr(std::is_same_v<T, int32_t>) {
+            *fieldPtr = *(std::static_pointer_cast<int32_t>(serializerRecord->data));
+        }
+    }
+
 public:
     /**
      * @brief A recursive template: prepare a vector of SerializerRecord containing the otherFields to serialize
@@ -76,8 +93,8 @@ public:
      * @return
      */
     template<typename CurrentFieldType, typename... OtherFieldTypes>
-    static std::shared_ptr<std::vector<std::shared_ptr<SerializerRecord>>> serialize(CurrentFieldType currentField,
-                                                                                     OtherFieldTypes... otherFields) {
+    static std::shared_ptr<std::vector<std::shared_ptr<SerializerRecord>>> serialize(
+            CurrentFieldType currentField, OtherFieldTypes... otherFields) throw() {
         std::shared_ptr<std::vector<std::shared_ptr<SerializerRecord>>> result;
         if constexpr(sizeof...(OtherFieldTypes) == 0) {
             result = std::make_shared<std::vector<std::shared_ptr<SerializerRecord>>>();
@@ -86,6 +103,25 @@ public:
         }
         result->push_back(serializeField(currentField));
         return result;
+    }
+
+    template<typename CurrentFieldType, typename... OtherFieldTypes>
+    static void deserialize(std::shared_ptr<std::vector<std::shared_ptr<SerializerRecord>>> serializedVector,
+                            CurrentFieldType *currentField,
+                            OtherFieldTypes *...otherFields) throw() {
+
+        if(serializedVector->size() <= 0) {
+            // TODO Throw an exception here
+            return;
+        }
+
+        std::shared_ptr<SerializerRecord> currentRecord = serializedVector->back();
+        deserializeField(currentField, currentRecord);
+        serializedVector->pop_back();
+
+        if constexpr(sizeof...(OtherFieldTypes) > 0) {
+            deserialize(serializedVector, otherFields...);
+        }
     }
 };
 
