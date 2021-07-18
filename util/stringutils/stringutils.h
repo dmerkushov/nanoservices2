@@ -10,6 +10,7 @@
 #include <sstream>
 #include <string>
 #include <type_traits>
+#include <vector>
 
 namespace nanoservices {
 
@@ -85,6 +86,21 @@ concept SStreamProducer = requires(MT mt) {
  */
 template<class MT>
 concept StringOrSStreamProducer = StringProducer<MT> || SStreamProducer<MT>;
+
+/**
+ * @brief Split a string by delimiting char
+ * @param in input string
+ * @param delimiter
+ * @param trimTokens if true, will trim the tokens
+ * @param dropEmptyTokens if true, will not include empty tokens (due to delimiters beside each other, or due to
+ * delimiters at the start or the end of the input string) in the result. The empty-check is performed after trimming
+ * the token.
+ * @return A shared pointer to a vector of found tokens
+ */
+std::shared_ptr<std::vector<std::shared_ptr<std::string>>> splitString(std::shared_ptr<std::string> in,
+                                                                       char delimiter = ' ',
+                                                                       bool trimTokens = false,
+                                                                       bool dropEmptyTokens = false);
 
 } // namespace nanoservices
 

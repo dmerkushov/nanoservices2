@@ -1,7 +1,7 @@
 #include "core/exception/NsException.h"
 #include "plugins/configuration/configuration.h"
 #include "plugins/logging/logging.h"
-//#include "plugins/serialization/serializer.h"
+#include "plugins/serialization/serializer.h"
 #include "thirdparty/swansontec/map-macro/map.h"
 
 #include <functional>
@@ -11,13 +11,13 @@
 using namespace std;
 using namespace nanoservices;
 
-// class MyClass {
-// public:
-//     int32_t myField1 = 52;
-//     int32_t myField2 = 8967;
-//
-//     NANOSERVICES2_MAKE_SERIALIZABLE(myField1, myField2)
-// };
+class MyClass {
+public:
+    int32_t myField1 = 52;
+    int32_t myField2 = 8967;
+
+    NANOSERVICES2_MAKE_SERIALIZABLE(myField1, myField2)
+};
 
 #define LOGX(...) \
     { \
@@ -32,18 +32,27 @@ int main(int argc, char **argv) {
 
     logger->info("+main()");
 
-    // MyClass myClass;
-    // auto serialized = myClass.__nanoservices2_serializer_serialize();
-    //
-    // stringstream msgSS0;
-    // msgSS0 << "Serialized data 0: " << *(static_pointer_cast<int32_t>(serialized->at(0)->data));
-    // logger->info(msgSS0);
-    //
-    // stringstream msgSS1;
-    // msgSS1 << "Serialized data 1: " << *(static_pointer_cast<int32_t>(serialized->at(1)->data));
-    // logger->info(msgSS1);
+    MyClass myClass;
+    auto serialized = myClass.__nanoservices_serialize();
 
-    LOGX(logger, logger->info)
+    stringstream msgSS0;
+    msgSS0 << "Serialized data 0: " << *(static_pointer_cast<int32_t>(serialized->at(0)->data));
+    logger->info(msgSS0);
+
+    stringstream msgSS1;
+    msgSS1 << "Serialized data 1: " << *(static_pointer_cast<int32_t>(serialized->at(1)->data));
+    logger->info(msgSS1);
+
+    MyClass myClass2;
+    myClass2.__nanoservices_deserialize(serialized);
+
+    stringstream msgSS2;
+    msgSS2 << "Deserialized myField1: " << myClass2.myField1;
+    logger->info(msgSS2);
+
+    stringstream msgSS3;
+    msgSS3 << "Deserialized myField2: " << myClass2.myField2;
+    logger->info(msgSS3);
 
     logger->info("-main()");
 
