@@ -33,9 +33,6 @@ enum class RecordType {
     MAP
 };
 
-// TODO Try https://stackoverflow.com/questions/1872220/is-it-possible-to-iterate-over-arguments-in-variadic-macros
-// Add something like macroutils.h for these macro tricks
-
 struct SerializerRecord {
     RecordType type;
     std::shared_ptr<std::string> fieldName;
