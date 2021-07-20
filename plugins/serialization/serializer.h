@@ -8,6 +8,7 @@
 #include "../../thirdparty/swansontec/map-macro/map.h"
 #include "../../util/macroutils/classname.h"
 #include "../../util/stringutils/stringutils.h"
+#include "../../util/templateutils/specialization.h"
 
 #include <memory>
 #include <string>
@@ -83,6 +84,58 @@ public: \
 
 class Serializer {
 public:
+    // TODO Implement serializeListField
+    template<typename T>
+    static std::shared_ptr<SerializerRecord> serializeListField(std::shared_ptr<std::string> fieldName,
+                                                                std::vector<T> &fieldValue) {
+        auto record = std::make_shared<SerializerRecord>();
+        record->fieldName = fieldName;
+        if constexpr(std::is_same_v<T, std::vector<char>>) {
+            record->type = RecordType::BYTE_ARRAY;
+            record->data = std::make_shared<std::vector<char>>(fieldValue);
+        } else if constexpr(std::is_same_v<T, std::shared_ptr<std::vector<char>>>) {
+            record->type = RecordType::BYTE_ARRAY;
+            record->data = fieldValue;
+        } else {
+            record->type = RecordType::LIST;
+            record->data = std::make_shared<std::vector<std::shared_ptr<SerializerRecord>>>();
+
+            auto data = std::static_pointer_cast<std::vector<std::shared_ptr<SerializerRecord>>>(record->data);
+            auto allNamesEmpty = std::make_shared<std::string>("");
+
+            for(auto iter = fieldValue.begin(); iter != fieldValue.end(); ++iter) {
+                data->push_back(serializeField(allNamesEmpty, fieldValue));
+            }
+        }
+        return record;
+    }
+
+    // TODO Implement serializeMapField (currently copied from serializeListField)
+    template<typename K, typename V>
+    static std::shared_ptr<SerializerRecord> serializeMapField(std::shared_ptr<std::string> fieldName,
+                                                               std::map<K, V> &fieldValue) {
+        auto record = std::make_shared<SerializerRecord>();
+        record->fieldName = fieldName;
+        if constexpr(std::is_same_v<T, std::vector<char>>) {
+            record->type = RecordType::BYTE_ARRAY;
+            record->data = std::make_shared<std::vector<char>>(fieldValue);
+        } else if constexpr(std::is_same_v<T, std::shared_ptr<std::vector<char>>>) {
+            record->type = RecordType::BYTE_ARRAY;
+            record->data = fieldValue;
+        } else {
+            record->type = RecordType::MAP;
+            record->data = std::make_shared<std::vector<std::shared_ptr<SerializerRecord>>>();
+
+            auto data = std::static_pointer_cast<std::vector<std::shared_ptr<SerializerRecord>>>(record->data);
+            auto allNamesEmpty = std::make_shared<std::string>("");
+
+            for(auto iter = fieldValue.begin(); iter != fieldValue.end(); ++iter) {
+                data->push_back(serializeField(allNamesEmpty, fieldValue));
+            }
+        }
+        return record;
+    }
+
     template<typename T>
     static std::shared_ptr<SerializerRecord> serializeField(std::shared_ptr<std::string> fieldName, T &fieldValue) {
         auto record = std::make_shared<SerializerRecord>();
@@ -123,36 +176,12 @@ public:
         } else if constexpr(std::is_same_v<T, double>) {
             record->type = RecordType::FLOAT_64;
             record->data = std::make_shared<double>(fieldValue);
-        } else if constexpr(std::is_same_v<T, std::vector<>>) {
-            record->type = RecordType::FLOAT_64;
-            record->data = std::make_shared<double>(fieldValue);
+        } else if constexpr(nanoservices::is_specialization<T, std::vector>::value) {
+            return serializeListField(fieldName, fieldValue);
+        } else if constexpr(nanoservices::is_specialization<T, std::map>::value) {
+            return serializeMapField(fieldName, fieldValue);
         } else {
             record->type = RecordType::NULL_VALUE;
-        }
-        return record;
-    }
-
-    template<typename T>
-    static std::shared_ptr<SerializerRecord> serializeListField(std::shared_ptr<std::string> fieldName,
-                                                                std::vector<T> &fieldValue) {
-        auto record = std::make_shared<SerializerRecord>();
-        record->fieldName = fieldName;
-        if constexpr(std::is_same_v<T, std::vector<char>>) {
-            record->type = RecordType::BYTE_ARRAY;
-            record->data = std::make_shared<std::vector<char>>(fieldValue);
-        } else if constexpr(std::is_same_v<T, std::shared_ptr<std::vector<char>>>) {
-            record->type = RecordType::BYTE_ARRAY;
-            record->data = fieldValue;
-        } else {
-            record->type = RecordType::LIST;
-            record->data = std::make_shared<std::vector<std::shared_ptr<SerializerRecord>>>();
-
-            auto data = std::static_pointer_cast<std::vector<std::shared_ptr<SerializerRecord>>>(record->data);
-            auto allNamesEmpty = std::make_shared<std::string>("");
-
-            for(auto iter = fieldValue.begin(); iter != fieldValue.end(); ++iter) {
-                data->push_back(serializeField(allNamesEmpty, fieldValue));
-            }
         }
         return record;
     }
