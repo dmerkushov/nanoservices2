@@ -5,6 +5,7 @@
 #ifndef NANOSERVICES2_SERIALIZER_H
 #define NANOSERVICES2_SERIALIZER_H
 
+#include "../../plugins/logging/logging.h"
 #include "../../thirdparty/swansontec/map-macro/map.h"
 #include "../../util/macroutils/classname.h"
 #include "../../util/stringutils/stringutils.h"
@@ -51,20 +52,26 @@ struct SerializerRecord {
 // };
 
 #define __NANOSERVICES2_SERIALIZE_FIELDCLAUSE__(FIELDNAME) \
+    __nanoservices_logger->trace("+"); \
     result->push_back(nanoservices::Serializer::serializeField(*fieldNamesIter, (FIELDNAME))); \
-    ++fieldNamesIter;
+    ++fieldNamesIter; \
+    __nanoservices_logger->trace("-");
 
 #define __NANOSERVICES2_DESERIALIZE_FIELDCLAUSE__(FIELDNAME) \
+    __nanoservices_logger->trace("+"); \
     nanoservices::Serializer::deserializeField(&(FIELDNAME), *serializerRecordsIter); \
-    ++serializerRecordsIter;
+    ++serializerRecordsIter; \
+    __nanoservices_logger->trace("-");
 
 #define NANOSERVICES2_MAKE_SERIALIZABLE(...) \
 \
 private: \
     mutable std::shared_ptr<std::vector<std::shared_ptr<std::string>>> __nanoservices_fieldNamesVector; \
+    std::shared_ptr<nanoservices::Logger> __nanoservices_logger = Logger::getLogger(); \
 \
 public: \
     std::shared_ptr<std::vector<std::shared_ptr<SerializerRecord>>> __nanoservices_serialize() { \
+        __nanoservices_logger->debug("+__nanoservices_serialize()"); \
         if(!__nanoservices_fieldNamesVector) { \
             const char *fieldNames = #__VA_ARGS__; \
             __nanoservices_fieldNamesVector = \
@@ -73,22 +80,32 @@ public: \
         auto result = make_shared<std::vector<std::shared_ptr<SerializerRecord>>>(); \
         auto fieldNamesIter = __nanoservices_fieldNamesVector->begin(); \
         MAP(__NANOSERVICES2_SERIALIZE_FIELDCLAUSE__, __VA_ARGS__) \
+        __nanoservices_logger->debug("-__nanoservices_serialize()"); \
         return result; \
     } \
 \
     void __nanoservices_deserialize( \
             std::shared_ptr<std::vector<std::shared_ptr<SerializerRecord>>> serializerRecords) { \
+        __nanoservices_logger->debug("+__nanoservices_deserialize()"); \
         auto serializerRecordsIter = serializerRecords->begin(); \
         MAP(__NANOSERVICES2_DESERIALIZE_FIELDCLAUSE__, __VA_ARGS__) \
+        __nanoservices_logger->debug("-__nanoservices_deserialize()"); \
     }
 
 class Serializer {
+
 public:
     // TODO Implement serializeListField
     template<typename T>
     static std::shared_ptr<SerializerRecord> serializeListField(std::shared_ptr<std::string> fieldName,
                                                                 std::vector<T> &fieldValue) {
         auto record = std::make_shared<SerializerRecord>();
+
+        auto __nanoservices_logger = Logger::getLogger();
+        __nanoservices_logger->trace("serializeListField(): serializing");
+        std::string a(typeid(T).name());
+        __nanoservices_logger->trace(a);
+
         record->fieldName = fieldName;
         if constexpr(std::is_same_v<T, std::vector<char>>) {
             record->type = RecordType::BYTE_ARRAY;
@@ -104,34 +121,33 @@ public:
             auto allNamesEmpty = std::make_shared<std::string>("");
 
             for(auto iter = fieldValue.begin(); iter != fieldValue.end(); ++iter) {
-                data->push_back(serializeField(allNamesEmpty, fieldValue));
+                data->push_back(serializeField(allNamesEmpty, *iter));
             }
         }
+
         return record;
     }
 
-    // TODO Implement serializeMapField (currently copied from serializeListField)
+    /**
+     * @brief Serialization of a map
+     * @tparam V
+     * @param fieldName
+     * @param fieldValue
+     * @return
+     */
     template<typename K, typename V>
     static std::shared_ptr<SerializerRecord> serializeMapField(std::shared_ptr<std::string> fieldName,
                                                                std::map<K, V> &fieldValue) {
         auto record = std::make_shared<SerializerRecord>();
         record->fieldName = fieldName;
-        if constexpr(std::is_same_v<T, std::vector<char>>) {
-            record->type = RecordType::BYTE_ARRAY;
-            record->data = std::make_shared<std::vector<char>>(fieldValue);
-        } else if constexpr(std::is_same_v<T, std::shared_ptr<std::vector<char>>>) {
-            record->type = RecordType::BYTE_ARRAY;
-            record->data = fieldValue;
-        } else {
-            record->type = RecordType::MAP;
-            record->data = std::make_shared<std::vector<std::shared_ptr<SerializerRecord>>>();
 
-            auto data = std::static_pointer_cast<std::vector<std::shared_ptr<SerializerRecord>>>(record->data);
-            auto allNamesEmpty = std::make_shared<std::string>("");
+        record->type = RecordType::MAP;
+        record->data = std::make_shared<std::vector<std::shared_ptr<SerializerRecord>>>();
+        auto data = std::static_pointer_cast<std::vector<std::shared_ptr<SerializerRecord>>>(record->data);
 
-            for(auto iter = fieldValue.begin(); iter != fieldValue.end(); ++iter) {
-                data->push_back(serializeField(allNamesEmpty, fieldValue));
-            }
+        for(auto iter = fieldValue.begin(); iter != fieldValue.end(); ++iter) {
+            data->push_back(serializeField("key", iter->first));
+            data->push_back(serializeField("value", iter->second));
         }
         return record;
     }

@@ -7,16 +7,16 @@
 #include <functional>
 #include <iostream>
 #include <string>
+#include <vector>
 
 using namespace std;
 using namespace nanoservices;
 
 class MyClass {
 public:
-    int32_t myField1 = 52;
-    int32_t myField2 = 8967;
+    vector<int32_t> myField3 = {234};
 
-    NANOSERVICES2_MAKE_SERIALIZABLE(myField1, myField2)
+    NANOSERVICES2_MAKE_SERIALIZABLE(myField3)
 };
 
 #define LOGX(...) \
@@ -35,24 +35,29 @@ int main(int argc, char **argv) {
     MyClass myClass;
     auto serialized = myClass.__nanoservices_serialize();
 
-    stringstream msgSS0;
-    msgSS0 << "Serialized data 0: " << *(static_pointer_cast<int32_t>(serialized->at(0)->data));
-    logger->info(msgSS0);
+    stringstream msgSS;
+    msgSS << "Ser: "
+          << *((dynamic_pointer_cast<std::vector<SerializerRecord>>(serialized->at(0)->data))->at(0).fieldName) << endl;
+    logger->info(msgSS);
 
-    stringstream msgSS1;
-    msgSS1 << "Serialized data 1: " << *(static_pointer_cast<int32_t>(serialized->at(1)->data));
-    logger->info(msgSS1);
-
+    // stringstream msgSS0;
+    // msgSS0 << "Serialized data 0: " << *(static_pointer_cast<int32_t>(serialized->at(0)->data));
+    // logger->info(msgSS0);
+    //
+    // stringstream msgSS1;
+    // msgSS1 << "Serialized data 1: " << *(static_pointer_cast<int32_t>(serialized->at(1)->data));
+    // logger->info(msgSS1);
+    //
     MyClass myClass2;
     myClass2.__nanoservices_deserialize(serialized);
-
-    stringstream msgSS2;
-    msgSS2 << "Deserialized myField1: " << myClass2.myField1;
-    logger->info(msgSS2);
-
-    stringstream msgSS3;
-    msgSS3 << "Deserialized myField2: " << myClass2.myField2;
-    logger->info(msgSS3);
+    //
+    // stringstream msgSS2;
+    // msgSS2 << "Deserialized myField1: " << myClass2.myField1;
+    // logger->info(msgSS2);
+    //
+    // stringstream msgSS3;
+    // msgSS3 << "Deserialized myField2: " << myClass2.myField2;
+    // logger->info(msgSS3);
 
     logger->info("-main()");
 
