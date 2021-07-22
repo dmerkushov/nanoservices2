@@ -36,8 +36,11 @@ int main(int argc, char **argv) {
     auto serialized = myClass.__nanoservices_serialize();
 
     stringstream msgSS;
-    msgSS << "Ser: "
-          << *((dynamic_pointer_cast<std::vector<SerializerRecord>>(serialized->at(0)->data))->at(0).fieldName) << endl;
+    auto serializedField3Data =
+            static_pointer_cast<std::vector<std::shared_ptr<SerializerRecord>>>(serialized->at(0)->data);
+    auto serializedField3Rec0 = serializedField3Data->at(0);
+    auto serializedField3Rec0Data = static_pointer_cast<int32_t>(serializedField3Rec0->data);
+    msgSS << "Ser: " << *serializedField3Rec0Data << endl;
     logger->info(msgSS);
 
     // stringstream msgSS0;
