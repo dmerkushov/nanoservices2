@@ -19,6 +19,7 @@ endif ()
 ############################
 list(APPEND SRC main.cpp)
 list(APPEND SRC core/exception/NsException.cpp)
+list(APPEND SRC core/serialization/serialization.cpp)
 
 ############################
 # BASIC PLUGIN DEFINITIONS

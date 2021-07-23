@@ -1,7 +1,7 @@
 #include "core/exception/NsException.h"
+#include "core/serialization/serialization.h"
 #include "plugins/configuration/configuration.h"
 #include "plugins/logging/logging.h"
-#include "plugins/serialization/serializer.h"
 #include "thirdparty/swansontec/map-macro/map.h"
 
 #include <functional>
@@ -35,13 +35,15 @@ int main(int argc, char **argv) {
     MyClass myClass;
     auto serialized = myClass.__nanoservices_serialize();
 
-    stringstream msgSS;
-    auto serializedField3Data =
-            static_pointer_cast<std::vector<std::shared_ptr<SerializerRecord>>>(serialized->at(0)->data);
-    auto serializedField3Rec0 = serializedField3Data->at(0);
-    auto serializedField3Rec0Data = static_pointer_cast<int32_t>(serializedField3Rec0->data);
-    msgSS << "Ser: " << *serializedField3Rec0Data << endl;
-    logger->info(msgSS);
+    {
+        stringstream msgSS;
+        auto serializedField3Data =
+                static_pointer_cast<std::vector<std::shared_ptr<SerializerRecord>>>(serialized->at(0)->data);
+        auto serializedField3Rec0 = serializedField3Data->at(0);
+        auto serializedField3Rec0Data = static_pointer_cast<int32_t>(serializedField3Rec0->data);
+        msgSS << "Ser: " << *serializedField3Rec0Data << endl;
+        logger->info(msgSS);
+    }
 
     // stringstream msgSS0;
     // msgSS0 << "Serialized data 0: " << *(static_pointer_cast<int32_t>(serialized->at(0)->data));

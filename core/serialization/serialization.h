@@ -2,8 +2,8 @@
 // Created by dmerkushov on 12.07.2021.
 //
 
-#ifndef NANOSERVICES2_SERIALIZER_H
-#define NANOSERVICES2_SERIALIZER_H
+#ifndef NANOSERVICES2_SERIALIZATION_H
+#define NANOSERVICES2_SERIALIZATION_H
 
 #include "../../plugins/logging/logging.h"
 #include "../../thirdparty/swansontec/map-macro/map.h"
@@ -93,9 +93,12 @@ public: \
     }
 
 class Serializer {
+private:
+    static std::shared_ptr<std::string> _mapItemKeyRecordName;
+    static std::shared_ptr<std::string> _mapItemValueRecordName;
+    static std::shared_ptr<std::string> _listItemRecordName;
 
 public:
-    // TODO Implement serializeListField
     template<typename T>
     static std::shared_ptr<SerializerRecord> serializeListField(std::shared_ptr<std::string> fieldName,
                                                                 std::vector<T> &fieldValue) {
@@ -118,10 +121,9 @@ public:
             record->data = std::make_shared<std::vector<std::shared_ptr<SerializerRecord>>>();
 
             auto data = std::static_pointer_cast<std::vector<std::shared_ptr<SerializerRecord>>>(record->data);
-            auto allNamesEmpty = std::make_shared<std::string>("");
 
             for(auto iter = fieldValue.begin(); iter != fieldValue.end(); ++iter) {
-                data->push_back(serializeField(allNamesEmpty, *iter));
+                data->push_back(serializeField(_listItemRecordName, *iter));
             }
         }
 
@@ -145,9 +147,9 @@ public:
         record->data = std::make_shared<std::vector<std::shared_ptr<SerializerRecord>>>();
         auto data = std::static_pointer_cast<std::vector<std::shared_ptr<SerializerRecord>>>(record->data);
 
-        for(auto iter = fieldValue.begin(); iter != fieldValue.end(); ++iter) {
-            data->push_back(serializeField("key", iter->first));
-            data->push_back(serializeField("value", iter->second));
+        for(typename std::map<K, V>::iterator iter = fieldValue.begin(); iter != fieldValue.end(); ++iter) {
+            data->push_back(serializeField(_mapItemKeyRecordName, iter->first));
+            data->push_back(serializeField(_mapItemValueRecordName, iter->second));
         }
         return record;
     }
@@ -203,6 +205,11 @@ public:
     }
 
     template<typename T>
+    static std::shared_ptr<SerializerRecord> serializeField(const char *fieldName, T &fieldValue) {
+        return serializeField(std::make_shared<std::string>(fieldName), fieldValue);
+    }
+
+    template<typename T>
     static void deserializeField(T *fieldPtr, std::shared_ptr<SerializerRecord> serializerRecord) {
         if constexpr(std::is_same_v<T, int32_t>) {
             *fieldPtr = *(std::static_pointer_cast<int32_t>(serializerRecord->data));
@@ -212,4 +219,4 @@ public:
 
 } // namespace nanoservices
 
-#endif // NANOSERVICES2_SERIALIZER_H
+#endif // NANOSERVICES2_SERIALIZATION_H
