@@ -6,6 +6,7 @@
 
 #include <functional>
 #include <iostream>
+#include <map>
 #include <string>
 #include <vector>
 
@@ -14,9 +15,10 @@ using namespace nanoservices;
 
 class MyClass {
 public:
-    vector<int32_t> myField3 = {234};
+    vector<int32_t> myField = {234};
+    map<int32_t, int32_t> myMap = {{234, 15}, {75, 86}};
 
-    NANOSERVICES2_MAKE_SERIALIZABLE(myField3)
+    NANOSERVICES2_MAKE_SERIALIZABLE(myField, myMap)
 };
 
 #define LOGX(...) \
