@@ -2,7 +2,7 @@
 #include "core/serialization/serialization.h"
 #include "plugins/configuration/configuration.h"
 #include "plugins/logging/logging.h"
-#include "thirdparty/swansontec/map-macro/map.h"
+#include "thirdparty/swansontec/map-macro/do_foreach.h"
 
 #include <functional>
 #include <iostream>
@@ -15,7 +15,7 @@ using namespace nanoservices;
 
 class MyClass {
 public:
-    vector<int32_t> myField = {234};
+    vector<int32_t> myField = {234, 235, 236};
     map<int32_t, int32_t> myMap = {{234, 15}, {75, 86}};
 
     NANOSERVICES2_MAKE_SERIALIZABLE(myField, myMap)
@@ -39,11 +39,26 @@ int main(int argc, char **argv) {
 
     {
         stringstream msgSS;
-        auto serializedField3Data =
-                static_pointer_cast<std::vector<std::shared_ptr<SerializerRecord>>>(serialized->at(0)->data);
-        auto serializedField3Rec0 = serializedField3Data->at(0);
-        auto serializedField3Rec0Data = static_pointer_cast<int32_t>(serializedField3Rec0->data);
-        msgSS << "Ser: " << *serializedField3Rec0Data << endl;
+        auto serializedListData =
+                static_pointer_cast<std::vector<std::shared_ptr<SerializationRecord>>>(serialized->at(0)->data);
+
+        for(auto iter = serializedListData->begin(); iter != serializedListData->end(); ++iter) {
+            auto serializedListRec = *iter;
+            auto serializedListRecData = static_pointer_cast<int32_t>(serializedListRec->data);
+            msgSS << "Serialized list: " << *serializedListRecData << endl;
+        }
+        logger->info(msgSS);
+    }
+    {
+        stringstream msgSS;
+        auto serializedMapData =
+                static_pointer_cast<std::vector<std::shared_ptr<SerializationRecord>>>(serialized->at(1)->data);
+
+        auto iter = serializedMapData->begin();
+        auto serializedMapRec = *iter;
+        msgSS << serializedMapRec->type << endl;
+        // auto serializedMapRecData = static_pointer_cast<int32_t>(serializedMapRec->data);
+        //  msgSS << "Serialized map: " << *serializedMapRecData << endl;
         logger->info(msgSS);
     }
 
