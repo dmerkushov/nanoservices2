@@ -32,9 +32,9 @@ enum class RecordType {
     UNSIGNED_INT_64,
     FLOAT_32,
     FLOAT_64,
+    SERIALIZABLE_CLASS,
     LIST,
-    MAP,
-    SERIALIZABLE_CLASS
+    MAP
 };
 
 /**
@@ -72,15 +72,23 @@ struct SerializationRecord {
     std::shared_ptr<void> data;
 };
 
-// template<typename T>
-// concept Serializable = requires {
-//     {
-//         &T::__nanoservices2_serializer_serialize()
-//         } -> std::convertible_to<std::shared_ptr<std::vector<std::shared_ptr<SerializationRecord>>>>;
-//     {
-//         &T::__nanoservices2_serializer_deserialize(std::shared_ptr<std::vector<std::shared_ptr<SerializationRecord>>>)
-//         } -> void;
-// };
+template<typename T>
+concept Serializable = requires(T t) {
+    {
+        t.__nanoservices2_serializer_serialize()
+        } -> std::convertible_to<std::shared_ptr<std::vector<std::shared_ptr<SerializationRecord>>>>;
+    t.__nanoservices2_serializer_deserialize();
+};
+
+    // template<typename T>
+    // concept Serializable = requires {
+    //     {
+    //         &T::__nanoservices2_serializer_serialize()
+    //         } -> std::convertible_to<std::shared_ptr<std::vector<std::shared_ptr<SerializationRecord>>>>;
+    //     {
+    //         &T::__nanoservices2_serializer_deserialize(std::shared_ptr<std::vector<std::shared_ptr<SerializationRecord>>>)
+    //         } -> void;
+    // };
 
 #define __NANOSERVICES2_SERIALIZE_FIELDCLAUSE__(FIELDNAME) \
     result->push_back(nanoservices::Serializer::serializeField(*fieldNamesIter, (FIELDNAME))); \
@@ -228,6 +236,9 @@ public:
         } else if constexpr(std::is_same_v<T, double>) {
             record->type = RecordType::FLOAT_64;
             record->data = std::make_shared<double>(fieldValue);
+        } else if constexpr(nanoservices::Serializable<T>) {
+            record->type = RecordType::SERIALIZABLE_CLASS;
+            record->data = fieldValue.__nanoservices2_serializer_serialize();
         } else if constexpr(nanoservices::is_specialization<T, std::vector>::value) {
             return serializeListField(fieldName, fieldValue);
         } else if constexpr(nanoservices::is_specialization<T, std::map>::value) {

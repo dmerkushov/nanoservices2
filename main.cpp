@@ -13,20 +13,19 @@
 using namespace std;
 using namespace nanoservices;
 
-class MyClass {
+class MyClass1 {
 public:
-    vector<int32_t> myField = {234, 235, 236};
-    map<int32_t, int32_t> myMap = {{234, 15}, {75, 86}};
+    int32_t myField1 = 234;
 
-    NANOSERVICES2_MAKE_SERIALIZABLE(myField, myMap)
+    NANOSERVICES2_MAKE_SERIALIZABLE(myField1);
 };
 
-#define LOGX(...) \
-    { \
-        stringstream msgSS_X; \
-        msgSS_X << #__VA_ARGS__; \
-        logger->info(msgSS_X); \
-    }
+class MyClass2 {
+    MyClass1 myField2;
+
+    NANOSERVICES2_MAKE_SERIALIZABLE(myField2);
+};
+
 int main(int argc, char **argv) {
     Configuration::initialize(argc, argv);
     Logger::initialize();
@@ -57,29 +56,10 @@ int main(int argc, char **argv) {
         auto iter = serializedMapData->begin();
         auto serializedMapRec = *iter;
         msgSS << serializedMapRec->type << endl;
-        // auto serializedMapRecData = static_pointer_cast<int32_t>(serializedMapRec->data);
-        //  msgSS << "Serialized map: " << *serializedMapRecData << endl;
+        auto serializedMapRecData = static_pointer_cast<int32_t>(serializedMapRec->data);
+        msgSS << "Serialized map: " << *serializedMapRecData << endl;
         logger->info(msgSS);
     }
-
-    // stringstream msgSS0;
-    // msgSS0 << "Serialized data 0: " << *(static_pointer_cast<int32_t>(serialized->at(0)->data));
-    // logger->info(msgSS0);
-    //
-    // stringstream msgSS1;
-    // msgSS1 << "Serialized data 1: " << *(static_pointer_cast<int32_t>(serialized->at(1)->data));
-    // logger->info(msgSS1);
-    //
-    MyClass myClass2;
-    myClass2.__nanoservices_deserialize(serialized);
-    //
-    // stringstream msgSS2;
-    // msgSS2 << "Deserialized myField1: " << myClass2.myField1;
-    // logger->info(msgSS2);
-    //
-    // stringstream msgSS3;
-    // msgSS3 << "Deserialized myField2: " << myClass2.myField2;
-    // logger->info(msgSS3);
 
     logger->info("-main()");
 
