@@ -77,7 +77,7 @@ concept Serializable = requires(T t) {
     {
         t.__nanoservices2_serializer_serialize()
         } -> std::convertible_to<std::shared_ptr<std::vector<std::shared_ptr<SerializationRecord>>>>;
-    t.__nanoservices2_serializer_deserialize();
+    // t.__nanoservices2_serializer_deserialize();
 };
 
     // template<typename T>
@@ -244,7 +244,12 @@ public:
         } else if constexpr(nanoservices::is_specialization<T, std::map>::value) {
             return serializeMapField(fieldName, fieldValue);
         } else {
-            Logger::getLogger()->trace("Serializing a null");
+            std::function msgFunc = [fieldName]() {
+                std::stringstream msgSS;
+                msgSS << "Serializing a null field. Name: " << *fieldName;
+                return msgSS;
+            };
+            Logger::getLogger()->trace(msgFunc);
             record->type = RecordType::NULL_VALUE;
         }
         return record;
@@ -259,6 +264,9 @@ public:
     static void deserializeField(T *fieldPtr, std::shared_ptr<SerializationRecord> serializerRecord) {
         if constexpr(std::is_same_v<T, int32_t>) {
             *fieldPtr = *(std::static_pointer_cast<int32_t>(serializerRecord->data));
+        } else if constexpr(nanoservices::Serializable<T>) {
+            fieldPtr->__nanoservices_deserialize(
+                    std::static_pointer_cast<std::vector<SerializationRecord>>(serializerRecord->data));
         }
     }
 };
