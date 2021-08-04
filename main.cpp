@@ -1,4 +1,4 @@
-#include "core/exception/NsException.h"
+//#include "core/exception/NsException.h"
 #include "core/serialization/serialization.h"
 #include "plugins/configuration/configuration.h"
 #include "plugins/logging/logging.h"
@@ -35,11 +35,11 @@ int main(int argc, char **argv) {
     logger->info("+main()");
 
     MyEnclosingClass myClass1;
-    auto serialized = myClass1.__nanoservices_serialize();
+    auto serialized = myClass1.__nanoservices_serializer_serialize();
 
     MyEnclosingClass myClass2;
     myClass2.enclosingField.enclosedField = 512;
-    myClass2.__nanoservices_deserialize(serialized);
+    myClass2.__nanoservices_serializer_deserialize(serialized);
 
     {
         stringstream msgSS;

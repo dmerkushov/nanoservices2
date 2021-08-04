@@ -66,7 +66,7 @@ concept StringOrSStream = String<MT> || SStream<MT>;
  */
 template<class MT>
 concept StringProducer = requires(MT mt) {
-    { mt() } -> String;
+    std::is_same_v<MT, std::function<std::string()>>;
 };
 
 /**
