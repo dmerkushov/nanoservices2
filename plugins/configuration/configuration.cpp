@@ -18,12 +18,14 @@ shared_ptr<string> Configuration::getProperty(const string &propertyName) noexce
         return make_shared<string>();
     }
 
+    auto propertyFindIterator = Configuration::_properties.find(propertyName);
+
     shared_ptr<string> result;
-    try {
-        result = Configuration::_properties.at(propertyName);
-    } catch(const std::out_of_range &) {
+    if(propertyFindIterator == Configuration::_properties.end()) {
         result = nullptr;
         Configuration::_properties[propertyName] = result;
+    } else {
+        result = propertyFindIterator->second;
     }
 
     return result;
