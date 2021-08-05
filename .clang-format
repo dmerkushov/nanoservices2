@@ -5,7 +5,7 @@
 ########################################################################################################################
 BasedOnStyle: Google
 Language: Cpp
-Standard: c++17
+Standard: c++20
 ColumnLimit: 160
 IndentWidth: 4
 TabWidth: 4
@@ -93,7 +93,7 @@ FixNamespaceComments: true
 NamespaceIndentation: None
 SortUsingDeclarations: true
 
-# template
+# template & concept
 AlwaysBreakTemplateDeclarations: Yes
 BreakBeforeConceptDeclarations: true
 IndentRequires: false
