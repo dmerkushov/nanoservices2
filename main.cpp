@@ -27,6 +27,11 @@ public:
     NANOSERVICES2_MAKE_SERIALIZABLE(enclosingField);
 };
 
+template<Serializable S>
+void f(S &s, shared_ptr<Logger> logger) {
+    logger->info("s is Serializable");
+}
+
 int main(int argc, char **argv) {
     Configuration::initialize(argc, argv);
     Logger::initialize();
@@ -34,13 +39,9 @@ int main(int argc, char **argv) {
 
     logger->info("+main()");
 
-    if(Serializable<MyEnclosingClass>) {
-        logger->info("serializable");
-    } else {
-        logger->info("not serializable");
-    }
-
     MyEnclosingClass myClass1;
+    f(myClass1, logger);
+
     auto serialized = myClass1.__nanoservices_serializer_serialize();
 
     MyEnclosingClass myClass2;

@@ -25,7 +25,7 @@ template<typename F>
 using function_type_t = typename detail::function_traits<F>::function_type;
 
 template<typename F>
-function_type_t<F> toFunction(F lambda) {
+function_type_t<F> toFunction(F &lambda) {
     return static_cast<function_type_t<F>>(lambda);
 }
 
