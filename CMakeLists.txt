@@ -17,7 +17,7 @@ endif ()
 # Do not comment these lines.
 ############################
 list(APPEND SRC main.cpp)
-list(APPEND SRC core/exception/NsException.cpp)
+list(APPEND SRC core/exception/ns_exception.cpp)
 list(APPEND SRC core/serialization/serialization.cpp)
 
 ############################

@@ -15,13 +15,13 @@
  */
 
 /*
- * File:   NsException.cpp
+ * File:   ns_exception.cpp
  * Author: dmerkushov
  *
  * Created on February 21, 2019, 6:39 PM
  */
 
-#include "NsException.h"
+#include "ns_exception.h"
 
 #include <cstring>
 #include <memory>
@@ -31,19 +31,18 @@
 using namespace nanoservices;
 using namespace std;
 
-const size_t NsException::STACKTRACE_SIZE_MAX = 200;
+const size_t ns_exception::STACKTRACE_SIZE_MAX = 200;
 
-NsException::NsException(const std::shared_ptr<std::string> message,
+ns_exception::ns_exception(const std::shared_ptr<std::string> message,
                          const std::shared_ptr<std::string> position,
                          const std::shared_ptr<std::exception> cause) noexcept :
         _message(message), _position(position), _cause(cause) {
 }
 
-NsException::NsException(const char *message, const std::shared_ptr<std::string> position) noexcept :
-        NsException(make_shared<string>(message), position) {
+ns_exception::ns_exception(const char *message, const std::shared_ptr<std::string> position) noexcept : ns_exception(make_shared<string>(message), position) {
 }
 
-const char *NsException::what() const noexcept {
+const char *ns_exception::what() const noexcept {
     if(!_what) {
         // Collect info for what()
         stringstream wss;
@@ -56,14 +55,14 @@ const char *NsException::what() const noexcept {
     return _what->c_str();
 }
 
-std::shared_ptr<std::string> NsException::message() const noexcept {
+std::shared_ptr<std::string> ns_exception::message() const noexcept {
     return _message;
 }
 
-std::shared_ptr<std::exception> NsException::cause() const noexcept {
+std::shared_ptr<std::exception> ns_exception::cause() const noexcept {
     return _cause;
 }
 
-std::shared_ptr<std::string> NsException::position() const noexcept {
+std::shared_ptr<std::string> ns_exception::position() const noexcept {
     return _position;
 }

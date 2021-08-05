@@ -15,7 +15,7 @@
  */
 
 /*
- * File:   NsException.h
+ * File:   ns_exception.h
  * Author: dmerkushov
  *
  * Created on February 21, 2019, 6:39 PM
@@ -33,9 +33,10 @@
 #include <vector>
 
 #ifndef NS_EXCEPTION
-#    define NS_EXCEPTION(message) NsException((message), std::make_shared<std::string>(NS_POSITION))
-#    define NS_EXCEPTION_WITHCAUSE(message, cause) \
-        NsException((message), std::make_shared<std::string>(NS_POSITION), (cause))
+#    define NS_EXCEPTION(message) ns_exception((message), std::make_shared<std::string>(NS_POSITION))
+#    define NS_EXCEPTION_WITHCAUSE(message, cause) ns_exception((message), std::make_shared<std::string>(NS_POSITION), (cause))
+#    define NS_THROW(message) throw NS_EXCEPTION(message)
+#    define NS_THROW_WITHCAUSE(message, cause) throw NS_EXCEPTION_WITHCAUSE((message), (cause))
 #endif
 
 namespace nanoservices {
@@ -43,7 +44,7 @@ namespace nanoservices {
 /**
  * @brief An immutable exception class for all over nanoservices
  */
-class NsException : public std::exception {
+class ns_exception : public std::exception {
 private:
     /**
      * @brief The maximum number of stacktrace elements of the stacktrace kept in an exception
@@ -57,13 +58,11 @@ private:
     mutable std::shared_ptr<std::string> _what;
 
 public:
-    NsException(const char *message, const std::shared_ptr<std::string> position) noexcept;
+    ns_exception(const char *message, const std::shared_ptr<std::string> position) noexcept;
 
-    NsException(const std::shared_ptr<std::string> message,
-                const std::shared_ptr<std::string> position,
-                const std::shared_ptr<std::exception> cause = nullptr) noexcept;
+    ns_exception(const std::shared_ptr<std::string> message, const std::shared_ptr<std::string> position, const std::shared_ptr<std::exception> cause = nullptr) noexcept;
 
-    ~NsException() noexcept override = default;
+    ~ns_exception() noexcept override = default;
 
     /**
      * @brief Inherited from std::exception
@@ -80,7 +79,7 @@ public:
     std::shared_ptr<std::string> message() const noexcept;
 
     /**
-     * @brief Get the position where the NsException was constructed
+     * @brief Get the position where the ns_exception was constructed
      * @return
      */
     std::shared_ptr<std::string> position() const noexcept;
