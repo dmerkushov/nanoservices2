@@ -34,6 +34,12 @@ int main(int argc, char **argv) {
 
     logger->info("+main()");
 
+    if(Serializable<MyEnclosingClass>) {
+        logger->info("serializable");
+    } else {
+        logger->info("not serializable");
+    }
+
     MyEnclosingClass myClass1;
     auto serialized = myClass1.__nanoservices_serializer_serialize();
 

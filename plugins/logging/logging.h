@@ -7,6 +7,7 @@
 
 #include "../../core/position/position.h"
 #include "../../util/stringutils/stringutils.h"
+#include "../../util/templateutils/lambdaToFunction.h"
 
 #include <cassert>
 #include <chrono>
@@ -364,9 +365,9 @@ public:
         } else if constexpr(SStream<MT>) {
             logRecord.message = std::make_shared<std::string>(message.str());
         } else if constexpr(StringProducer<MT>) {
-            logRecord.message = std::make_shared<std::string>(message());
+            logRecord.message = std::make_shared<std::string>(toFunction(message)());
         } else if constexpr(SStreamProducer<MT>) {
-            logRecord.message = std::make_shared<std::string>(message().str());
+            logRecord.message = std::make_shared<std::string>(toFunction(message)().str());
         }
 
         if(exception) {
