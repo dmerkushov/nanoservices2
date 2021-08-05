@@ -6,7 +6,7 @@
 BasedOnStyle: Google
 Language: Cpp
 Standard: c++20
-ColumnLimit: 160
+ColumnLimit: 200
 IndentWidth: 4
 TabWidth: 4
 UseTab: Never
