@@ -42,11 +42,11 @@ int main(int argc, char **argv) {
     MyEnclosingClass myClass1;
     f(myClass1, logger);
 
-    auto serialized = myClass1.__nanoservices_serializer_serialize();
+    auto serialized = myClass1.__nanoservices2_serializer_serialize();
 
     MyEnclosingClass myClass2;
     myClass2.enclosingField.enclosedField = 512;
-    myClass2.__nanoservices_serializer_deserialize(serialized);
+    myClass2.__nanoservices2_serializer_deserialize(serialized);
 
     {
         stringstream msgSS;
