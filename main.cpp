@@ -1,4 +1,4 @@
-//#include "core/exception/NsException.h"
+//#include "core/exception/ns_exception.h"
 #include "core/serialization/serialization.h"
 #include "plugins/configuration/configuration.h"
 #include "plugins/logging/logging.h"
@@ -13,24 +13,19 @@
 using namespace std;
 using namespace nanoservices;
 
-class MyEnclosedClass {
-public:
-    int32_t enclosedField = 234;
+struct MyEnclosedClass {
+    int32_t int32Field;
+    std::map<int32_t, std::string> mapField;
+    std::vector<double> vectorField;
 
-    NANOSERVICES2_MAKE_SERIALIZABLE(enclosedField);
+    NANOSERVICES2_MAKE_SERIALIZABLE(int32Field, mapField, vectorField);
 };
 
-class MyEnclosingClass {
-public:
-    MyEnclosedClass enclosingField;
+struct MyEnclosingClass {
+    std::map<u_int8_t, MyEnclosedClass> enclosingField;
 
     NANOSERVICES2_MAKE_SERIALIZABLE(enclosingField);
 };
-
-template<Serializable S>
-void f(S &s, shared_ptr<Logger> logger) {
-    logger->info("s is Serializable");
-}
 
 int main(int argc, char **argv) {
     Configuration::initialize(argc, argv);
@@ -40,32 +35,32 @@ int main(int argc, char **argv) {
     logger->info("+main()");
 
     MyEnclosingClass myClass1;
-    f(myClass1, logger);
+    MyEnclosedClass myEnclosedClass;
+    myClass1.enclosingField[0] = myEnclosedClass;
+    myClass1.enclosingField[0].int32Field = 234;
+    myClass1.enclosingField[0].mapField[32] = "Hallo";
+    myClass1.enclosingField[0].vectorField = {0.0, 3.14};
 
     auto serialized = myClass1.__nanoservices2_serializer_serialize();
 
     MyEnclosingClass myClass2;
-    myClass2.enclosingField.enclosedField = 512;
     myClass2.__nanoservices2_serializer_deserialize(serialized);
 
     {
         stringstream msgSS;
-        msgSS << "Deserialized: " << myClass2.enclosingField.enclosedField;
+        msgSS << "Deserialized int32: " << myClass2.enclosingField[0].int32Field;
         logger->info(msgSS);
     }
-    //
-    //    {
-    //        stringstream msgSS;
-    //        auto serializedListData =
-    //                static_pointer_cast<std::vector<std::shared_ptr<SerializationRecord>>>(serialized->at(0)->data);
-    //
-    //        for(auto iter = serializedListData->begin(); iter != serializedListData->end(); ++iter) {
-    //            auto serializedListRec = *iter;
-    //            auto serializedListRecData = static_pointer_cast<int32_t>(serializedListRec->data);
-    //            msgSS << "Serialized list: " << *serializedListRecData << endl;
-    //        }
-    //        logger->info(msgSS);
-    //    }
+    {
+        stringstream msgSS;
+        msgSS << "Deserialized map: " << myClass2.enclosingField[0].mapField[32];
+        logger->info(msgSS);
+    }
+    {
+        stringstream msgSS;
+        msgSS << "Deserialized vector: " << myClass2.enclosingField[0].vectorField.at(0) << ", " << myClass2.enclosingField[0].vectorField.at(1);
+        logger->info(msgSS);
+    }
 
     logger->info("-main()");
 
