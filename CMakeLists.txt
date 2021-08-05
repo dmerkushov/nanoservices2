@@ -8,7 +8,6 @@ if (UNIX)
     if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         set(CMAKE_CXX_COMPILER g++-10)
         set(CMAKE_CXX_COMPILER_VERSION 10.3.0)
-        set(CMAKE_CXX_FLAGS -fconcepts)
     endif ()
 endif ()
 
@@ -95,7 +94,7 @@ list(APPEND SRC plugins/logging/stdout/logging_stdout.cpp)
 # No monitoring
 list(APPEND SRC plugins/monitoring/monitoring_none.cpp)
 
-# Monitoring via Zipkin. See the plugin documentation for more info
+# Distributed system monitoring via Zipkin. See the plugin documentation for more info
 #list(APPEND SRC plugins/optional/monitoring/zipkin/monitoring_zipkin.cpp)
 
 add_executable(nanoservices2 ${SRC})
