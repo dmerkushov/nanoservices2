@@ -9,8 +9,7 @@
 namespace spdlog {
 
 namespace sinks {
-class SPDLOG_API sink
-{
+class SPDLOG_API sink {
 public:
     virtual ~sink() = default;
     virtual void log(const details::log_msg &msg) = 0;
@@ -24,7 +23,7 @@ public:
 
 protected:
     // sink log level - default is all
-    level_t level_{level::trace};
+    level_t level_ {level::trace};
 };
 
 } // namespace sinks

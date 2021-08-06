@@ -3,15 +3,14 @@
 
 #pragma once
 
+#include <chrono>
+#include <functional>
+#include <memory>
 #include <spdlog/details/log_msg_buffer.h>
 #include <spdlog/details/mpmc_blocking_q.h>
 #include <spdlog/details/os.h>
-
-#include <chrono>
-#include <memory>
 #include <thread>
 #include <vector>
-#include <functional>
 
 namespace spdlog {
 class async_logger;
@@ -20,18 +19,12 @@ namespace details {
 
 using async_logger_ptr = std::shared_ptr<spdlog::async_logger>;
 
-enum class async_msg_type
-{
-    log,
-    flush,
-    terminate
-};
+enum class async_msg_type { log, flush, terminate };
 
 // Async msg to move to/from the queue
 // Movable only. should never be copied
-struct async_msg : log_msg_buffer
-{
-    async_msg_type msg_type{async_msg_type::log};
+struct async_msg : log_msg_buffer {
+    async_msg_type msg_type {async_msg_type::log};
     async_logger_ptr worker_ptr;
 
     async_msg() = default;
@@ -42,14 +35,10 @@ struct async_msg : log_msg_buffer
 
 // support for vs2013 move
 #if defined(_MSC_VER) && _MSC_VER <= 1800
-    async_msg(async_msg &&other)
-        : log_msg_buffer(std::move(other))
-        , msg_type(other.msg_type)
-        , worker_ptr(std::move(other.worker_ptr))
-    {}
+    async_msg(async_msg &&other) : log_msg_buffer(std::move(other)), msg_type(other.msg_type), worker_ptr(std::move(other.worker_ptr)) {
+    }
 
-    async_msg &operator=(async_msg &&other)
-    {
+    async_msg &operator=(async_msg &&other) {
         *static_cast<log_msg_buffer *>(this) = std::move(other);
         msg_type = other.msg_type;
         worker_ptr = std::move(other.worker_ptr);
@@ -61,25 +50,17 @@ struct async_msg : log_msg_buffer
 #endif
 
     // construct from log_msg with given type
-    async_msg(async_logger_ptr &&worker, async_msg_type the_type, const details::log_msg &m)
-        : log_msg_buffer{m}
-        , msg_type{the_type}
-        , worker_ptr{std::move(worker)}
-    {}
+    async_msg(async_logger_ptr &&worker, async_msg_type the_type, const details::log_msg &m) : log_msg_buffer {m}, msg_type {the_type}, worker_ptr {std::move(worker)} {
+    }
 
-    async_msg(async_logger_ptr &&worker, async_msg_type the_type)
-        : log_msg_buffer{}
-        , msg_type{the_type}
-        , worker_ptr{std::move(worker)}
-    {}
+    async_msg(async_logger_ptr &&worker, async_msg_type the_type) : log_msg_buffer {}, msg_type {the_type}, worker_ptr {std::move(worker)} {
+    }
 
-    explicit async_msg(async_msg_type the_type)
-        : async_msg{nullptr, the_type}
-    {}
+    explicit async_msg(async_msg_type the_type) : async_msg {nullptr, the_type} {
+    }
 };
 
-class SPDLOG_API thread_pool
-{
+class SPDLOG_API thread_pool {
 public:
     using item_type = async_msg;
     using q_type = details::mpmc_blocking_queue<item_type>;

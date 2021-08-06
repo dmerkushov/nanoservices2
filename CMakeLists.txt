@@ -20,6 +20,8 @@ list(APPEND SRC main.cpp)
 list(APPEND SRC core/exception/ns_exception.cpp)
 list(APPEND SRC core/serialization/serialization.cpp)
 
+include_directories(BEFORE SYSTEM thirdparty/gabime)
+
 ############################
 # BASIC PLUGIN DEFINITIONS
 #

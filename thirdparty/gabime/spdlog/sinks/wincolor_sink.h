@@ -3,16 +3,15 @@
 
 #pragma once
 
+#include <array>
+#include <cstdint>
+#include <memory>
+#include <mutex>
 #include <spdlog/common.h>
 #include <spdlog/details/console_globals.h>
 #include <spdlog/details/null_mutex.h>
 #include <spdlog/sinks/sink.h>
-
-#include <memory>
-#include <mutex>
 #include <string>
-#include <array>
-#include <cstdint>
 
 namespace spdlog {
 namespace sinks {
@@ -21,8 +20,7 @@ namespace sinks {
  * colors
  */
 template<typename ConsoleMutex>
-class wincolor_sink : public sink
-{
+class wincolor_sink : public sink {
 public:
     wincolor_sink(void *out_handle, color_mode mode);
     ~wincolor_sink() override;
@@ -59,15 +57,13 @@ protected:
 };
 
 template<typename ConsoleMutex>
-class wincolor_stdout_sink : public wincolor_sink<ConsoleMutex>
-{
+class wincolor_stdout_sink : public wincolor_sink<ConsoleMutex> {
 public:
     explicit wincolor_stdout_sink(color_mode mode = color_mode::automatic);
 };
 
 template<typename ConsoleMutex>
-class wincolor_stderr_sink : public wincolor_sink<ConsoleMutex>
-{
+class wincolor_stderr_sink : public wincolor_sink<ConsoleMutex> {
 public:
     explicit wincolor_stderr_sink(color_mode mode = color_mode::automatic);
 };

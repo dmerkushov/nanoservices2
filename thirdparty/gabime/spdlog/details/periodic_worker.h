@@ -17,8 +17,7 @@
 namespace spdlog {
 namespace details {
 
-class SPDLOG_API periodic_worker
-{
+class SPDLOG_API periodic_worker {
 public:
     periodic_worker(const std::function<void()> &callback_fun, std::chrono::seconds interval);
     periodic_worker(const periodic_worker &) = delete;

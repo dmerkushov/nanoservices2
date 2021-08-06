@@ -1,10 +1,10 @@
 # Third-party code
 
-| Directory            | License              | Date copied  | Copied from                                                   | Notes        |
-|----------------------|----------------------|--------------|---------------------------------------------------------------|--------------|
-| HowardHinnant/date   | [MIT(1)](#MIT1)      | Jul 10, 2021 | https://github.com/HowardHinnant/date                         | Partial copy |
-| swansontec/map-macro | [MIT(2)](#MIT2)      | Jul 17, 2021 | https://github.com/swansontec/map-macro                       | Partial copy |
-| gabime/spdlog        | [MIT(1)](#MIT1)      | Aug 06, 2021 | https://github.com/gabime/spdlog                              | Partial copy, changed `#include` paths |
+| Directory            | License              | Date copied  | Copied from                                                   | Notes                                |
+|----------------------|----------------------|--------------|---------------------------------------------------------------|--------------------------------------|
+| HowardHinnant/date   | [MIT(1)](#MIT1)      | Jul 10, 2021 | https://github.com/HowardHinnant/date                         | Partial copy                         |
+| swansontec/map-macro | [MIT(2)](#MIT2)      | Jul 17, 2021 | https://github.com/swansontec/map-macro                       | Partial copy                         |
+| gabime/spdlog        | [MIT(1)](#MIT1)      | Aug 06, 2021 | https://github.com/gabime/spdlog                              | Partial copy, reformatted            |
 | gabime/spdlog/fmt    | [Custom](#CustomFMT) | Aug 06, 2021 | https://github.com/gabime/spdlog/tree/v1.x/include/spdlog/fmt | Copied along with SPDLOG (see above) |
 
 # Licenses

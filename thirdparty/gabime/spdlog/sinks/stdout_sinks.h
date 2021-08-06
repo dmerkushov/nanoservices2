@@ -3,10 +3,10 @@
 
 #pragma once
 
+#include <cstdio>
 #include <spdlog/details/console_globals.h>
 #include <spdlog/details/synchronous_factory.h>
 #include <spdlog/sinks/sink.h>
-#include <cstdio>
 
 #ifdef _WIN32
 #    include <spdlog/details/windows_include.h>
@@ -17,8 +17,7 @@ namespace spdlog {
 namespace sinks {
 
 template<typename ConsoleMutex>
-class stdout_sink_base : public sink
-{
+class stdout_sink_base : public sink {
 public:
     using mutex_t = typename ConsoleMutex::mutex_t;
     explicit stdout_sink_base(FILE *file);
@@ -46,15 +45,13 @@ protected:
 };
 
 template<typename ConsoleMutex>
-class stdout_sink : public stdout_sink_base<ConsoleMutex>
-{
+class stdout_sink : public stdout_sink_base<ConsoleMutex> {
 public:
     stdout_sink();
 };
 
 template<typename ConsoleMutex>
-class stderr_sink : public stdout_sink_base<ConsoleMutex>
-{
+class stderr_sink : public stdout_sink_base<ConsoleMutex> {
 public:
     stderr_sink();
 };

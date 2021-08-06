@@ -4,13 +4,13 @@
 #pragma once
 
 #include "dist_sink.h"
-#include <spdlog/details/null_mutex.h>
-#include <spdlog/details/log_msg.h>
 
+#include <chrono>
 #include <cstdio>
 #include <mutex>
+#include <spdlog/details/log_msg.h>
+#include <spdlog/details/null_mutex.h>
 #include <string>
-#include <chrono>
 
 // Duplicate message removal sink.
 // Skip the message if previous one is identical and less than "max_skip_duration" have passed
@@ -37,13 +37,11 @@
 namespace spdlog {
 namespace sinks {
 template<typename Mutex>
-class dup_filter_sink : public dist_sink<Mutex>
-{
+class dup_filter_sink : public dist_sink<Mutex> {
 public:
     template<class Rep, class Period>
-    explicit dup_filter_sink(std::chrono::duration<Rep, Period> max_skip_duration)
-        : max_skip_duration_{max_skip_duration}
-    {}
+    explicit dup_filter_sink(std::chrono::duration<Rep, Period> max_skip_duration) : max_skip_duration_ {max_skip_duration} {
+    }
 
 protected:
     std::chrono::microseconds max_skip_duration_;
@@ -51,23 +49,19 @@ protected:
     std::string last_msg_payload_;
     size_t skip_counter_ = 0;
 
-    void sink_it_(const details::log_msg &msg) override
-    {
+    void sink_it_(const details::log_msg &msg) override {
         bool filtered = filter_(msg);
-        if (!filtered)
-        {
+        if(!filtered) {
             skip_counter_ += 1;
             return;
         }
 
         // log the "skipped.." message
-        if (skip_counter_ > 0)
-        {
+        if(skip_counter_ > 0) {
             char buf[64];
             auto msg_size = ::snprintf(buf, sizeof(buf), "Skipped %u duplicate messages..", static_cast<unsigned>(skip_counter_));
-            if (msg_size > 0 && static_cast<size_t>(msg_size) < sizeof(buf))
-            {
-                details::log_msg skipped_msg{msg.logger_name, level::info, string_view_t{buf, static_cast<size_t>(msg_size)}};
+            if(msg_size > 0 && static_cast<size_t>(msg_size) < sizeof(buf)) {
+                details::log_msg skipped_msg {msg.logger_name, level::info, string_view_t {buf, static_cast<size_t>(msg_size)}};
                 dist_sink<Mutex>::sink_it_(skipped_msg);
             }
         }
@@ -80,8 +74,7 @@ protected:
     }
 
     // return whether the log msg should be displayed (true) or skipped (false)
-    bool filter_(const details::log_msg &msg)
-    {
+    bool filter_(const details::log_msg &msg) {
         auto filter_duration = msg.time - last_msg_time_;
         return (filter_duration > max_skip_duration_) || (msg.payload != last_msg_payload_);
     }
