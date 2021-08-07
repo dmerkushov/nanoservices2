@@ -1,9 +1,9 @@
-//#include "core/exception/ns_exception.h"
+#include "core/exception/ns_exception.h"
 #include "core/serialization/serialization.h"
 #include "plugins/configuration/configuration.h"
 #include "plugins/logging/logging.h"
+#include "thirdparty/gabime/spdlog/fmt/bin_to_hex.h"
 #include "thirdparty/gabime/spdlog/spdlog.h"
-#include "thirdparty/swansontec/map-macro/do_foreach.h"
 
 #include <functional>
 #include <iostream>
@@ -13,6 +13,8 @@
 
 using namespace std;
 using namespace nanoservices;
+
+namespace logger = spdlog;
 
 struct MyEnclosedClass {
     int32_t int32Field;
@@ -32,7 +34,14 @@ int main(int argc, char **argv) {
     Configuration::initialize(argc, argv);
     Logger::initialize();
 
+    spdlog::set_pattern("[%Y-%m-%d %H:%M:%S.%F] [thread %t] %^[%l]%$ %v");
+
     spdlog::info("Welcome to spdlog!");
+
+    std::array<char, 80> buf;
+    spdlog::info("Binary example: {:a}", spdlog::to_hex(buf));
+    spdlog::info("Another binary example:{:n}", spdlog::to_hex(std::begin(buf), std::begin(buf) + 10));
+
     spdlog::error("Some error message with arg: {}", 1);
 
     spdlog::warn("Easy padding in numbers like {:08d}", 12);
@@ -44,16 +53,7 @@ int main(int argc, char **argv) {
     spdlog::set_level(spdlog::level::debug); // Set global log level to debug
     spdlog::debug("This message should be displayed..");
 
-    // change log pattern
-    spdlog::set_pattern("[%H:%M:%S %z] [%n] [%^---%L---%$] [thread %t] %v");
-
-    // Compile time log levels
-    // define SPDLOG_ACTIVE_LEVEL to desired level
-    SPDLOG_TRACE("Some trace message with param {}", 42);
-    SPDLOG_DEBUG("Some debug message");
-
     shared_ptr<Logger> logger = Logger::getLogger();
-
     logger->info("+main()");
 
     MyEnclosingClass myClass1;
@@ -62,30 +62,20 @@ int main(int argc, char **argv) {
     myClass1.enclosingField[0].int32Field = 234;
     myClass1.enclosingField[0].mapField[32] = "Hallo";
     myClass1.enclosingField[0].vectorField = {0.0, 3.14};
-
     auto serialized = myClass1.__nanoservices2_serializer_serialize();
-
     MyEnclosingClass myClass2;
     myClass2.__nanoservices2_serializer_deserialize(serialized);
 
-    {
-        stringstream msgSS;
-        msgSS << "Deserialized int32: " << myClass2.enclosingField[0].int32Field;
-        logger->info(msgSS);
-    }
-    {
-        stringstream msgSS;
-        msgSS << "Deserialized map: " << myClass2.enclosingField[0].mapField[32];
-        logger->info(msgSS);
-    }
-    {
-        stringstream msgSS;
-        msgSS << "Deserialized vector: " << myClass2.enclosingField[0].vectorField.at(0) << ", " << myClass2.enclosingField[0].vectorField.at(1);
-        logger->info(msgSS);
-    }
-
-    logger->info("-main()");
-
+    spdlog::info("Deserialized map: {}", myClass2.enclosingField[0].mapField[32]);
+    spdlog::info("Deserialized vector: {}, {}", myClass2.enclosingField[0].vectorField[0], myClass2.enclosingField[0].vectorField[1]);
+    // {
+    //     stringstream msgSS;
+    //     msgSS << "Deserialized vector: " << myClass2.enclosingField[0].vectorField.at(0) << ", " << myClass2.enclosingField[0].vectorField.at(1);
+    //     logger->info(msgSS);
+    // }
+    //
+    // logger->info("-main()");
+    //
     Logger::finalize();
     Configuration::finalize();
 
