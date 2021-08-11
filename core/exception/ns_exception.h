@@ -24,7 +24,7 @@
 #ifndef NSEXCEPTION_H_
 #define NSEXCEPTION_H_
 
-#include "../position/position.h"
+#include "../../util/macroutils/position.h"
 
 #include <exception>
 #include <memory>

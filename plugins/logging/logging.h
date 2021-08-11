@@ -5,7 +5,7 @@
 #ifndef LOGGING_H_
 #define LOGGING_H_
 
-#include "../../core/position/position.h"
+#include "../../util/macroutils/position.h"
 #include "../../util/stringutils/stringutils.h"
 #include "../../util/templateutils/lambdaToFunction.h"
 
