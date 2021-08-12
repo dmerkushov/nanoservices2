@@ -23,6 +23,8 @@
 
 #include "ns_exception.h"
 
+#include "../../thirdparty/gabime/spdlog/fmt/fmt.h"
+
 #include <cstring>
 #include <memory>
 #include <sstream>
@@ -33,9 +35,7 @@ using namespace std;
 
 const size_t ns_exception::STACKTRACE_SIZE_MAX = 200;
 
-ns_exception::ns_exception(const std::shared_ptr<std::string> message,
-                         const std::shared_ptr<std::string> position,
-                         const std::shared_ptr<std::exception> cause) noexcept :
+ns_exception::ns_exception(const std::shared_ptr<std::string> message, const std::shared_ptr<std::string> position, const std::shared_ptr<std::exception> cause) noexcept :
         _message(message), _position(position), _cause(cause) {
 }
 
@@ -45,12 +45,14 @@ ns_exception::ns_exception(const char *message, const std::shared_ptr<std::strin
 const char *ns_exception::what() const noexcept {
     if(!_what) {
         // Collect info for what()
-        stringstream wss;
-        wss << "Exception at " << *_position << ": " << *_message;
+        string what;
         if(_cause) {
-            wss << endl << "Caused by: " << _cause->what();
+            const char *causeWhat = dynamic_pointer_cast<ns_exception>(_cause)->what();
+            what = fmt::format("Exception at {}: {}\nCaused by: {}", *_position, *_message, causeWhat);
+        } else {
+            what = fmt::format("Exception at {}: {}", *_position, *_message);
         }
-        _what = make_shared<string>(wss.str());
+        _what = make_shared<string>(what);
     }
     return _what->c_str();
 }
