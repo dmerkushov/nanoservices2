@@ -24,6 +24,7 @@
 #ifndef NSEXCEPTION_H_
 #define NSEXCEPTION_H_
 
+#include "../../thirdparty/gabime/spdlog/fmt/fmt.h"
 #include "../../util/macroutils/position.h"
 
 #include <exception>
@@ -90,7 +91,29 @@ public:
      */
     std::shared_ptr<std::exception> cause() const noexcept;
 };
-
 } // namespace nanoservices
+
+namespace fmt {
+
+template<>
+struct formatter<nanoservices::ns_exception> {
+    template<typename ParseContext>
+    constexpr auto parse(ParseContext &ctx);
+
+    template<typename FormatContext>
+    auto format(nanoservices::ns_exception const &e, FormatContext &ctx);
+};
+
+template<typename ParseContext>
+constexpr auto formatter<nanoservices::ns_exception>::parse(ParseContext &ctx) {
+    return std::begin(ctx);
+}
+
+template<typename FormatContext>
+auto formatter<nanoservices::ns_exception>::format(nanoservices::ns_exception const &e, FormatContext &ctx) {
+    return fmt::format_to(ctx.out(), "{}", e.what());
+}
+
+} // namespace fmt
 
 #endif // NSEXCEPTION_H_

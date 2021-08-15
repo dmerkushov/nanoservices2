@@ -38,7 +38,7 @@ int main(int argc, char **argv) {
     ns_exception e1("Message1", make_shared<string>(NS_POSITION));
     ns_exception e2(make_shared<string>("Message2"), make_shared<string>(NS_POSITION), make_shared<ns_exception>(e1));
 
-    spdlog::warn(e2.what());
+    spdlog::warn("{}", e2);
 
     // spdlog::set_pattern("[%Y-%m-%d %H:%M:%S.%F] [thread %t] %^[%l]%$ %v");
     //
