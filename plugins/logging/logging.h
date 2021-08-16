@@ -5,6 +5,7 @@
 #ifndef LOGGING_H_
 #define LOGGING_H_
 
+#include "../../thirdparty/gabime/spdlog/spdlog.h"
 #include "../../util/macroutils/position.h"
 #include "../../util/stringutils/stringutils.h"
 #include "../../util/templateutils/lambdaToFunction.h"
@@ -22,7 +23,59 @@
 #include <string>
 #include <type_traits>
 
+namespace fmt {
+
+///////////////////////////////////////////////////////////////////////////////
+////  Formatting of strings returned from functions                        ////
+///////////////////////////////////////////////////////////////////////////////
+
+template<>
+struct formatter<std::function<std::string()>> {
+    template<typename ParseContext>
+    constexpr auto parse(ParseContext &ctx);
+
+    template<typename FormatContext>
+    auto format(std::function<std::string()> const &e, FormatContext &ctx);
+};
+
+template<typename ParseContext>
+constexpr auto formatter<std::function<std::string()>>::parse(ParseContext &ctx) {
+    return std::begin(ctx);
+}
+
+template<typename FormatContext>
+auto formatter<std::function<std::string()>>::format(std::function<std::string()> const &f, FormatContext &ctx) {
+    return fmt::format_to(ctx.out(), "{}", f());
+}
+
+///////////////////////////////////////////////////////////////////////////////
+////  Formatting of stringstreams returned from functions                  ////
+///////////////////////////////////////////////////////////////////////////////
+
+template<>
+struct formatter<std::function<std::stringstream()>> {
+    template<typename ParseContext>
+    constexpr auto parse(ParseContext &ctx);
+
+    template<typename FormatContext>
+    auto format(std::function<std::stringstream()> const &e, FormatContext &ctx);
+};
+
+template<typename ParseContext>
+constexpr auto formatter<std::function<std::stringstream()>>::parse(ParseContext &ctx) {
+    return std::begin(ctx);
+}
+
+template<typename FormatContext>
+auto formatter<std::function<std::stringstream()>>::format(std::function<std::stringstream()> const &f, FormatContext &ctx) {
+    return fmt::format_to(ctx.out(), "{}", f().str());
+}
+
+} // namespace fmt
+
 namespace nanoservices {
+
+namespace log = spdlog;
 
 /**
  * @brief The name for the default logger
@@ -62,16 +115,7 @@ public:
      * log. <li>TRACE, DEBUG, INFO, WARN, ERROR, FATAL - levels advised to be used both in configuration and in the code
      * </ul>
      */
-    enum class LogLevel : uint32_t {
-        ALL = 0,
-        TRACE = 100,
-        DEBUG = 200,
-        INFO = 300,
-        WARN = 400,
-        ERROR = 500,
-        FATAL = 600,
-        OFF = UINT32_MAX
-    };
+    enum class LogLevel : uint32_t { ALL = 0, TRACE = 100, DEBUG = 200, INFO = 300, WARN = 400, ERROR = 500, FATAL = 600, OFF = UINT32_MAX };
 
 private:
     /**
@@ -348,16 +392,14 @@ public:
     void log(const MT &message,
              const LogLevel level = Logger::levelByName(LOGGING_LOGGER_LEVELNAME_DEFAULT.c_str()),
              const std::shared_ptr<std::exception> exception = nullptr,
-             const std::chrono::time_point<std::chrono::system_clock> timePoint =
-                     std::chrono::system_clock::now()) const noexcept {
+             const std::chrono::time_point<std::chrono::system_clock> timePoint = std::chrono::system_clock::now()) const noexcept {
 
         if(!Logger::isLoggable(level)) {
             return;
         }
 
-        static_assert(
-                String<MT> || SStream<MT> || StringProducer<MT> || SStreamProducer<MT>,
-                "Will not be able to create a message: MT is unexpected. Check the LogMessage<MT> concept for any additions");
+        static_assert(String<MT> || SStream<MT> || StringProducer<MT> || SStreamProducer<MT>,
+                      "Will not be able to create a message: MT is unexpected. Check the LogMessage<MT> concept for any additions");
 
         LogRecord logRecord;
         if constexpr(String<MT>) {
