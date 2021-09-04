@@ -10,12 +10,9 @@ using namespace nanoservices;
 shared_ptr<string> nanoservices::Serializer::_mapItemKeyRecordName = make_shared<string>("nanoservices::Serializer::mapKey");
 shared_ptr<string> nanoservices::Serializer::_mapItemValueRecordName = make_shared<string>("nanoservices::Serializer::mapValue");
 shared_ptr<string> nanoservices::Serializer::_listItemRecordName = make_shared<string>("nanoservices::Serializer::listItem");
-shared_ptr<Logger> nanoservices::Serializer::_logger = nullptr;
 
 void nanoservices::Serializer::_initLogger() {
-    if(!_logger) {
-        _logger = Logger::getLogger();
-    }
+    // Do nothing
 }
 
 const char *nanoservices::getRecordTypeName(RecordType recordType) {

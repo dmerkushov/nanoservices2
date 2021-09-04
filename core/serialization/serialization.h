@@ -118,7 +118,6 @@ private:
     static std::shared_ptr<std::string> _mapItemKeyRecordName;
     static std::shared_ptr<std::string> _mapItemValueRecordName;
     static std::shared_ptr<std::string> _listItemRecordName;
-    static std::shared_ptr<Logger> _logger;
 
     static void _initLogger();
 
@@ -215,15 +214,21 @@ public:
     template<typename T>
     static std::shared_ptr<SerializationRecord> serializeField(std::shared_ptr<std::string> fieldName, T &fieldValue) {
         _initLogger();
-        auto msgf = [fieldValue, fieldName]() {
-            std::stringstream msgSS;
+        if(log::should_log(log::level::trace)) {
             int demangleStatus = 0;
             char *fieldTypeName = abi::__cxa_demangle(typeid(fieldValue).name(), 0, 0, &demangleStatus);
-            msgSS << "Serializing an instance of " << fieldTypeName << ". Field name: " << *fieldName;
-            ::free(fieldTypeName);
-            return msgSS;
-        };
-        _logger->trace(msgf);
+            if(demangleStatus == 0) {
+                log::trace("Serializing an instance of {}. Field name: {}", fieldTypeName, *fieldName);
+            } else if(demangleStatus == -1) {
+                log::trace("Serializing an instance of (unknown type: memory allocation failure). Field name: {}", *fieldName);
+            } else if(demangleStatus == -2) {
+                log::trace("Serializing an instance of (unknown type: mangled name \"{}\" is not a valid name under the C++ mangling rules). Field name: {}", typeid(fieldValue).name(), *fieldName);
+            } else if(demangleStatus == -3) {
+                log::trace("Serializing an instance of (unknown type: invalid argument). Field name: {}", *fieldName);
+            } else {
+                log::trace("Serializing an instance of (unknown type: unknown error). Field name: {}", *fieldName);
+            }
+        }
 
         auto record = std::make_shared<SerializationRecord>();
         record->fieldName = fieldName;
@@ -281,15 +286,24 @@ public:
     template<typename T>
     static void deserializeField(T *fieldValuePtr, std::shared_ptr<SerializationRecord> serializationRecord) {
         _initLogger();
-        auto msgf = [fieldValuePtr, serializationRecord]() {
-            std::stringstream msgSS;
+        if(log::should_log(log::level::trace)) {
             int demangleStatus = 0;
-            char *fieldTypeName = abi::__cxa_demangle(typeid(*fieldValuePtr).name(), 0, 0, &demangleStatus);
-            msgSS << "Deserializing an instance of " << fieldTypeName << ". Field name: " << *(serializationRecord->fieldName);
-            ::free(fieldTypeName);
-            return msgSS;
-        };
-        _logger->trace(msgf);
+            char *fieldTypeName = abi::__cxa_demangle(typeid(fieldValuePtr).name(), 0, 0, &demangleStatus);
+            if(demangleStatus == 0) {
+                log::trace("Deserializing an instance of {}. Field name: {}", fieldTypeName, *serializationRecord->fieldName);
+            } else if(demangleStatus == -1) {
+                log::trace("Deserializing an instance of (unknown type: memory allocation failure). Field name: {}", *serializationRecord->fieldName);
+            } else if(demangleStatus == -2) {
+                log::trace("Deserializing an instance of (unknown type: mangled name \"{}\" is not a valid name under the C++ mangling rules). Field name: {}",
+                           typeid(fieldValuePtr).name(),
+                           *serializationRecord->fieldName);
+            } else if(demangleStatus == -3) {
+                log::trace("Deserializing an instance of (unknown type: invalid argument). Field name: {}", *serializationRecord->fieldName);
+            } else {
+                log::trace("Deserializing an instance of (unknown type: unknown error). Field name: {}", *serializationRecord->fieldName);
+            }
+            free(fieldTypeName);
+        }
 
         if constexpr(std::is_same_v<T, std::string> || std::is_same_v<T, int8_t> || std::is_same_v<T, u_int8_t> || std::is_same_v<T, int16_t> || std::is_same_v<T, u_int16_t> ||
                      std::is_same_v<T, int32_t> || std::is_same_v<T, u_int32_t> || std::is_same_v<T, int64_t> || std::is_same_v<T, u_int64_t> || std::is_same_v<T, float> ||
