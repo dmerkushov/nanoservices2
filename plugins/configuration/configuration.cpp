@@ -10,42 +10,42 @@
 using namespace std;
 using namespace nanoservices;
 
-map<string, shared_ptr<string>, less<>> Configuration::_properties;
+map<string, shared_ptr<string>, less<>> configuration::_properties;
 
 #ifndef NANOSERVICES_CONF_PLUGIN_IMPLEMENTS_GETPROPERTY_STRING
-shared_ptr<string> Configuration::getProperty(const string &propertyName) noexcept {
-    if(propertyName == "") {
+shared_ptr<string> configuration::get_property(const string &property_name) noexcept {
+    if(property_name == "") {
         return make_shared<string>();
     }
 
-    auto propertyFindIterator = Configuration::_properties.find(propertyName);
+    auto property_find_iterator = configuration::_properties.find(property_name);
 
     shared_ptr<string> result;
-    if(propertyFindIterator == Configuration::_properties.end()) {
+    if(property_find_iterator == configuration::_properties.end()) {
         result = nullptr;
-        Configuration::_properties[propertyName] = result;
+        configuration::_properties[property_name] = result;
     } else {
-        result = propertyFindIterator->second;
+        result = property_find_iterator->second;
     }
 
     return result;
 }
 #endif
 
-shared_ptr<string> Configuration::getProperty(const char *propertyName) noexcept {
-    if(propertyName == nullptr) {
+shared_ptr<string> configuration::get_property(const char *property_name) noexcept {
+    if(property_name == nullptr) {
         return make_shared<string>();
     }
 
-    if(::strncmp("", propertyName, 1) == 0) {
+    if(::strncmp("", property_name, 1) == 0) {
         return make_shared<string>();
     }
 
-    if(::strnlen(propertyName, MAX_PROPERTYNAME_LEN_CONSTCHARPTR + 1) == MAX_PROPERTYNAME_LEN_CONSTCHARPTR + 1) {
+    if(::strnlen(property_name, MAX_PROPERTYNAME_LEN_CONSTCHARPTR + 1) == MAX_PROPERTYNAME_LEN_CONSTCHARPTR + 1) {
         return make_shared<string>();
     }
 
-    string propertyNameStr(propertyName);
+    string propertyNameStr(property_name);
 
-    return getProperty(propertyNameStr);
+    return get_property(propertyNameStr);
 }

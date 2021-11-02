@@ -32,8 +32,8 @@ struct MyEnclosingClass {
 };
 
 int main(int argc, char **argv) {
-    Configuration::initialize(argc, argv);
-    initialize_logging();
+    configuration::initialize(argc, argv);
+    logging_initialize();
 
     ns_exception e2(make_shared<string>("Message2"), make_shared<string>(NS_POSITION), make_shared<ns_exception>("Message1", make_shared<string>(NS_POSITION)));
 
@@ -88,8 +88,8 @@ int main(int argc, char **argv) {
     //
     // logger->info("-main()");
     //
-    finalize_logging();
-    Configuration::finalize();
+    logging_finalize();
+    configuration::finalize();
 
     return 0;
 }

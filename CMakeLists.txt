@@ -49,20 +49,20 @@ list(APPEND SRC util/stringutils/stringutils.cpp)
 # Uncomment one of the following options to use one of the configuration engines. Exactly one option should be used for each service.
 ############################
 
-# Configuration via command line arguments
+# configuration via command line arguments
 list(APPEND SRC plugins/configuration/argc_argv/configuration_argc_argv.cpp)
 
-# Configuration via environment variables
+# configuration via environment variables
 #list(APPEND SRC plugins/required/configuration/environment_variables/configuration_environment_variables.cpp)
 
-# Configuration via JSON files. Two files, /etc/nanoservices2/globalconfig.json and /etc/nanoservices2/{serviceExecutableName}/serviceconfig.json, will be used as the configuration source. serviceconfig.json takes precedence. See the plugin documentation for more info
+# configuration via JSON files. Two files, /etc/nanoservices2/globalconfig.json and /etc/nanoservices2/{serviceExecutableName}/serviceconfig.json, will be used as the configuration source. serviceconfig.json takes precedence. See the plugin documentation for more info
 #list(APPEND SRC plugins/required/configuration/json_file/configuration_json_file.cpp)
 
-# Configuration via Spring Cloud Config Server. To use this option, uncomment both of these lines. See the plugin documentation for more info
+# configuration via Spring Cloud Config Server. To use this option, uncomment both of these lines. See the plugin documentation for more info
 #ADD_DEFINITIONS(-DNANOSERVICES_CONF_PLUGIN_IMPLEMENTS_GETPROPERTY_STRING)
 #list(APPEND SRC plugins/required/configuration/sccs/configuration_sccs.cpp)
 
-# Configuration via ZooKeeper server. To use this option, uncomment both of these lines. See the plugin documentation for more info
+# configuration via ZooKeeper server. To use this option, uncomment both of these lines. See the plugin documentation for more info
 #ADD_DEFINITIONS(-DNANOSERVICES_CONF_PLUGIN_IMPLEMENTS_GETPROPERTY_STRING)
 #list(APPEND SRC plugins/required/configuration/zookeeper/configuration_zookeeper.cpp)
 

@@ -7,19 +7,18 @@
 using namespace std;
 using namespace nanoservices;
 
-void nanoservices::mon_initialize() noexcept {
+void nanoservices::monitoring::initialize() noexcept {
     // Do nothing
 }
 
-void nanoservices::mon_finalize() noexcept {
+void nanoservices::monitoring::finalize() noexcept {
     // Do nothing
 }
 
-bool nanoservices::mon_active() noexcept {
+bool nanoservices::monitoring::active() noexcept {
     return false;
 }
 
-void nanoservices::mon_event([[maybe_unused]] uint32_t eventId,
-                             [[maybe_unused]] shared_ptr<map<string, string>> eventData) noexcept {
+void nanoservices::monitoring::event([[maybe_unused]] uint32_t eventId, [[maybe_unused]] shared_ptr<map<string, string>> eventData) noexcept {
     // Do nothing
 }

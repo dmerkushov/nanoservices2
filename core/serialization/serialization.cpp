@@ -7,52 +7,52 @@
 using namespace std;
 using namespace nanoservices;
 
-shared_ptr<string> nanoservices::Serializer::_mapItemKeyRecordName = make_shared<string>("nanoservices::Serializer::mapKey");
-shared_ptr<string> nanoservices::Serializer::_mapItemValueRecordName = make_shared<string>("nanoservices::Serializer::mapValue");
-shared_ptr<string> nanoservices::Serializer::_listItemRecordName = make_shared<string>("nanoservices::Serializer::listItem");
+shared_ptr<string> nanoservices::serializer::_map_item_key_record_name = make_shared<string>("nanoservices::serializer::mapKey");
+shared_ptr<string> nanoservices::serializer::_map_item_value_record_name = make_shared<string>("nanoservices::serializer::mapValue");
+shared_ptr<string> nanoservices::serializer::_list_item_record_name = make_shared<string>("nanoservices::serializer::listItem");
 
-void nanoservices::Serializer::_initLogger() {
+void nanoservices::serializer::_init_log() {
     // Do nothing
 }
 
-const char *nanoservices::getRecordTypeName(RecordType recordType) {
+const char *nanoservices::get_record_type_name(record_type recordType) {
     switch(recordType) {
-    case RecordType::NULL_VALUE:
+    case record_type::NULL_VALUE:
         return "NULL_VALUE";
-    case RecordType::BYTE_ARRAY:
+    case record_type::BYTE_ARRAY:
         return "BYTE_ARRAY";
-    case RecordType::STRING:
+    case record_type::STRING:
         return "STRING";
-    case RecordType::SIGNED_INT_8:
+    case record_type::SIGNED_INT_8:
         return "SIGNED_INT_8";
-    case RecordType::UNSIGNED_INT_8:
+    case record_type::UNSIGNED_INT_8:
         return "UNSIGNED_INT_8";
-    case RecordType::SIGNED_INT_16:
+    case record_type::SIGNED_INT_16:
         return "SIGNED_INT_16";
-    case RecordType::UNSIGNED_INT_16:
+    case record_type::UNSIGNED_INT_16:
         return "UNSIGNED_INT_16";
-    case RecordType::SIGNED_INT_32:
+    case record_type::SIGNED_INT_32:
         return "SIGNED_INT_32";
-    case RecordType::UNSIGNED_INT_32:
+    case record_type::UNSIGNED_INT_32:
         return "UNSIGNED_INT_32";
-    case RecordType::SIGNED_INT_64:
+    case record_type::SIGNED_INT_64:
         return "SIGNED_INT_64";
-    case RecordType::UNSIGNED_INT_64:
+    case record_type::UNSIGNED_INT_64:
         return "UNSIGNED_INT_64";
-    case RecordType::FLOAT_32:
+    case record_type::FLOAT_32:
         return "FLOAT_32";
-    case RecordType::FLOAT_64:
+    case record_type::FLOAT_64:
         return "FLOAT_64";
-    case RecordType::LIST:
+    case record_type::LIST:
         return "LIST";
-    case RecordType::MAP:
+    case record_type::MAP:
         return "MAP";
     default:
         return "UNKNOWN";
     }
 }
 
-std::ostream &nanoservices::operator<<(std::ostream &os, const RecordType &recordType) {
-    os << getRecordTypeName(recordType);
+std::ostream &nanoservices::operator<<(std::ostream &os, const record_type &recordType) {
+    os << get_record_type_name(recordType);
     return os;
 }

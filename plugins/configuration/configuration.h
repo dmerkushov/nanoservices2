@@ -14,13 +14,13 @@ namespace nanoservices {
 /**
  * @brief The nanoservice configuration class.
  */
-class Configuration {
+class configuration {
 private:
     /**
      * @brief The map containing the configuration _properties after being read by
-     * Configuration::initialize(int,char**).
+     * configuration::initialize(int,char**).
      * @details By default, the configuration is being read at startup. But, if the configuration engine plugin
-     * implements its own Configuration::getProperty(std::string&), it may override this default behaviour.
+     * implements its own configuration::get_property(std::string&), it may override this default behaviour.
      */
     static std::map<std::string, std::shared_ptr<std::string>, std::less<>> _properties;
 
@@ -55,21 +55,21 @@ public:
      * defined (to do it, add a corresponding line to ${NSPROJECT_ROOT}/CMakeLists.txt - see
      * https://cmake.org/cmake/help/v3.6/command/add_definitions.html ). Otherwise, a duplicate definition error will be
      * raised by the linker.
-     * @param propertyName name of the property
+     * @param property_name name of the property
      * @return The value of the named property. If the property is absent, returns an empty shared pointer.
      */
-    static std::shared_ptr<std::string> getProperty(const std::string &propertyName) noexcept;
+    static std::shared_ptr<std::string> get_property(const std::string &property_name) noexcept;
 
     /**
      * @brief Get a value of a configuration property
      * @details The implementation is provided in configuration.cpp, that makes use of
-     * nanoservices::Configuration::getProperty(const std::string&). Configuration engine plugins are not intended to
+     * nanoservices::configuration::get_property(const std::string&). configuration engine plugins are not intended to
      * implement this method.
-     * @param propertyName name of the property
+     * @param property_name name of the property
      * @return The value of the named property. If the property is absent, or its name is too long (see
-     * nanoservices::Configuration::MAX_PROPERTYNAME_LEN_CONSTCHARPTR), returns an empty shared pointer.
+     * nanoservices::configuration::MAX_PROPERTYNAME_LEN_CONSTCHARPTR), returns an empty shared pointer.
      */
-    static std::shared_ptr<std::string> getProperty(const char *propertyName) noexcept;
+    static std::shared_ptr<std::string> get_property(const char *property_name) noexcept;
 };
 } // namespace nanoservices
 

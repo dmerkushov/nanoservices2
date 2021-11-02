@@ -77,9 +77,9 @@ namespace nanoservices {
 
 namespace log = spdlog;
 
-void initialize_logging() noexcept;
+void logging_initialize() noexcept;
 
-void finalize_logging() noexcept;
+void logging_finalize() noexcept;
 
 log::level::level_enum logging_level_by_name(const char *name) noexcept;
 
