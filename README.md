@@ -1,6 +1,6 @@
 # nanoservices
 
-[![Documentation](https://codedocs.xyz/dmerkushov/nanoservices2.svg)](https://codedocs.xyz/dmerkushov/nanoservices2/)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=dmerkushov_nanoservices2&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=dmerkushov_nanoservices2) [![Documentation](https://codedocs.xyz/dmerkushov/nanoservices2.svg)](https://codedocs.xyz/dmerkushov/nanoservices2/)
 
 Nanoservices framework
 
