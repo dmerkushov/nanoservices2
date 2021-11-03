@@ -8,7 +8,6 @@
 #include "../../thirdparty/gabime/spdlog/spdlog.h"
 #include "../../util/macroutils/position.h"
 #include "../../util/stringutils/stringutils.h"
-#include "../../util/templateutils/lambdaToFunction.h"
 
 #include <cassert>
 #include <chrono>

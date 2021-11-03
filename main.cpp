@@ -37,14 +37,21 @@ int main(int argc, char **argv) {
 
     ns_exception e2(make_shared<string>("Message2"), NS_POSITION_SHAREDPTR, make_shared<ns_exception>("Message1", NS_POSITION_SHAREDPTR));
 
-    // log::set_level(log::level::trace);
+    log::set_level(log::level::trace);
 
     log::critical("{}", e2);
     log::warn("{}", e2);
     log::error("{}", e2);
     log::info("{}", e2);
     log::debug("{}", e2);
-    log::trace("{}", e2);
+
+    ns_exception e3("Message3", NS_POSITION_SHAREDPTR);
+
+    function<string()> f = [e3]() {
+        return string("EXCEPTION FROM FUNC: ") + e3.what();
+    };
+
+    log::trace("{}", f);
 
     // spdlog::set_pattern("[%Y-%m-%d %H:%M:%S.%F] [thread %t] %^[%l]%$ %v");
     //
