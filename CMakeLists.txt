@@ -11,6 +11,11 @@ if (UNIX)
     endif ()
 endif ()
 
+string(TOLOWER "${CMAKE_BUILD_TYPE}" BUILD_TYPE_LOWER)
+if ("${BUILD_TYPE_LOWER}" STREQUAL "debug")
+    add_compile_definitions(RUN_TESTS_AT_START)
+endif ()
+
 ############################
 # CORE DEFINITIONS
 #
@@ -18,6 +23,7 @@ endif ()
 ############################
 list(APPEND SRC main.cpp)
 list(APPEND SRC core/exception/ns_exception.cpp)
+list(APPEND SRC core/exception/exception_test.cpp)
 list(APPEND SRC core/serialization/serialization.cpp)
 
 include_directories(BEFORE SYSTEM thirdparty/gabime)
