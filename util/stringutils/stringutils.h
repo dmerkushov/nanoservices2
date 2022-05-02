@@ -101,6 +101,9 @@ std::shared_ptr<std::vector<std::shared_ptr<std::string>>> splitString(std::shar
 
 namespace fmt {
 
+/**
+ * @brief fmt library formatter for <code>std::shared_ptr&lt;std::string></code>
+ */
 template<>
 struct formatter<std::shared_ptr<std::string>> {
     template<typename ParseContext>
@@ -110,11 +113,23 @@ struct formatter<std::shared_ptr<std::string>> {
     auto format(std::shared_ptr<std::string> const &e, FormatContext &ctx);
 };
 
+/**
+ * @brief Implementation of the <code>parse</code> method for the fmt library formatter for <code>std::shared_ptr&lt;std::string></code>
+ * @tparam ParseContext
+ * @param ctx
+ * @return
+ */
 template<typename ParseContext>
 constexpr auto formatter<std::shared_ptr<std::string>>::parse(ParseContext &ctx) {
     return std::begin(ctx);
 }
 
+/**
+ * @brief Implementation of the <code>format</code> method for the fmt library formatter for <code>std::shared_ptr&lt;std::string></code>
+ * @tparam ParseContext
+ * @param ctx
+ * @return
+ */
 template<typename FormatContext>
 auto formatter<std::shared_ptr<std::string>>::format(std::shared_ptr<std::string> const &sps, FormatContext &ctx) {
     return fmt::format_to(ctx.out(), "{}", *sps);
