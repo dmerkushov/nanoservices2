@@ -5,6 +5,8 @@
 #ifndef NANOSERVICES2_STRINGUTILS_H
 #define NANOSERVICES2_STRINGUTILS_H
 
+#include "../../thirdparty/gabime/spdlog/fmt/fmt.h"
+
 #include <functional>
 #include <memory>
 #include <sstream>
@@ -37,18 +39,14 @@ std::shared_ptr<std::string> str_toUpper_copy(std::string_view str) noexcept;
  * @tparam MT
  */
 template<typename MT>
-concept String = requires {
-    requires std::is_convertible_v<MT, std::string>;
-};
+concept String = requires { requires std::is_convertible_v<MT, std::string>; };
 
 /**
  * @brief The concept requires that the given type is std::stringstream
  * @tparam MT
  */
 template<typename MT>
-concept SStream = requires {
-    requires std::is_same_v<MT, std::stringstream>;
-};
+concept SStream = requires { requires std::is_same_v<MT, std::stringstream>; };
 
 /**
  * @brief The concept requires that the given type is either std::stringstream or convertible to std::string
@@ -66,8 +64,8 @@ concept StringOrSStream = String<MT> || SStream<MT>;
  */
 template<class MT>
 concept StringProducer = requires(MT mt) {
-    { mt() } -> String;
-};
+                             { mt() } -> String;
+                         };
 
 /**
  * @brief The concept requires that the given type denotes a callable entity that produces a std::stringstream when
@@ -76,8 +74,8 @@ concept StringProducer = requires(MT mt) {
  */
 template<class MT>
 concept SStreamProducer = requires(MT mt) {
-    { mt() } -> SStream;
-};
+                              { mt() } -> SStream;
+                          };
 
 /**
  * @brief The concept requires that the given type denotes a callable entity that produces either a std::stringstream or
@@ -100,5 +98,28 @@ concept StringOrSStreamProducer = StringProducer<MT> || SStreamProducer<MT>;
 std::shared_ptr<std::vector<std::shared_ptr<std::string>>> splitString(std::shared_ptr<std::string> in, char delimiter = ' ', bool trimTokens = false, bool dropEmptyTokens = false);
 
 } // namespace nanoservices
+
+namespace fmt {
+
+template<>
+struct formatter<std::shared_ptr<std::string>> {
+    template<typename ParseContext>
+    constexpr auto parse(ParseContext &ctx);
+
+    template<typename FormatContext>
+    auto format(std::shared_ptr<std::string> const &e, FormatContext &ctx);
+};
+
+template<typename ParseContext>
+constexpr auto formatter<std::shared_ptr<std::string>>::parse(ParseContext &ctx) {
+    return std::begin(ctx);
+}
+
+template<typename FormatContext>
+auto formatter<std::shared_ptr<std::string>>::format(std::shared_ptr<std::string> const &sps, FormatContext &ctx) {
+    return fmt::format_to(ctx.out(), "{}", *sps);
+}
+
+} // namespace fmt
 
 #endif // NANOSERVICES2_STRINGUTILS_H
