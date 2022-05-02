@@ -6,6 +6,7 @@
 #define NANOSERVICES2_POSITION_H
 
 #include <memory>
+#include <source_location>
 #include <string>
 
 #define __NANOSERVICES2_LOC (std::source_location::current())
