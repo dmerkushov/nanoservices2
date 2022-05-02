@@ -77,9 +77,9 @@ struct serialization_record {
 
 template<typename T>
 concept Serializable = requires(T t) {
-    { t.__nanoservices2_serializer_serialize() } -> std::convertible_to<std::shared_ptr<std::vector<std::shared_ptr<serialization_record>>>>;
-    t.__nanoservices2_serializer_deserialize(t.__nanoservices2_serializer_serialize());
-};
+                           { t.__nanoservices2_serializer_serialize() } -> std::convertible_to<std::shared_ptr<std::vector<std::shared_ptr<serialization_record>>>>;
+                           t.__nanoservices2_serializer_deserialize(t.__nanoservices2_serializer_serialize());
+                       };
 
 #define __NANOSERVICES2_SERIALIZE_FIELDCLAUSE__(FIELDNAME) \
     result->push_back(nanoservices::serializer::serialize_field(*fieldNamesIter, (FIELDNAME))); \
@@ -197,9 +197,7 @@ public:
 
             ++iter;
             if(iter == recordsVector->end()) {
-                std::stringstream msgSS;
-                msgSS << "Reached the end of the serialization record vector when deserializing map field " << serializationRecord->fieldName;
-                NS_THROW(msgSS.str().c_str());
+                NS_THROW(fmt::format("Reached the end of the serialization record vector when deserializing map field {}", serializationRecord->fieldName).c_str());
             }
 
             V v;
@@ -218,15 +216,15 @@ public:
             int demangleStatus = 0;
             char *fieldTypeName = abi::__cxa_demangle(typeid(fieldValue).name(), nullptr, nullptr, &demangleStatus);
             if(demangleStatus == 0) {
-                log::trace("Serializing an instance of {}. Field name: {}", fieldTypeName, *fieldName);
+                log::trace("Serializing an instance of {}. Field name: {}", fieldTypeName, fieldName);
             } else if(demangleStatus == -1) {
-                log::trace("Serializing an instance of (unknown type: memory allocation failure). Field name: {}", *fieldName);
+                log::trace("Serializing an instance of (unknown type: memory allocation failure). Field name: {}", fieldName);
             } else if(demangleStatus == -2) {
-                log::trace("Serializing an instance of (unknown type: mangled name \"{}\" is not a valid name under the C++ mangling rules). Field name: {}", typeid(fieldValue).name(), *fieldName);
+                log::trace("Serializing an instance of (unknown type: mangled name \"{}\" is not a valid name under the C++ mangling rules). Field name: {}", typeid(fieldValue).name(), fieldName);
             } else if(demangleStatus == -3) {
-                log::trace("Serializing an instance of (unknown type: invalid argument). Field name: {}", *fieldName);
+                log::trace("Serializing an instance of (unknown type: invalid argument). Field name: {}", fieldName);
             } else {
-                log::trace("Serializing an instance of (unknown type: unknown error). Field name: {}", *fieldName);
+                log::trace("Serializing an instance of (unknown type: unknown error). Field name: {}", fieldName);
             }
         }
 
@@ -291,17 +289,17 @@ public:
             size_t length = 0;
             std::shared_ptr<char> fieldTypeName(abi::__cxa_demangle(typeid(fieldValuePtr).name(), nullptr, &length, &demangleStatus));
             if(demangleStatus == 0) {
-                log::trace("Deserializing an instance of {}. Field name: {}", fieldTypeName.get(), *serializationRecord->fieldName);
+                log::trace("Deserializing an instance of {}. Field name: {}", fieldTypeName.get(), serializationRecord->fieldName);
             } else if(demangleStatus == -1) {
-                log::trace("Deserializing an instance of (unknown type: memory allocation failure). Field name: {}", *serializationRecord->fieldName);
+                log::trace("Deserializing an instance of (unknown type: memory allocation failure). Field name: {}", serializationRecord->fieldName);
             } else if(demangleStatus == -2) {
                 log::trace("Deserializing an instance of (unknown type: mangled name \"{}\" is not a valid name under the C++ mangling rules). Field name: {}",
                            typeid(fieldValuePtr).name(),
-                           *serializationRecord->fieldName);
+                           serializationRecord->fieldName);
             } else if(demangleStatus == -3) {
-                log::trace("Deserializing an instance of (unknown type: invalid argument). Field name: {}", *serializationRecord->fieldName);
+                log::trace("Deserializing an instance of (unknown type: invalid argument). Field name: {}", serializationRecord->fieldName);
             } else {
-                log::trace("Deserializing an instance of (unknown type: unknown error). Field name: {}", *serializationRecord->fieldName);
+                log::trace("Deserializing an instance of (unknown type: unknown error). Field name: {}", serializationRecord->fieldName);
             }
         }
 
