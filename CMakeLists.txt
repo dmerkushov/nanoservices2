@@ -6,8 +6,8 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 
 if (UNIX)
     if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-        set(CMAKE_CXX_COMPILER g++-10)
-        set(CMAKE_CXX_COMPILER_VERSION 10.3.0)
+        set(CMAKE_CXX_COMPILER g++-11)
+        set(CMAKE_CXX_COMPILER_VERSION 11.1.0)
     endif ()
 endif ()
 
