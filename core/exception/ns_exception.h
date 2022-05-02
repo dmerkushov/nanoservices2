@@ -34,10 +34,9 @@
 #include <vector>
 
 #ifndef NS_EXCEPTION
-#    define NS_EXCEPTION(message) ns_exception((message), std::make_shared<std::string>(NS_POSITION))
-#    define NS_EXCEPTION_WITHCAUSE(message, cause) ns_exception((message), std::make_shared<std::string>(NS_POSITION), (cause))
-#    define NS_THROW(message) throw NS_EXCEPTION(message)
-#    define NS_THROW_WITHCAUSE(message, cause) throw NS_EXCEPTION_WITHCAUSE((message), (cause))
+#    define NS_THROW(message) throw ns_exception((message), std::make_shared<std::string>(NS_POSITION))
+#    define NS_THROW_WITHCAUSE(cause, message) throw ns_exception((message), std::make_shared<std::string>(NS_POSITION), (cause))
+#    define NS_THROW_FMT(...) throw NS_EXCEPTION(fmt::format(...).c_str())
 #endif
 
 namespace nanoservices {
@@ -52,16 +51,18 @@ private:
      */
     static const size_t STACKTRACE_SIZE_MAX;
 
+    std::shared_ptr<std::exception> _cause;
     std::shared_ptr<std::string> _message;
     std::shared_ptr<std::string> _position;
-    std::shared_ptr<std::exception> _cause;
 
     mutable std::shared_ptr<std::string> _what;
 
 public:
     ns_exception(const char *message, const std::shared_ptr<std::string> position) noexcept;
 
-    ns_exception(const std::shared_ptr<std::string> message, const std::shared_ptr<std::string> position, const std::shared_ptr<std::exception> cause = nullptr) noexcept;
+    ns_exception(const exception &cause, const std::shared_ptr<std::string> message, const std::shared_ptr<std::string> position) noexcept;
+
+    ns_exception(const std::shared_ptr<std::exception> cause, const std::shared_ptr<std::string> message, const std::shared_ptr<std::string> position) noexcept;
 
     ~ns_exception() noexcept override = default;
 

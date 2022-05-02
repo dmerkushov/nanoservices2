@@ -23,8 +23,6 @@
 
 #include "ns_exception.h"
 
-#include "../../thirdparty/gabime/spdlog/fmt/fmt.h"
-
 #include <cstring>
 #include <memory>
 #include <sstream>
@@ -35,11 +33,15 @@ using namespace std;
 
 const size_t ns_exception::STACKTRACE_SIZE_MAX = 200;
 
-ns_exception::ns_exception(const std::shared_ptr<std::string> message, const std::shared_ptr<std::string> position, const std::shared_ptr<std::exception> cause) noexcept :
-        _message(message), _position(position), _cause(cause) {
+ns_exception::ns_exception(const exception &cause, const std::shared_ptr<std::string> message, const std::shared_ptr<std::string> position) noexcept :
+        _cause(make_shared<std::exception>(cause)), _message(message), _position(position) {
 }
 
-ns_exception::ns_exception(const char *message, const std::shared_ptr<std::string> position) noexcept : ns_exception(make_shared<string>(message), position) {
+ns_exception::ns_exception(const shared_ptr<exception> cause, const std::shared_ptr<std::string> message, const std::shared_ptr<std::string> position) noexcept :
+        _cause(cause), _message(message), _position(position) {
+}
+
+ns_exception::ns_exception(const char *message, const std::shared_ptr<std::string> position) noexcept : _message(make_shared<string>(message)), _position(position) {
 }
 
 const char *ns_exception::what() const noexcept {
