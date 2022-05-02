@@ -1,4 +1,3 @@
-#define DOCTEST_CONFIG_IMPLEMENT
 #include "../../plugins/logging/logging.h"
 #include "../../thirdparty/doctest/doctest/doctest.h"
 #include "ns_exception.h"

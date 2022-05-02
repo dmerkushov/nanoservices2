@@ -1,3 +1,5 @@
+#define DOCTEST_CONFIG_IMPLEMENT
+
 #include "core/exception/ns_exception.h"
 #include "core/serialization/serialization.h"
 #include "plugins/configuration/configuration.h"

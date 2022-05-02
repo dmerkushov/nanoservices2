@@ -48,6 +48,7 @@ list(APPEND SRC plugins/logging/logging.cpp)
 # Do not comment these lines.
 ############################
 list(APPEND SRC util/stringutils/stringutils.cpp)
+list(APPEND SRC util/stringutils/stringutils_test.cpp)
 
 ############################
 # CONFIGURATION ENGINE
