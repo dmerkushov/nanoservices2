@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
     configuration::initialize(argc, argv);
     logging_initialize();
 
-    ns_exception e2(make_shared<string>("Message2"), NS_POSITION_SHAREDPTR, make_shared<ns_exception>("Message1", NS_POSITION_SHAREDPTR));
+    ns_exception e2(make_shared<ns_exception>("Message1", NS_POSITION_SHAREDPTR), make_shared<string>("Message2"), NS_POSITION_SHAREDPTR);
 
     log::set_level(log::level::trace);
 
