@@ -18,8 +18,8 @@ jobs:
     steps:
       - name: Set up g++-11
         run: |
-          add-apt-repository -y ppa:ubuntu-toolchain-r/test
-          apt install -y g++-11
+          sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+          sudo apt install -y g++-11
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
