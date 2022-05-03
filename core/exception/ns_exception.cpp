@@ -45,6 +45,10 @@ ns_exception::ns_exception(const char *message, const std::shared_ptr<std::strin
 }
 
 const char *ns_exception::what() const noexcept {
+    return whatstr()->c_str();
+}
+
+shared_ptr<string> ns_exception::whatstr() const noexcept {
     if(!_what) {
         // Collect info for what()
         string what;
@@ -56,7 +60,7 @@ const char *ns_exception::what() const noexcept {
         }
         _what = make_shared<string>(what);
     }
-    return _what->c_str();
+    return _what;
 }
 
 std::shared_ptr<std::string> ns_exception::message() const noexcept {

@@ -69,10 +69,16 @@ public:
     /**
      * @brief Inherited from std::exception
      * @details
-     * @return The full description of the exception, including position, message and the stacktrace. If a cause is set,
+     * @return The full description of the exception, including position and message. If a cause is set,
      * then the result of the what() call for the causing exception is appended.
      */
     const char *what() const noexcept override;
+
+    /**
+     * @brief
+     * @return The full description of the exception, including position and message. If a cause is set, then the result of the what() call for the causing exception is appended.
+     */
+    std::shared_ptr<std::string> whatstr() const noexcept;
 
     /**
      * @brief Get the message of the exception
