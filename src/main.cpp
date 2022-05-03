@@ -4,7 +4,7 @@
 #include "core/serialization/serialization.h"
 #include "plugins/configuration/configuration.h"
 #include "plugins/logging/logging.h"
-#include "thirdparty/doctest/doctest/doctest.h"
+//#include "thirdparty/doctest/doctest/doctest.h"
 #include "thirdparty/gabime/spdlog/fmt/bin_to_hex.h"
 #include "thirdparty/gabime/spdlog/spdlog.h"
 
@@ -38,15 +38,15 @@ int main(int argc, char **argv) {
     configuration::initialize(argc, argv);
     logging_initialize();
 
-    if(configuration::get_property("nanoservices.testing.nstests.run")) {
-        doctest::Context context;
-        context.setOption("reporters", "console");
-        context.applyCommandLine(argc, argv);
-        int doctest_result = context.run();
-        if(context.shouldExit()) {
-            return doctest_result;
-        }
-    }
+    // if(configuration::get_property("nanoservices.testing.nstests.run")) {
+    //     doctest::Context context;
+    //     context.setOption("reporters", "console");
+    //     context.applyCommandLine(argc, argv);
+    //     int doctest_result = context.run();
+    //     if(context.shouldExit()) {
+    //         return doctest_result;
+    //     }
+    // }
 
     ns_exception e2(make_shared<ns_exception>("Message1", NS_POSITION_SHAREDPTR), make_shared<string>("Message2"), NS_POSITION_SHAREDPTR);
 

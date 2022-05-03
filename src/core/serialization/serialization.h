@@ -89,7 +89,7 @@ concept Serializable = requires(T t) {
     nanoservices::serializer::deserialize_field(&(FIELDNAME), *serializerRecordsIter); \
     ++serializerRecordsIter;
 
-// SonarLint will argue: "Each instance of a parameter in a function-like macro should be enclosed in parentheses" in the body of this macro.
+// SonarLint will argue: "Each main_instance of a parameter in a function-like macro should be enclosed in parentheses" in the body of this macro.
 // But what we need is actually using it without parentheses!
 #define NANOSERVICES2_MAKE_SERIALIZABLE(...) \
 \
@@ -216,15 +216,16 @@ public:
             int demangleStatus = 0;
             char *fieldTypeName = abi::__cxa_demangle(typeid(fieldValue).name(), nullptr, nullptr, &demangleStatus);
             if(demangleStatus == 0) {
-                log::trace("Serializing an instance of {}. Field name: {}", fieldTypeName, fieldName);
+                log::trace("Serializing an main_instance of {}. Field name: {}", fieldTypeName, fieldName);
             } else if(demangleStatus == -1) {
-                log::trace("Serializing an instance of (unknown type: memory allocation failure). Field name: {}", fieldName);
+                log::trace("Serializing an main_instance of (unknown type: memory allocation failure). Field name: {}", fieldName);
             } else if(demangleStatus == -2) {
-                log::trace("Serializing an instance of (unknown type: mangled name \"{}\" is not a valid name under the C++ mangling rules). Field name: {}", typeid(fieldValue).name(), fieldName);
+                log::trace(
+                        "Serializing an main_instance of (unknown type: mangled name \"{}\" is not a valid name under the C++ mangling rules). Field name: {}", typeid(fieldValue).name(), fieldName);
             } else if(demangleStatus == -3) {
-                log::trace("Serializing an instance of (unknown type: invalid argument). Field name: {}", fieldName);
+                log::trace("Serializing an main_instance of (unknown type: invalid argument). Field name: {}", fieldName);
             } else {
-                log::trace("Serializing an instance of (unknown type: unknown error). Field name: {}", fieldName);
+                log::trace("Serializing an main_instance of (unknown type: unknown error). Field name: {}", fieldName);
             }
         }
 
@@ -289,17 +290,17 @@ public:
             size_t length = 0;
             std::shared_ptr<char> fieldTypeName(abi::__cxa_demangle(typeid(fieldValuePtr).name(), nullptr, &length, &demangleStatus));
             if(demangleStatus == 0) {
-                log::trace("Deserializing an instance of {}. Field name: {}", fieldTypeName.get(), serializationRecord->fieldName);
+                log::trace("Deserializing an main_instance of {}. Field name: {}", fieldTypeName.get(), serializationRecord->fieldName);
             } else if(demangleStatus == -1) {
-                log::trace("Deserializing an instance of (unknown type: memory allocation failure). Field name: {}", serializationRecord->fieldName);
+                log::trace("Deserializing an main_instance of (unknown type: memory allocation failure). Field name: {}", serializationRecord->fieldName);
             } else if(demangleStatus == -2) {
-                log::trace("Deserializing an instance of (unknown type: mangled name \"{}\" is not a valid name under the C++ mangling rules). Field name: {}",
+                log::trace("Deserializing an main_instance of (unknown type: mangled name \"{}\" is not a valid name under the C++ mangling rules). Field name: {}",
                            typeid(fieldValuePtr).name(),
                            serializationRecord->fieldName);
             } else if(demangleStatus == -3) {
-                log::trace("Deserializing an instance of (unknown type: invalid argument). Field name: {}", serializationRecord->fieldName);
+                log::trace("Deserializing an main_instance of (unknown type: invalid argument). Field name: {}", serializationRecord->fieldName);
             } else {
-                log::trace("Deserializing an instance of (unknown type: unknown error). Field name: {}", serializationRecord->fieldName);
+                log::trace("Deserializing an main_instance of (unknown type: unknown error). Field name: {}", serializationRecord->fieldName);
             }
         }
 

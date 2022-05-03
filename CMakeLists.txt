@@ -17,21 +17,21 @@ endif ()
 #
 # Do not comment these lines.
 ############################
-list(APPEND SRC core/exception/ns_exception.cpp)
-list(APPEND SRC core/serialization/serialization.cpp)
+list(APPEND SRC src/core/exception/ns_exception.cpp)
+list(APPEND SRC src/core/serialization/serialization.cpp)
 
 # Testing of the core components
-list(APPEND TEST_SRC core/exception/exception_test.cpp)
+list(APPEND TEST_SRC src/core/exception/exception_test.cpp)
 
-include_directories(BEFORE SYSTEM thirdparty/gabime)
+include_directories(BEFORE SYSTEM src/thirdparty/gabime)
 
 ############################
 # BASIC PLUGIN DEFINITIONS
 #
 # Do not comment these lines.
 ############################
-list(APPEND SRC plugins/configuration/configuration.cpp)
-list(APPEND SRC plugins/logging/logging.cpp)
+list(APPEND SRC src/plugins/configuration/configuration.cpp)
+list(APPEND SRC src/plugins/logging/logging.cpp)
 
 ############################
 # THIRD-PARTY LIBRARIES
@@ -44,8 +44,9 @@ list(APPEND SRC plugins/logging/logging.cpp)
 #
 # Do not comment these lines.
 ############################
-list(APPEND SRC util/stringutils/stringutils.cpp)
-list(APPEND SRC util/stringutils/stringutils_test.cpp)
+list(APPEND SRC src/util/stringutils/stringutils.cpp)
+list(APPEND SRC src/util/stringutils/stringutils_test.cpp)
+list(APPEND SRC src/util/testing/testing.cpp)
 
 ############################
 # CONFIGURATION ENGINE
@@ -54,7 +55,7 @@ list(APPEND SRC util/stringutils/stringutils_test.cpp)
 ############################
 
 # configuration via command line arguments
-list(APPEND SRC plugins/configuration/argc_argv/configuration_argc_argv.cpp)
+list(APPEND SRC src/plugins/configuration/argc_argv/configuration_argc_argv.cpp)
 
 # configuration via environment variables
 #list(APPEND SRC plugins/required/configuration/environment_variables/configuration_environment_variables.cpp)
@@ -77,7 +78,7 @@ list(APPEND SRC plugins/configuration/argc_argv/configuration_argc_argv.cpp)
 ############################
 
 # Log to STDOUT
-list(APPEND SRC plugins/logging/stdout/logging_stdout.cpp)
+list(APPEND SRC src/plugins/logging/stdout/logging_stdout.cpp)
 
 # Log using the syslog.
 #list(APPEND SRC plugins/logging/syslog/logging_syslog.cpp)
@@ -98,21 +99,21 @@ list(APPEND SRC plugins/logging/stdout/logging_stdout.cpp)
 ############################
 
 # No monitoring
-list(APPEND SRC plugins/monitoring/monitoring_none.cpp)
+list(APPEND SRC src/plugins/monitoring/monitoring_none.cpp)
 
 # Distributed system monitoring via Zipkin. See the plugin documentation for more info
 #list(APPEND SRC plugins/optional/monitoring/zipkin/monitoring_zipkin.cpp)
 
 # Append all regular sources to the test sources, then the regular main.cpp to the regular sources, and the testing main.cpp to the test sources
 list(APPEND TEST_SRC ${SRC})
-list(APPEND SRC main.cpp)
-list(APPEND TEST_SRC main_test.cpp)
+list(APPEND SRC src/main.cpp)
+list(APPEND TEST_SRC src/main_test.cpp)
 
 add_executable(nanoservices2 ${SRC})
 
 #if ("${BUILD_TYPE_LOWER}" STREQUAL "debug")
 add_executable(nanoservices2_testing ${TEST_SRC})
-target_compile_options(nanoservices2_testing PRIVATE -O0 --coverage)
+target_compile_options(nanoservices2_testing PRIVATE -O0 -fprofile-arcs -ftest-coverage)
 target_compile_features(nanoservices2_testing PRIVATE cxx_std_20)
 target_link_options(nanoservices2_testing PUBLIC -fprofile-arcs -lgcov)
 

@@ -75,7 +75,7 @@ SPDLOG_INLINE const std::string &logger::name() const {
 }
 
 // set formatting for the sinks in this logger.
-// each sink will get a separate instance of the formatter object.
+// each sink will get a separate main_instance of the formatter object.
 SPDLOG_INLINE void logger::set_formatter(std::unique_ptr<formatter> f) {
     for(auto it = sinks_.begin(); it != sinks_.end(); ++it) {
         if(std::next(it) == sinks_.end()) {

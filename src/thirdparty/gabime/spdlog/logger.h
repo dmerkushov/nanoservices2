@@ -240,7 +240,7 @@ public:
     const std::string &name() const;
 
     // set formatting for the sinks in this logger.
-    // each sink will get a separate instance of the formatter object.
+    // each sink will get a separate main_instance of the formatter object.
     void set_formatter(std::unique_ptr<formatter> f);
 
     void set_pattern(std::string pattern, pattern_time_type time_type = pattern_time_type::local);
