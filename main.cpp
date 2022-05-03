@@ -38,10 +38,9 @@ int main(int argc, char **argv) {
     configuration::initialize(argc, argv);
     logging_initialize();
 
-    if(configuration::get_property("nanoservices.testing.nstests.atstartup")) {
+    if(configuration::get_property("nanoservices.testing.nstests.run")) {
         doctest::Context context;
-        context.setOption("reporters", "junit");
-        context.setOption("out", "/tmp/doctestreport.xml");
+        context.setOption("reporters", "console");
         context.applyCommandLine(argc, argv);
         int doctest_result = context.run();
         if(context.shouldExit()) {

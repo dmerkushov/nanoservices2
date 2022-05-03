@@ -3,17 +3,13 @@ project(nanoservices2)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_VERBOSE_MAKEFILE ON)
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)
 
 if (UNIX)
     if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         set(CMAKE_CXX_COMPILER g++-11)
         set(CMAKE_CXX_COMPILER_VERSION 11.1.0)
     endif ()
-endif ()
-
-string(TOLOWER "${CMAKE_BUILD_TYPE}" BUILD_TYPE_LOWER)
-if ("${BUILD_TYPE_LOWER}" STREQUAL "debug")
-    add_compile_definitions(RUN_TESTS_AT_START)
 endif ()
 
 ############################
@@ -114,24 +110,15 @@ list(APPEND TEST_SRC main_test.cpp)
 
 add_executable(nanoservices2 ${SRC})
 
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    add_executable(nanoservices2_testing ${TEST_SRC})
-    target_compile_options(nanoservices2_testing PRIVATE --coverage)
-    target_compile_features(nanoservices2_testing PRIVATE cxx_std_20)
-    target_link_options(nanoservices2_testing PUBLIC -fprofile-arcs -lgcov)
+#if ("${BUILD_TYPE_LOWER}" STREQUAL "debug")
+add_executable(nanoservices2_testing ${TEST_SRC})
+target_compile_options(nanoservices2_testing PRIVATE -O0 --coverage)
+target_compile_features(nanoservices2_testing PRIVATE cxx_std_20)
+target_link_options(nanoservices2_testing PUBLIC -fprofile-arcs -lgcov)
 
-    add_custom_target(gcov_dir
-            DEPENDS nanoservices2 nanoservices2_testing
-            COMMAND mkdir -p ${CMAKE_BINARY_DIR}/coverage
-            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
-            )
-
-    add_custom_target(gcov
-            DEPENDS gcov_dir
-            COMMAND ../nanoservices2_testing
-            #            COMMAND gcov -o ${CMAKE_BINARY_DIR}/CMakeFiles/nanoservices2_testing.dir ${PROJECT_SOURCE_DIR}/*.cpp
-            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/coverage/
-            )
-
-endif ()
+add_custom_target(gcov
+        DEPENDS nanoservices2_testing
+        COMMAND bash ${PROJECT_SOURCE_DIR}/cmake/scripts/run_gcov.sh "${PROJECT_SOURCE_DIR}" "${CMAKE_BINARY_DIR}"
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
+        )
+#endif ()
