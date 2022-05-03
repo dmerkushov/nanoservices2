@@ -21,7 +21,7 @@ list(APPEND SRC src/core/exception/ns_exception.cpp)
 list(APPEND SRC src/core/serialization/serialization.cpp)
 
 # Testing of the core components
-list(APPEND TEST_SRC src/core/exception/exception_test.cpp)
+list(APPEND TEST_SRC src/core/exception/_test_exception.cpp)
 
 include_directories(BEFORE SYSTEM src/thirdparty/gabime)
 
@@ -45,7 +45,7 @@ list(APPEND SRC src/plugins/logging/logging.cpp)
 # Do not comment these lines.
 ############################
 list(APPEND SRC src/util/stringutils/stringutils.cpp)
-list(APPEND SRC src/util/stringutils/stringutils_test.cpp)
+list(APPEND SRC src/util/stringutils/_test_stringutils.cpp)
 list(APPEND SRC src/util/testing/testing.cpp)
 
 ############################
