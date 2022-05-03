@@ -40,6 +40,8 @@ int main(int argc, char **argv) {
 
     if(configuration::get_property("nanoservices.testing.nstests.atstartup")) {
         doctest::Context context;
+        context.setOption("reporters", "junit");
+        context.setOption("out", "/tmp/doctestreport.xml");
         context.applyCommandLine(argc, argv);
         int doctest_result = context.run();
         if(context.shouldExit()) {

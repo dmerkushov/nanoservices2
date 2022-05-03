@@ -7,5 +7,4 @@ using namespace nanoservices;
 
 TEST_CASE("ns_exception ctor") {
     ns_exception e("My exception", NS_POSITION_SHAREDPTR);
-    log::critical("{}", e);
 }

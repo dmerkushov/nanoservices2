@@ -21,10 +21,11 @@ endif ()
 #
 # Do not comment these lines.
 ############################
-list(APPEND SRC main.cpp)
 list(APPEND SRC core/exception/ns_exception.cpp)
-list(APPEND SRC core/exception/exception_test.cpp)
 list(APPEND SRC core/serialization/serialization.cpp)
+
+# Testing of the core components
+list(APPEND TEST_SRC core/exception/exception_test.cpp)
 
 include_directories(BEFORE SYSTEM thirdparty/gabime)
 
@@ -106,4 +107,31 @@ list(APPEND SRC plugins/monitoring/monitoring_none.cpp)
 # Distributed system monitoring via Zipkin. See the plugin documentation for more info
 #list(APPEND SRC plugins/optional/monitoring/zipkin/monitoring_zipkin.cpp)
 
+# Append all regular sources to the test sources, then the regular main.cpp to the regular sources, and the testing main.cpp to the test sources
+list(APPEND TEST_SRC ${SRC})
+list(APPEND SRC main.cpp)
+list(APPEND TEST_SRC main_test.cpp)
+
 add_executable(nanoservices2 ${SRC})
+
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    add_executable(nanoservices2_testing ${TEST_SRC})
+    target_compile_options(nanoservices2_testing PRIVATE --coverage)
+    target_compile_features(nanoservices2_testing PRIVATE cxx_std_20)
+    target_link_options(nanoservices2_testing PUBLIC -fprofile-arcs -lgcov)
+
+    add_custom_target(gcov_dir
+            DEPENDS nanoservices2 nanoservices2_testing
+            COMMAND mkdir -p ${CMAKE_BINARY_DIR}/coverage
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
+            )
+
+    add_custom_target(gcov
+            DEPENDS gcov_dir
+            COMMAND ../nanoservices2_testing
+            #            COMMAND gcov -o ${CMAKE_BINARY_DIR}/CMakeFiles/nanoservices2_testing.dir ${PROJECT_SOURCE_DIR}/*.cpp
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/coverage/
+            )
+
+endif ()
