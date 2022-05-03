@@ -6,14 +6,14 @@
 using namespace std;
 using namespace nanoservices;
 
-static function<bool()> test_ns_exception_ctor = []() {
+static const function<bool()> test_ns_exception_ctor = []() {
     auto e1 = make_shared<ns_exception>("My exception 1", NS_POSITION_SHAREDPTR);
     auto e2 = make_shared<ns_exception>(e1, make_shared<string>("My exception 2"), NS_POSITION_SHAREDPTR);
 
     regex re1(".*My exception 1.*");
     regex re2(".*My exception 2.*");
     return
-            // Testing whatstr for the first exception
+            // Testing whatstr for the first exception (without a cause, so re2 should not match)
             regex_match(*e1->whatstr(), re1) &&
             !regex_match(*e1->whatstr(), re2)
 

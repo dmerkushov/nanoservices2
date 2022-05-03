@@ -1,13 +1,12 @@
-#include "stringutils.h"
-
 #include "../../plugins/logging/logging.h"
 #include "../testing/testing.h"
+#include "stringutils.h"
 
 using namespace std;
 using namespace nanoservices;
 
-static std::function<bool()> test_strutils_fmt_sharedptrstring_formatter = []() {
-    shared_ptr<string> str = make_shared<string>("Ololo");
+static const std::function<bool()> test_strutils_fmt_sharedptrstring_formatter = []() {
+    auto str = make_shared<string>("Ololo");
     string str2 = fmt::format("{}", str);
     return (str->compare(str2) == 0);
 };

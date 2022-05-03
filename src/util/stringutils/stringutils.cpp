@@ -37,13 +37,10 @@ shared_ptr<string> nanoservices::str_toUpper_copy(string_view str) noexcept {
     return uppered;
 }
 
-shared_ptr<vector<shared_ptr<string>>> nanoservices::splitString(std::shared_ptr<std::string> in,
-                                                                 char delimiter,
-                                                                 bool trimTokens,
-                                                                 bool dropEmptyTokens) {
+shared_ptr<vector<shared_ptr<string>>> nanoservices::splitString(std::shared_ptr<std::string> in, char delimiter, bool trimTokens, bool dropEmptyTokens) {
     stringstream ss(*in);
     string token;
-    shared_ptr<vector<shared_ptr<string>>> result = make_shared<vector<shared_ptr<string>>>();
+    auto result = make_shared<vector<shared_ptr<string>>>();
     while(getline(ss, token, delimiter)) {
         if(trimTokens) {
             token = *(str_trim_copy(token));
