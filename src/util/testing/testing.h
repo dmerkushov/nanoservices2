@@ -23,14 +23,14 @@ public:
     template<typename T>
     int add_test(std::string funcname, T func) {
         static_assert(std::is_same_v<T, std::function<bool()>>, "Test functions can be only std::function<bool()>");
-        _tests.insert({funcname, (std::function<bool()>) func});
+        _tests.try_emplace(funcname, (std::function<bool()>) func);
         return 0;
     }
 
     void run_tests();
 
     static std::shared_ptr<ns_testing_context> main_instance() {
-        static std::shared_ptr<ns_testing_context> instance = std::make_shared<ns_testing_context>();
+        static auto instance = std::make_shared<ns_testing_context>();
         return instance;
     }
 
