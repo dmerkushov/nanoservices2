@@ -9,78 +9,67 @@ SOURCE_DIR=$PROJECT_SOURCE_DIR/src
 RAWINFO_DIR=$CMAKE_BINARY_DIR/CMakeFiles/nanoservices2_testing.dir/src
 GCOV_TOOL=`which gcov-11`
 
-echo ==== Preparing to run tests with coverage
+echo ==== run_gcov.sh: Preparing to run tests with coverage
 pushd . > /dev/null
-echo ---- PROJECT_SOURCE_DIR $PROJECT_SOURCE_DIR
-echo ---- CMAKE_BINARY_DIR $CMAKE_BINARY_DIR
-echo ---- SOURCE_DIR $SOURCE_DIR
-echo ---- RAWINFO_DIR $RAWINFO_DIR
-echo ---- GCOV_TOOL $GCOV_TOOL
+echo ---- run_gcov.sh: PROJECT_SOURCE_DIR $PROJECT_SOURCE_DIR
+echo ---- run_gcov.sh: CMAKE_BINARY_DIR $CMAKE_BINARY_DIR
+echo ---- run_gcov.sh: SOURCE_DIR $SOURCE_DIR
+echo ---- run_gcov.sh: RAWINFO_DIR $RAWINFO_DIR
+echo ---- run_gcov.sh: GCOV_TOOL $GCOV_TOOL
 
-echo ==== Cleaning existing raw coverage data in binary dir $CMAKE_BINARY_DIR
+echo ==== run_gcov.sh: Cleaning existing raw coverage data in binary dir $CMAKE_BINARY_DIR
 cd $CMAKE_BINARY_DIR
-echo ---- In directory: `pwd`
+echo ---- run_gcov.sh: In directory: `pwd`
 
 FILES=`find . -type f`
 FILE_REGEX="(\.gcda|\.gcov)$"
 for F in $FILES; do
   if [[ ${F} =~ $FILE_REGEX ]]; then
-    echo .... Deleting $F
+    echo .... run_gcov.sh: Deleting $F
     rm $F
   fi
 done
-echo ==== Existing raw coverage data deleted
+echo ==== run_gcov.sh: Existing raw coverage data deleted
 
-echo ==== Running tests with coverage
+echo ==== run_gcov.sh: Running tests with coverage
 cd $SOURCE_DIR
 $CMAKE_BINARY_DIR/nanoservices2_testing
-echo ==== Tests run, return code: $?
+echo ==== run_gcov.sh: Tests run, return code: $?
 
-echo ==== Running gcov
+echo ==== run_gcov.sh: Running gcov
 cd $RAWINFO_DIR
-echo ---- In directory: `pwd`
+echo ---- run_gcov.sh: In directory: `pwd`
 
 FILES=`find . -type f`
 FILE_REGEX="(\.gcda)$"
 for F in $FILES; do
   if [[ ${F} =~ $FILE_REGEX ]]; then
-    echo .... gcov processing $SOURCE_DIR/$F
+    echo .... run_gcov.sh: gcov processing $SOURCE_DIR/$F
 
     # When running GCOV, we need $PROJECT_SOURCE_DIR as the source dir, as GCOV
     # prints source paths in its result files based on that dir
     $GCOV_TOOL -l -p -r -s "$PROJECT_SOURCE_DIR" $F
   fi
 done
-echo ==== gcov finished
+echo ==== run_gcov.sh: gcov finished
 
-echo ==== Moving gcov reports to $GCOV_REPORT_DIR
+echo ==== run_gcov.sh: Moving gcov reports to $GCOV_REPORT_DIR
 mkdir -p $GCOV_REPORT_DIR
 rm -r $GCOV_REPORT_DIR/*
-echo ---- GCOV report dir prepared
+echo ---- run_gcov.sh: GCOV report dir prepared
 
 cd $RAWINFO_DIR
-echo ---- In directory: `pwd`
+echo ---- run_gcov.sh: In directory: `pwd`
 
 FILES=`find . -type f`
 FILE_REGEX="(\.gcov)$"
 for F in $FILES; do
   if [[ ${F} =~ $FILE_REGEX ]]; then
-    echo .... Processing $F
+    echo .... run_gcov.sh: Processing $F
     mv $F $GCOV_REPORT_DIR
   fi
 done
-echo ==== gcov reports placed in $GCOV_REPORT_DIR
-
-echo ==== Running lcov
-mkdir -p $LCOV_REPORT_DIR
-rm -R $LCOV_REPORT_DIR/*
-cd $LCOV_REPORT_DIR
-echo ---- In directory: `pwd`
-
-lcov --capture --gcov-tool $GCOV_TOOL --directory $RAWINFO_DIR/ --output-file $LCOV_REPORT_DIR/coverage.info
-mkdir $LCOV_REPORT_DIR/html
-genhtml $LCOV_REPORT_DIR/coverage.info --output-directory $LCOV_REPORT_DIR/html
-echo ==== lcov reports placed in $LCOV_REPORT_DIR
+echo ==== run_gcov.sh: gcov reports placed in $GCOV_REPORT_DIR
 
 popd > /dev/null
-echo ==== Coverage report script finished
+echo ==== run_gcov.sh: Coverage report script finished
