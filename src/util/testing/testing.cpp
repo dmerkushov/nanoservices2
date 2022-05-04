@@ -5,7 +5,6 @@
 
 #include <exception>
 #include <spdlog/fmt/bundled/color.h>
-#include <spdlog/fmt/bundled/printf.h>
 
 using namespace std;
 using namespace nanoservices;
