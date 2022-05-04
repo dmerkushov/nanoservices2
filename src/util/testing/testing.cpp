@@ -41,17 +41,13 @@ void ns_testing_context::run_tests() {
 
     log::info("==== Test results:");
 
-    size_t totalCount = 0;
-    size_t passedCount = 0;
-    size_t failedCount = 0;
+    uint32_t totalCount = 0;
+    uint32_t passedCount = 0;
+    uint32_t failedCount = 0;
 
     for(auto it = testResults.begin(); it != testResults.end(); it++) {
         totalCount++;
-        if(it->second) {
-            passedCount++;
-        } else {
-            failedCount++;
-        }
+        it->second ? passedCount++ : failedCount++;
 
         log::info("{} {}", it->second ? testPassedIndicator : testFailedIndicator, it->first);
     }
