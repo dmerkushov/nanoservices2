@@ -10,12 +10,6 @@
 using namespace std;
 using namespace nanoservices;
 
-ns_testing_context::ns_testing_context() noexcept {
-}
-
-ns_testing_context::~ns_testing_context() noexcept {
-}
-
 const string testPassedIndicator = fmt::format(fmt::bg(fmt::terminal_color::green) | fmt::fg(fmt::terminal_color::bright_white) | fmt::emphasis::bold, " PASSED ");
 const string testFailedIndicator = fmt::format(fmt::bg(fmt::terminal_color::red) | fmt::fg(fmt::terminal_color::bright_white) | fmt::emphasis::bold, " FAILED ");
 

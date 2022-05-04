@@ -16,9 +16,9 @@
 
 class ns_testing_context {
 public:
-    ns_testing_context() noexcept;
+    ns_testing_context() noexcept = default;
 
-    ~ns_testing_context() noexcept;
+    ~ns_testing_context() noexcept = default;
 
     template<typename T>
     int add_test(std::string funcname, T func) {
