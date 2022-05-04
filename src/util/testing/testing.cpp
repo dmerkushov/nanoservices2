@@ -57,10 +57,10 @@ void ns_testing_context::run_tests() {
         log::info("{} {}", it->second ? testPassedIndicator : testFailedIndicator, it->first);
     }
 
-    log::info("==== Performing tests finished: total {} tests, {} ({}%) passed, {} ({}%) failed",
+    log::info("==== Performing tests finished: total {} tests, {} ({:.2f}%) passed, {} ({:.2f}%) failed",
               totalCount,
               passedCount,
-              fmt::sprintf("%.2f", passedCount * 100.0 / totalCount),
+              passedCount * 100.0 / totalCount,
               failedCount,
-              fmt::sprintf("%.2f", passedCount * 100.0 / totalCount));
+              failedCount * 100.0 / totalCount);
 }
