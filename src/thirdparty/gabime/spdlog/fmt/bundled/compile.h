@@ -172,7 +172,7 @@ struct is_compiled_string : std::is_base_of<compiled_string, S> {};
     std::string s = fmt::format(FMT_COMPILE("{}"), 42);
   \endrst
  */
-#ifdef __cpp_if_constexpr
+#if defined(__cpp_if_constexpr) && defined(__cpp_return_type_deduction)
 #    define FMT_COMPILE(s) FMT_STRING_IMPL(s, fmt::detail::compiled_string, explicit)
 #else
 #    define FMT_COMPILE(s) FMT_STRING(s)
@@ -193,7 +193,7 @@ const T &first(const T &value, const Tail &...) {
     return value;
 }
 
-#ifdef __cpp_if_constexpr
+#if defined(__cpp_if_constexpr) && defined(__cpp_return_type_deduction)
 template<typename... Args>
 struct type_list {};
 
@@ -204,7 +204,7 @@ constexpr const auto &get([[maybe_unused]] const T &first, [[maybe_unused]] cons
     if constexpr(N == 0)
         return first;
     else
-        return get<N - 1>(rest...);
+        return detail::get<N - 1>(rest...);
 }
 
 template<typename Char, typename... Args>
@@ -217,7 +217,7 @@ struct get_type_impl;
 
 template<int N, typename... Args>
 struct get_type_impl<N, type_list<Args...>> {
-    using type = remove_cvref_t<decltype(get<N>(std::declval<Args>()...))>;
+    using type = remove_cvref_t<decltype(detail::get<N>(std::declval<Args>()...))>;
 };
 
 template<int N, typename T>
@@ -259,7 +259,7 @@ struct code_unit {
 // This ensures that the argument type is convertible to `const T&`.
 template<typename T, int N, typename... Args>
 constexpr const T &get_arg_checked(const Args &...args) {
-    const auto &arg = get<N>(args...);
+    const auto &arg = detail::get<N>(args...);
     if constexpr(detail::is_named_arg<remove_cvref_t<decltype(arg)>>()) {
         return arg.value;
     } else {
@@ -308,7 +308,7 @@ struct runtime_named_field {
     constexpr OutputIt format(OutputIt out, const Args &...args) const {
         bool found = (try_format_argument(out, name, args) || ...);
         if(!found) {
-            throw format_error("argument with specified name is not found");
+            FMT_THROW(format_error("argument with specified name is not found"));
         }
         return out;
     }
@@ -418,7 +418,7 @@ struct arg_id_handler {
     }
 
     constexpr void on_error(const char *message) {
-        throw format_error(message);
+        FMT_THROW(format_error(message));
     }
 };
 
@@ -466,7 +466,7 @@ constexpr auto compile_format_string(S format_str) {
     constexpr auto str = basic_string_view<char_type>(format_str);
     if constexpr(str[POS] == '{') {
         if constexpr(POS + 1 == str.size())
-            throw format_error("unmatched '{' in format string");
+            FMT_THROW(format_error("unmatched '{' in format string"));
         if constexpr(str[POS + 1] == '{') {
             return parse_tail<Args, POS + 2, ID>(make_text(str, POS, 1), format_str);
         } else if constexpr(str[POS + 1] == '}' || str[POS + 1] == ':') {
@@ -498,7 +498,7 @@ constexpr auto compile_format_string(S format_str) {
         }
     } else if constexpr(str[POS] == '}') {
         if constexpr(POS + 1 == str.size())
-            throw format_error("unmatched '}' in format string");
+            FMT_THROW(format_error("unmatched '}' in format string"));
         return parse_tail<Args, POS + 2, ID>(make_text(str, POS, 1), format_str);
     } else {
         constexpr auto end = parse_text(str, POS + 1);
@@ -520,12 +520,12 @@ constexpr auto compile(S format_str) {
         return result;
     }
 }
-#endif // __cpp_if_constexpr
+#endif // defined(__cpp_if_constexpr) && defined(__cpp_return_type_deduction)
 } // namespace detail
 
 FMT_MODULE_EXPORT_BEGIN
 
-#ifdef __cpp_if_constexpr
+#if defined(__cpp_if_constexpr) && defined(__cpp_return_type_deduction)
 
 template<typename CompiledFormat, typename... Args, typename Char = typename CompiledFormat::char_type, FMT_ENABLE_IF(detail::is_compiled_format<CompiledFormat>::value)>
 FMT_INLINE std::basic_string<Char> format(const CompiledFormat &cf, const Args &...args) {

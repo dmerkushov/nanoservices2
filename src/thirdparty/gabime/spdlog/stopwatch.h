@@ -38,13 +38,20 @@ public:
     }
 
     void reset() {
-        start_tp_ = clock ::now();
+        start_tp_ = clock::now();
     }
 };
 } // namespace spdlog
 
 // Support for fmt formatting  (e.g. "{:012.9}" or just "{}")
-namespace fmt {
+namespace
+#ifdef SPDLOG_USE_STD_FORMAT
+        std
+#else
+        fmt
+#endif
+{
+
 template<>
 struct formatter<spdlog::stopwatch> : formatter<double> {
     template<typename FormatContext>
@@ -52,4 +59,4 @@ struct formatter<spdlog::stopwatch> : formatter<double> {
         return formatter<double>::format(sw.elapsed().count(), ctx);
     }
 };
-} // namespace fmt
+} // namespace std

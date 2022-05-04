@@ -16,7 +16,7 @@
 namespace spdlog {
 namespace sinks {
 template<typename Mutex>
-class base_sink : public sink {
+class SPDLOG_API base_sink : public sink {
 public:
     base_sink();
     explicit base_sink(std::unique_ptr<spdlog::formatter> formatter);
@@ -36,7 +36,7 @@ public:
 protected:
     // sink formatter
     std::unique_ptr<spdlog::formatter> formatter_;
-    mutable Mutex mutex_;
+    Mutex mutex_;
 
     virtual void sink_it_(const details::log_msg &msg) = 0;
     virtual void flush_() = 0;

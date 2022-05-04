@@ -5,8 +5,8 @@
 //
 // For the license information refer to format.h.
 
-#ifndef FMT_WCHAR_H_
-#define FMT_WCHAR_H_
+#ifndef FMT_XCHAR_H_
+#define FMT_XCHAR_H_
 
 #include "format.h"
 
@@ -180,12 +180,12 @@ inline void vprint(wstring_view fmt, wformat_args args) {
 
 template<typename... T>
 void print(std::FILE *f, wformat_string<T...> fmt, T &&...args) {
-    return vprint(f, wstring_view(fmt), make_wformat_args(args...));
+    return vprint(f, wstring_view(fmt), fmt::make_wformat_args(args...));
 }
 
 template<typename... T>
 void print(wformat_string<T...> fmt, T &&...args) {
-    return vprint(wstring_view(fmt), make_wformat_args(args...));
+    return vprint(wstring_view(fmt), fmt::make_wformat_args(args...));
 }
 
 /**
@@ -198,4 +198,4 @@ inline auto to_wstring(const T &value) -> std::wstring {
 FMT_MODULE_EXPORT_END
 FMT_END_NAMESPACE
 
-#endif // FMT_WCHAR_H_
+#endif // FMT_XCHAR_H_

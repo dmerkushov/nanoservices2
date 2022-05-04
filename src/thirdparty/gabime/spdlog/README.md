@@ -1,8 +1,8 @@
 # spdlog
 
 Very fast, header-only/compiled, C++ logging
-library. [![Build Status](https://travis-ci.com/gabime/spdlog.svg?branch=v1.x)](https://travis-ci.com/gabime/spdlog)
-&nbsp; [![Build status](https://ci.appveyor.com/api/projects/status/d2jnxclg20vd0o50?svg=true)](https://ci.appveyor.com/project/gabime/spdlog) [![Release](https://img.shields.io/github/release/gabime/spdlog.svg)](https://github.com/gabime/spdlog/releases/latest)
+library. [![Build Status](https://app.travis-ci.com/gabime/spdlog.svg?branch=v1.x)](https://app.travis-ci.com/gabime/spdlog)
+&nbsp; [![Build status](https://ci.appveyor.com/api/projects/status/d2jnxclg20vd0o50?svg=true&branch=v1.x)](https://ci.appveyor.com/project/gabime/spdlog) [![Release](https://img.shields.io/github/release/gabime/spdlog.svg)](https://github.com/gabime/spdlog/releases/latest)
 
 ## Install
 
@@ -30,9 +30,10 @@ see example [CMakeLists.txt](https://github.com/gabime/spdlog/blob/v1.x/example/
 
 ## Package managers:
 
+* Debian: `sudo apt install libspdlog-dev`
 * Homebrew: `brew install spdlog`
 * MacPorts: `sudo port install spdlog`
-* FreeBSD:  `cd /usr/ports/devel/spdlog/ && make install clean`
+* FreeBSD:  `pkg install spdlog`
 * Fedora: `dnf install spdlog`
 * Gentoo: `emerge dev-libs/spdlog`
 * Arch Linux: `pacman -S spdlog`
@@ -329,7 +330,7 @@ void user_defined_example()
 
 ```c++ 
 // Log patterns can contain custom flags.
-// the following example will add new flag '%*' - which will be bound to a <my_formatter_flag> main_instance.
+// the following example will add new flag '%*' - which will be bound to a <my_formatter_flag> instance.
 #include "spdlog/pattern_formatter.h"
 class my_formatter_flag : public spdlog::custom_flag_formatter
 {
@@ -418,6 +419,38 @@ So then you can:
 ```console
 $ export SPDLOG_LEVEL=info,mylogger=trace
 $ ./example
+```
+
+---
+
+#### Log file open/close event handlers
+
+```c++
+// You can get callbacks from spdlog before/after log file has been opened or closed. 
+// This is useful for cleanup procedures or for adding someting the start/end of the log files.
+void file_events_example()
+{
+    // pass the spdlog::file_event_handlers to file sinks for open/close log file notifications
+    spdlog::file_event_handlers handlers;
+    handlers.before_open = [](spdlog::filename_t filename) { spdlog::info("Before opening {}", filename); };
+    handlers.after_open = [](spdlog::filename_t filename, std::FILE *fstream) { fputs("After opening\n", fstream); };
+    handlers.before_close = [](spdlog::filename_t filename, std::FILE *fstream) { fputs("Before closing\n", fstream); };
+    handlers.after_close = [](spdlog::filename_t filename) { spdlog::info("After closing {}", filename); };
+    auto my_logger = spdlog::basic_logger_st("some_logger", "logs/events-sample.txt", true, handlers);        
+}
+```
+
+---
+
+#### Replace the Default Logger
+
+```c++
+void replace_default_logger_example()
+{
+    auto new_logger = spdlog::basic_logger_mt("new_default_logger", "logs/new-default-log.txt", true);
+    spdlog::set_default_logger(new_logger);
+    spdlog::info("new logger log message");
+}
 ```
 
 ---

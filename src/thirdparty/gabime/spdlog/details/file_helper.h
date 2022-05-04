@@ -15,7 +15,8 @@ namespace details {
 
 class SPDLOG_API file_helper {
 public:
-    explicit file_helper() = default;
+    file_helper() = default;
+    explicit file_helper(const file_event_handlers &event_handlers);
 
     file_helper(const file_helper &) = delete;
     file_helper &operator=(const file_helper &) = delete;
@@ -49,6 +50,7 @@ private:
     const unsigned int open_interval_ = 10;
     std::FILE *fd_ {nullptr};
     filename_t filename_;
+    file_event_handlers event_handlers_;
 };
 } // namespace details
 } // namespace spdlog

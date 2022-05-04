@@ -1,12 +1,12 @@
 # Third-party code
 
-| Directory             | License              | Date copied  | Copyright                        | Copied from                                                     | Notes                                |
-|-----------------------|----------------------|--------------|----------------------------------|-----------------------------------------------------------------|--------------------------------------|
-| HowardHinnant/date    | [MIT(1)](#MIT1)      | Jul 10, 2021 | (see source)                     | https://github.com/HowardHinnant/date                           | Partial copy, reformatted            |
-| swansontec/map-macro  | [MIT(2)](#MIT2)      | Jul 17, 2021 | 2012 William Swanson             | https://github.com/swansontec/map-macro                         | Partial copy                         |
-| gabime/spdlog         | [MIT(1)](#MIT1)      | Aug 15, 2021 | 2016 Gabi Melman                 | https://github.com/gabime/spdlog/tree/v1.9.2                    | Partial copy, reformatted            |
-| gabime/spdlog/fmt     | [Custom](#CustomFMT) | Aug 15, 2021 | 2012 - present, Victor Zverovich | https://github.com/gabime/spdlog/tree/v1.9.2/include/spdlog/fmt | Copied along with SPDLOG (see above) |
-| doctest/doctest       | [MIT(1)](#MIT1)      | May 02, 2022 | 2016-2021 Viktor Kirilov         | https://github.com/doctest/doctest                              | Partial copy, reformatted            |
+| Directory             | License              | Date copied  | Copyright                        | Copied from                                                   | Notes                                |
+|-----------------------|----------------------|--------------|----------------------------------|---------------------------------------------------------------|--------------------------------------|
+| HowardHinnant/date    | [MIT(1)](#MIT1)      | Jul 10, 2021 | (see source)                     | https://github.com/HowardHinnant/date                         | Partial copy, reformatted            |
+| swansontec/map-macro  | [MIT(2)](#MIT2)      | Jul 17, 2021 | 2012 William Swanson             | https://github.com/swansontec/map-macro                       | Partial copy                         |
+| gabime/spdlog         | [MIT(1)](#MIT1)      | May 04, 2022 | 2016 Gabi Melman and others      | https://github.com/gabime/spdlog/tree/v1.x                    | Partial copy, reformatted            |
+| gabime/spdlog/fmt     | [Custom](#CustomFMT) | May 04, 2022 | 2012 - present, Victor Zverovich | https://github.com/gabime/spdlog/tree/v1.x/include/spdlog/fmt | Copied along with SPDLOG (see above) |
+| doctest/doctest       | [MIT(1)](#MIT1)      | May 02, 2022 | 2016-2021 Viktor Kirilov         | https://github.com/doctest/doctest                            | Partial copy, reformatted            |
 
 # Licenses
 

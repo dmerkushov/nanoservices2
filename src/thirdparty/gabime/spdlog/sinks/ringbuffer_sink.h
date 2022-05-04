@@ -44,7 +44,7 @@ public:
         for(size_t i = (items_available - n_items); i < items_available; i++) {
             memory_buf_t formatted;
             base_sink<Mutex>::formatter_->format(q_.at(i), formatted);
-            ret.push_back(fmt::to_string(formatted));
+            ret.push_back(std::move(SPDLOG_BUF_TO_STRING(formatted)));
         }
         return ret;
     }

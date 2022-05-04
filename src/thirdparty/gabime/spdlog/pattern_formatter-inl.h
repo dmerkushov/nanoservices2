@@ -639,6 +639,7 @@ public:
 
     void format(const details::log_msg &msg, const std::tm &, memory_buf_t &dest) override {
         if(msg.source.empty()) {
+            ScopedPadder p(0, padinfo_, dest);
             return;
         }
 
@@ -666,6 +667,7 @@ public:
 
     void format(const details::log_msg &msg, const std::tm &, memory_buf_t &dest) override {
         if(msg.source.empty()) {
+            ScopedPadder p(0, padinfo_, dest);
             return;
         }
         size_t text_size = padinfo_.enabled() ? std::char_traits<char>::length(msg.source.filename) : 0;
@@ -704,6 +706,7 @@ public:
 
     void format(const details::log_msg &msg, const std::tm &, memory_buf_t &dest) override {
         if(msg.source.empty()) {
+            ScopedPadder p(0, padinfo_, dest);
             return;
         }
         auto filename = basename(msg.source.filename);
@@ -721,6 +724,7 @@ public:
 
     void format(const details::log_msg &msg, const std::tm &, memory_buf_t &dest) override {
         if(msg.source.empty()) {
+            ScopedPadder p(0, padinfo_, dest);
             return;
         }
 
@@ -739,6 +743,7 @@ public:
 
     void format(const details::log_msg &msg, const std::tm &, memory_buf_t &dest) override {
         if(msg.source.empty()) {
+            ScopedPadder p(0, padinfo_, dest);
             return;
         }
         size_t text_size = padinfo_.enabled() ? std::char_traits<char>::length(msg.source.funcname) : 0;
@@ -855,13 +860,14 @@ private:
 } // namespace details
 
 SPDLOG_INLINE pattern_formatter::pattern_formatter(std::string pattern, pattern_time_type time_type, std::string eol, custom_flags custom_user_flags) :
-        pattern_(std::move(pattern)), eol_(std::move(eol)), pattern_time_type_(time_type), last_log_secs_(0), custom_handlers_(std::move(custom_user_flags)) {
+        pattern_(std::move(pattern)), eol_(std::move(eol)), pattern_time_type_(time_type), need_localtime_(false), last_log_secs_(0), custom_handlers_(std::move(custom_user_flags)) {
     std::memset(&cached_tm_, 0, sizeof(cached_tm_));
     compile_pattern_(pattern_);
 }
 
 // use by default full formatter for if pattern is not given
-SPDLOG_INLINE pattern_formatter::pattern_formatter(pattern_time_type time_type, std::string eol) : pattern_("%+"), eol_(std::move(eol)), pattern_time_type_(time_type), last_log_secs_(0) {
+SPDLOG_INLINE pattern_formatter::pattern_formatter(pattern_time_type time_type, std::string eol) :
+        pattern_("%+"), eol_(std::move(eol)), pattern_time_type_(time_type), need_localtime_(true), last_log_secs_(0) {
     std::memset(&cached_tm_, 0, sizeof(cached_tm_));
     formatters_.push_back(details::make_unique<details::full_formatter>(details::padding_info {}));
 }
@@ -875,10 +881,12 @@ SPDLOG_INLINE std::unique_ptr<formatter> pattern_formatter::clone() const {
 }
 
 SPDLOG_INLINE void pattern_formatter::format(const details::log_msg &msg, memory_buf_t &dest) {
-    auto secs = std::chrono::duration_cast<std::chrono::seconds>(msg.time.time_since_epoch());
-    if(secs != last_log_secs_) {
-        cached_tm_ = get_time_(msg);
-        last_log_secs_ = secs;
+    if(need_localtime_) {
+        const auto secs = std::chrono::duration_cast<std::chrono::seconds>(msg.time.time_since_epoch());
+        if(secs != last_log_secs_) {
+            cached_tm_ = get_time_(msg);
+            last_log_secs_ = secs;
+        }
     }
 
     for(auto &f : formatters_) {
@@ -890,6 +898,7 @@ SPDLOG_INLINE void pattern_formatter::format(const details::log_msg &msg, memory
 
 SPDLOG_INLINE void pattern_formatter::set_pattern(std::string pattern) {
     pattern_ = std::move(pattern);
+    need_localtime_ = false;
     compile_pattern_(pattern_);
 }
 
@@ -915,6 +924,7 @@ SPDLOG_INLINE void pattern_formatter::handle_flag_(char flag, details::padding_i
     switch(flag) {
     case('+'): // default formatter
         formatters_.push_back(details::make_unique<details::full_formatter>(padding));
+        need_localtime_ = true;
         break;
 
     case 'n': // logger name
@@ -939,60 +949,74 @@ SPDLOG_INLINE void pattern_formatter::handle_flag_(char flag, details::padding_i
 
     case('a'): // weekday
         formatters_.push_back(details::make_unique<details::a_formatter<Padder>>(padding));
+        need_localtime_ = true;
         break;
 
     case('A'): // short weekday
         formatters_.push_back(details::make_unique<details::A_formatter<Padder>>(padding));
+        need_localtime_ = true;
         break;
 
     case('b'):
     case('h'): // month
         formatters_.push_back(details::make_unique<details::b_formatter<Padder>>(padding));
+        need_localtime_ = true;
         break;
 
     case('B'): // short month
         formatters_.push_back(details::make_unique<details::B_formatter<Padder>>(padding));
+        need_localtime_ = true;
         break;
 
     case('c'): // datetime
         formatters_.push_back(details::make_unique<details::c_formatter<Padder>>(padding));
+        need_localtime_ = true;
         break;
 
     case('C'): // year 2 digits
         formatters_.push_back(details::make_unique<details::C_formatter<Padder>>(padding));
+        need_localtime_ = true;
         break;
 
     case('Y'): // year 4 digits
         formatters_.push_back(details::make_unique<details::Y_formatter<Padder>>(padding));
+        need_localtime_ = true;
         break;
 
     case('D'):
     case('x'): // datetime MM/DD/YY
         formatters_.push_back(details::make_unique<details::D_formatter<Padder>>(padding));
+        need_localtime_ = true;
         break;
 
     case('m'): // month 1-12
         formatters_.push_back(details::make_unique<details::m_formatter<Padder>>(padding));
+        need_localtime_ = true;
         break;
 
     case('d'): // day of month 1-31
         formatters_.push_back(details::make_unique<details::d_formatter<Padder>>(padding));
+        need_localtime_ = true;
         break;
 
     case('H'): // hours 24
         formatters_.push_back(details::make_unique<details::H_formatter<Padder>>(padding));
+        need_localtime_ = true;
         break;
 
     case('I'): // hours 12
         formatters_.push_back(details::make_unique<details::I_formatter<Padder>>(padding));
+        need_localtime_ = true;
         break;
 
     case('M'): // minutes
         formatters_.push_back(details::make_unique<details::M_formatter<Padder>>(padding));
+        need_localtime_ = true;
         break;
 
     case('S'): // seconds
         formatters_.push_back(details::make_unique<details::S_formatter<Padder>>(padding));
+        need_localtime_ = true;
         break;
 
     case('e'): // milliseconds
@@ -1013,23 +1037,28 @@ SPDLOG_INLINE void pattern_formatter::handle_flag_(char flag, details::padding_i
 
     case('p'): // am/pm
         formatters_.push_back(details::make_unique<details::p_formatter<Padder>>(padding));
+        need_localtime_ = true;
         break;
 
     case('r'): // 12 hour clock 02:55:02 pm
         formatters_.push_back(details::make_unique<details::r_formatter<Padder>>(padding));
+        need_localtime_ = true;
         break;
 
     case('R'): // 24-hour HH:MM time
         formatters_.push_back(details::make_unique<details::R_formatter<Padder>>(padding));
+        need_localtime_ = true;
         break;
 
     case('T'):
     case('X'): // ISO 8601 time format (HH:MM:SS)
         formatters_.push_back(details::make_unique<details::T_formatter<Padder>>(padding));
+        need_localtime_ = true;
         break;
 
     case('z'): // timezone
         formatters_.push_back(details::make_unique<details::z_formatter<Padder>>(padding));
+        need_localtime_ = true;
         break;
 
     case('P'): // pid
@@ -1150,7 +1179,6 @@ SPDLOG_INLINE details::padding_info pattern_formatter::handle_padspec_(std::stri
     } else {
         truncate = false;
     }
-
     return details::padding_info {std::min<size_t>(width, max_width), side, truncate};
 }
 
