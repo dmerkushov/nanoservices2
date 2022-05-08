@@ -20,8 +20,7 @@ static const std::function<bool()> test_strutils_splitString = []() {
             return false;
         }
         for(auto i = 0; i < check.size(); i++) {
-            auto member = check[i];
-            if(member.compare(*(in->operator[](i))) != 0) {
+            if(check[i].compare(*(in->operator[](i))) != 0) {
                 return false;
             }
         }
@@ -30,10 +29,10 @@ static const std::function<bool()> test_strutils_splitString = []() {
 
     auto str = make_shared<string>("My String  is quite long, and good enough");
 
-    auto check = [&str, &check_against](char delimiter, bool trimTokens, bool dropEmptyTokens, vector<string> check) {
+    auto doCheck = [&str, &check_against](char delimiter, bool trimTokens, bool dropEmptyTokens, vector<string> check) {
         auto split = splitString(str, delimiter, trimTokens, dropEmptyTokens);
         auto check_result = check_against(check, split);
-        log::debug("delimiter: '{}' trimTokens: {:<5} dropEmptyTokens: {:<5} check: {:<65} -> {:<65}: {}",
+        log::debug("delimiter: '{}' trimTokens: {:<5} dropEmptyTokens: {:<5} doCheck: {:<65} -> {:<65}: {}",
                    delimiter,
                    trimTokens,
                    dropEmptyTokens,
@@ -47,10 +46,10 @@ static const std::function<bool()> test_strutils_splitString = []() {
 
     bool result = true;
 
-    result &= check(' ', false, true, {"My", "String", "is", "quite", "long,", "and", "good", "enough"});
-    result &= check(' ', false, false, {"My", "String", "", "is", "quite", "long,", "and", "good", "enough"});
-    result &= check(',', false, true, {"My String  is quite long", " and good enough"});
-    result &= check(',', true, true, {"My String  is quite long", "and good enough"});
+    result &= doCheck(' ', false, true, {"My", "String", "is", "quite", "long,", "and", "good", "enough"});
+    result &= doCheck(' ', false, false, {"My", "String", "", "is", "quite", "long,", "and", "good", "enough"});
+    result &= doCheck(',', false, true, {"My String  is quite long", " and good enough"});
+    result &= doCheck(',', true, true, {"My String  is quite long", "and good enough"});
 
     return result;
 };
