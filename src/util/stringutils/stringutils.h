@@ -135,6 +135,44 @@ auto formatter<std::shared_ptr<std::string>>::format(std::shared_ptr<std::string
     return fmt::format_to(ctx.out(), "{}", *sps);
 }
 
+template<>
+struct formatter<std::vector<std::string>> {
+    template<typename ParseContext>
+    constexpr auto parse(ParseContext &ctx);
+
+    template<typename FormatContext>
+    auto format(std::vector<std::string> const &e, FormatContext &ctx);
+};
+
+template<typename ParseContext>
+constexpr auto formatter<std::vector<std::string>>::parse(ParseContext &ctx) {
+    return std::begin(ctx);
+}
+
+template<typename FormatContext>
+auto formatter<std::vector<std::string>>::format(std::vector<std::string> const &vec, FormatContext &ctx) {
+    return fmt::format_to(ctx.out(), "[{}]", vec.size() > 0 ? fmt::format("\"{}\"", fmt::join(vec, "\",\"")) : "");
+}
+
+template<>
+struct formatter<std::vector<std::shared_ptr<std::string>>> {
+    template<typename ParseContext>
+    constexpr auto parse(ParseContext &ctx);
+
+    template<typename FormatContext>
+    auto format(std::vector<std::shared_ptr<std::string>> const &e, FormatContext &ctx);
+};
+
+template<typename ParseContext>
+constexpr auto formatter<std::vector<std::shared_ptr<std::string>>>::parse(ParseContext &ctx) {
+    return std::begin(ctx);
+}
+
+template<typename FormatContext>
+auto formatter<std::vector<std::shared_ptr<std::string>>>::format(std::vector<std::shared_ptr<std::string>> const &vec, FormatContext &ctx) {
+    return fmt::format_to(ctx.out(), "[{}]", vec.size() > 0 ? fmt::format("\"{}\"", fmt::join(vec, "\",\"")) : "");
+}
+
 } // namespace fmt
 
 #endif // NANOSERVICES2_STRINGUTILS_H
