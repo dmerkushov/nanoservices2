@@ -7,13 +7,10 @@
 #include <memory>
 #include <string>
 
-namespace nanoservices {
-
-namespace internal {
+namespace nanoservices::internal {
 
 std::shared_ptr<std::string> demangle_type_name(const char *typeid_name) noexcept;
 
-}
-} // namespace nanoservices
+} // namespace nanoservices::internal
 
 #endif // NANOSERVICES2_DEMANGLE_H
