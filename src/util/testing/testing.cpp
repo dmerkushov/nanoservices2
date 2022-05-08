@@ -2,6 +2,7 @@
 
 #include "../../core/exception/ns_exception.h"
 #include "../../plugins/logging/logging.h"
+#include "../../util/typeutils/demangle.h"
 
 #include <exception>
 #include <spdlog/fmt/bundled/color.h>
@@ -24,11 +25,11 @@ void ns_testing_context::run_tests() {
 
         try {
             result = it->second();
-        } catch(ns_exception &e) {
-            log::warn(".... Test {} failed due to a ns_exception: {}", it->first, e.what());
+        } catch(exception const &e) {
+            log::warn(".... Test {} failed due to an exception derived from std::exception: {}: {}", it->first, nanoservices::internal::demangle_type_name(typeid(e).name()), e.what());
             result = false;
-        } catch(exception &e) {
-            log::warn(".... Test {} failed due to a std::exception: {}", it->first, e.what());
+        } catch(...) {
+            log::warn(".... Test {} failed due to a thrown non-an-std::exception", it->first);
             result = false;
         }
         testResults[it->first] = result;
