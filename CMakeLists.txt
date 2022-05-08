@@ -49,6 +49,7 @@ list(APPEND SRC src/plugins/logging/logging.cpp)
 list(APPEND SRC src/util/stringutils/stringutils.cpp)
 list(APPEND SRC src/util/stringutils/_test_stringutils.cpp)
 list(APPEND SRC src/util/testing/testing.cpp)
+list(APPEND SRC src/util/typeutils/demangle.cpp)
 
 ############################
 # CONFIGURATION SOURCE
