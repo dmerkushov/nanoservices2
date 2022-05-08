@@ -49,13 +49,3 @@ shared_ptr<string> configuration::get_property(const char *property_name) noexce
 
     return get_property(propertyNameStr);
 }
-
-// shared_ptr<bool> configuration::get_property_bool(const char *property_name) noexcept {
-//     if(property_name == nullptr) {
-//         return make_shared<bool>();
-//     }
-//
-//     if(::strncmp("", property_name, 1) == 0) {
-//         return make_shared<bool>();
-//     }
-// }
