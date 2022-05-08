@@ -17,5 +17,7 @@ int main(int argc, char **argv) {
 
     log::info("nanoservices2: unit testing finished");
 
+    logging_finalize();
+    configuration::finalize();
     return 0;
 }
