@@ -57,8 +57,7 @@ static const function<bool()> test_ns_exception_position = []() {
     bool result = true;
 
     auto position = e->position();
-    regex re("[a-zA-Z0-9\\/_.]*:[0-9]*, in <lambda\\(\\)>");
-    if(!regex_match(*position, re)) {
+    if(regex re("[a-zA-Z0-9\\/_.]*:[0-9]*, in <lambda\\(\\)>"); !regex_match(*position, re)) {
         log::warn("position: {} does not match regular expression");
         result = false;
     }
@@ -68,13 +67,13 @@ static const function<bool()> test_ns_exception_position = []() {
 NSTEST_ADD(test_ns_exception_position)
 
 static const function<bool()> test_ns_exception_cause = []() {
-    ns_exception e2 = []() {
+    ns_exception e = []() {
         ns_exception e1("My exception", NS_POSITION_SHAREDPTR);
         ns_exception e2(e1, make_shared<string>("Another exception"), NS_POSITION_SHAREDPTR);
         return e2;
     }();
 
-    auto e1ptr = e2.cause(); // If no segfault here, then everything is ok.
+    auto e1ptr = e.cause(); // If no segfault here, then everything is ok.
 
     return true;
 };
