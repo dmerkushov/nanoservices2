@@ -151,7 +151,7 @@ constexpr auto formatter<std::vector<std::string>>::parse(ParseContext &ctx) {
 
 template<typename FormatContext>
 auto formatter<std::vector<std::string>>::format(std::vector<std::string> const &vec, FormatContext &ctx) {
-    return fmt::format_to(ctx.out(), "[{}]", vec.empty() ? fmt::format("\"{}\"", fmt::join(vec, "\",\"")) : "");
+    return fmt::format_to(ctx.out(), "[{}]", vec.empty() ? "" : fmt::format("\"{}\"", fmt::join(vec, "\",\"")));
 }
 
 template<>
@@ -170,7 +170,7 @@ constexpr auto formatter<std::vector<std::shared_ptr<std::string>>>::parse(Parse
 
 template<typename FormatContext>
 auto formatter<std::vector<std::shared_ptr<std::string>>>::format(std::vector<std::shared_ptr<std::string>> const &vec, FormatContext &ctx) {
-    return fmt::format_to(ctx.out(), "[{}]", vec.empty() ? fmt::format("\"{}\"", fmt::join(vec, "\",\"")) : "");
+    return fmt::format_to(ctx.out(), "[{}]", vec.empty() ? "" : fmt::format("\"{}\"", fmt::join(vec, "\",\"")));
 }
 
 } // namespace fmt
