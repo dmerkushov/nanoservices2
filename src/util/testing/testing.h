@@ -35,7 +35,7 @@ public:
     }
 
 private:
-    std::map<std::string, std::function<bool()>> _tests;
+    std::map<std::string, std::function<bool()>, std::less<>> _tests;
 };
 
 #endif // NANOSERVICES2_TESTING_H
