@@ -16,27 +16,27 @@ const string testFailedIndicator = fmt::format(fmt::bg(fmt::terminal_color::red)
 void ns_testing_context::run_tests() {
     log::info("==== Performing tests");
 
-    map<string, bool> testResults;
+    map<string, bool, less<>> testResults;
 
-    for(auto it = _tests.begin(); it != _tests.end(); it++) {
-        log::info("---- Performing test: {}", it->first);
+    for(auto item : _tests) {
+        log::info("---- Performing item: {}", item.first);
 
         bool result;
 
         try {
-            result = it->second();
+            result = item.second();
         } catch(exception const &e) {
-            log::warn(".... Test {} failed due to an exception derived from std::exception: {}: {}", it->first, nanoservices::internal::demangle_type_name(typeid(e).name()), e.what());
+            log::warn(".... Test {} failed due to an exception derived from std::exception: {}: {}", item.first, nanoservices::internal::demangle_type_name(typeid(e).name()), e.what());
             result = false;
         } catch(...) {
-            log::warn(".... Test {} failed due to a thrown non-an-std::exception", it->first);
+            log::warn(".... Test {} failed due to a thrown non-an-std::exception", item.first);
             result = false;
         }
-        testResults[it->first] = result;
+        testResults[item.first] = result;
         if(result) {
-            log::info(".... Test {} {}", it->first, testPassedIndicator);
+            log::info(".... Test {} {}", item.first, testPassedIndicator);
         } else {
-            log::info(".... Test {} {}", it->first, testFailedIndicator);
+            log::info(".... Test {} {}", item.first, testFailedIndicator);
         }
     }
 
@@ -46,11 +46,11 @@ void ns_testing_context::run_tests() {
     uint32_t passedCount = 0;
     uint32_t failedCount = 0;
 
-    for(auto it = testResults.begin(); it != testResults.end(); it++) {
+    for(auto testResult : testResults) {
         totalCount++;
-        it->second ? passedCount++ : failedCount++;
+        testResult.second ? passedCount++ : failedCount++;
 
-        log::info("{} {}", it->second ? testPassedIndicator : testFailedIndicator, it->first);
+        log::info("{} {}", testResult.second ? testPassedIndicator : testFailedIndicator, testResult.first);
     }
 
     log::info("==== Performing tests finished: total {} tests, {} ({:.2f}%) passed, {} ({:.2f}%) failed",
