@@ -21,7 +21,7 @@ public:
     ~ns_testing_context() noexcept = default;
 
     template<typename T>
-    int add_test(std::string funcname, T func) {
+    int add_test(std::string const &funcname, T func) {
         static_assert(std::is_same_v<T, std::function<bool()>>, "Test functions can be only std::function<bool()>");
         _tests.try_emplace(funcname, (std::function<bool()>) func);
         return 0;
