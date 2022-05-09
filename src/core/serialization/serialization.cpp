@@ -11,10 +11,6 @@ shared_ptr<string> nanoservices::serializer::_map_item_key_record_name = make_sh
 shared_ptr<string> nanoservices::serializer::_map_item_value_record_name = make_shared<string>("nanoservices::serializer::mapValue");
 shared_ptr<string> nanoservices::serializer::_list_item_record_name = make_shared<string>("nanoservices::serializer::listItem");
 
-void nanoservices::serializer::_init_log() {
-    // Do nothing
-}
-
 const char *nanoservices::get_record_type_name(record_type recordType) {
     switch(recordType) {
     case record_type::NULL_VALUE:
@@ -50,9 +46,4 @@ const char *nanoservices::get_record_type_name(record_type recordType) {
     default:
         return "UNKNOWN";
     }
-}
-
-std::ostream &nanoservices::operator<<(std::ostream &os, const record_type &recordType) {
-    os << get_record_type_name(recordType);
-    return os;
 }

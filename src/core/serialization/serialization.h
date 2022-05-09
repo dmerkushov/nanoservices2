@@ -11,6 +11,7 @@
 #include "../../util/macroutils/classname.h"
 #include "../../util/stringutils/stringutils.h"
 #include "../../util/templateutils/specialization.h"
+#include "../../util/typeutils/demangle.h"
 
 #include <cxxabi.h>
 #include <memory>
@@ -46,14 +47,6 @@ enum class record_type {
  * @return
  */
 const char *get_record_type_name(record_type recordType);
-
-/**
- * @brief Append the record type's name to the output stream
- * @param os
- * @param recordType
- * @return
- */
-std::ostream &operator<<(std::ostream &os, const record_type &recordType);
 
 /**
  * @brief A record in the serialization sequence
@@ -118,8 +111,6 @@ private:
     static std::shared_ptr<std::string> _map_item_key_record_name;
     static std::shared_ptr<std::string> _map_item_value_record_name;
     static std::shared_ptr<std::string> _list_item_record_name;
-
-    static void _init_log();
 
 public:
     template<typename T>
@@ -211,22 +202,9 @@ public:
 
     template<typename T>
     static std::shared_ptr<serialization_record> serialize_field(std::shared_ptr<std::string> fieldName, T &fieldValue) {
-        _init_log();
         if(log::should_log(log::level::trace)) {
-            int demangleStatus = 0;
-            char *fieldTypeName = abi::__cxa_demangle(typeid(fieldValue).name(), nullptr, nullptr, &demangleStatus);
-            if(demangleStatus == 0) {
-                log::trace("Serializing an main_instance of {}. Field name: {}", fieldTypeName, fieldName);
-            } else if(demangleStatus == -1) {
-                log::trace("Serializing an main_instance of (unknown type: memory allocation failure). Field name: {}", fieldName);
-            } else if(demangleStatus == -2) {
-                log::trace(
-                        "Serializing an main_instance of (unknown type: mangled name \"{}\" is not a valid name under the C++ mangling rules). Field name: {}", typeid(fieldValue).name(), fieldName);
-            } else if(demangleStatus == -3) {
-                log::trace("Serializing an main_instance of (unknown type: invalid argument). Field name: {}", fieldName);
-            } else {
-                log::trace("Serializing an main_instance of (unknown type: unknown error). Field name: {}", fieldName);
-            }
+            auto fieldTypeName = nanoservices::internal::demangle_type_name(typeid(fieldValue).name());
+            log::trace("Serializing an instance of {}. Field name: {}", fieldTypeName, fieldName);
         }
 
         auto record = std::make_shared<serialization_record>();
@@ -284,24 +262,9 @@ public:
 
     template<typename T>
     static void deserialize_field(T *fieldValuePtr, std::shared_ptr<serialization_record> serializationRecord) {
-        _init_log();
         if(log::should_log(log::level::trace)) {
-            int demangleStatus = 0;
-            size_t length = 0;
-            std::shared_ptr<char> fieldTypeName(abi::__cxa_demangle(typeid(fieldValuePtr).name(), nullptr, &length, &demangleStatus));
-            if(demangleStatus == 0) {
-                log::trace("Deserializing an main_instance of {}. Field name: {}", fieldTypeName.get(), serializationRecord->fieldName);
-            } else if(demangleStatus == -1) {
-                log::trace("Deserializing an main_instance of (unknown type: memory allocation failure). Field name: {}", serializationRecord->fieldName);
-            } else if(demangleStatus == -2) {
-                log::trace("Deserializing an main_instance of (unknown type: mangled name \"{}\" is not a valid name under the C++ mangling rules). Field name: {}",
-                           typeid(fieldValuePtr).name(),
-                           serializationRecord->fieldName);
-            } else if(demangleStatus == -3) {
-                log::trace("Deserializing an main_instance of (unknown type: invalid argument). Field name: {}", serializationRecord->fieldName);
-            } else {
-                log::trace("Deserializing an main_instance of (unknown type: unknown error). Field name: {}", serializationRecord->fieldName);
-            }
+            auto fieldTypeName = nanoservices::internal::demangle_type_name(typeid(fieldValuePtr).name());
+            log::trace("Serializing an instance of {}. Field name: {}", fieldTypeName, serializationRecord->fieldName);
         }
 
         if constexpr(std::is_same_v<T, std::string> || std::is_same_v<T, int8_t> || std::is_same_v<T, u_int8_t> || std::is_same_v<T, int16_t> || std::is_same_v<T, u_int16_t> ||
