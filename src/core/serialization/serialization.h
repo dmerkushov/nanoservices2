@@ -97,18 +97,18 @@ private: \
     mutable std::shared_ptr<std::vector<std::shared_ptr<std::string>>> __nanoservices2_fieldNamesVector; \
 \
 public: \
-    std::shared_ptr<std::vector<std::shared_ptr<serialization_record>>> __nanoservices2_serializer_serialize() { \
+    std::shared_ptr<std::vector<std::shared_ptr<nanoservices::serialization_record>>> __nanoservices2_serializer_serialize() { \
         if(!__nanoservices2_fieldNamesVector) { \
             const char *fieldNames = #__VA_ARGS__; \
             __nanoservices2_fieldNamesVector = nanoservices::splitString(std::make_shared<std::string>(fieldNames), ',', true, false); \
         } \
-        auto result = make_shared<std::vector<std::shared_ptr<serialization_record>>>(); \
+        auto result = std::make_shared<std::vector<std::shared_ptr<nanoservices::serialization_record>>>(); \
         auto fieldNamesIter = __nanoservices2_fieldNamesVector->begin(); \
         DO_FOREACH(__NANOSERVICES2_SERIALIZE_FIELDCLAUSE__, __VA_ARGS__) \
         return result; \
     } \
 \
-    void __nanoservices2_serializer_deserialize(std::shared_ptr<std::vector<std::shared_ptr<serialization_record>>> serializerRecords) { \
+    void __nanoservices2_serializer_deserialize(std::shared_ptr<std::vector<std::shared_ptr<nanoservices::serialization_record>>> serializerRecords) { \
         auto serializerRecordsIter = serializerRecords->begin(); \
         DO_FOREACH(__NANOSERVICES2_DESERIALIZE_FIELDCLAUSE__, __VA_ARGS__) \
     }
