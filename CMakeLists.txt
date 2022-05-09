@@ -47,9 +47,11 @@ list(APPEND SRC src/plugins/logging/logging.cpp)
 # Do not comment these lines.
 ############################
 list(APPEND SRC src/util/stringutils/stringutils.cpp)
-list(APPEND SRC src/util/stringutils/_test_stringutils.cpp)
 list(APPEND SRC src/util/testing/testing.cpp)
 list(APPEND SRC src/util/typeutils/demangle.cpp)
+
+list(APPEND TEST_SRC src/util/stringutils/_test_stringutils.cpp)
+list(APPEND TEST_SRC src/util/typeutils/_test_typeutils.cpp)
 
 ############################
 # CONFIGURATION SOURCE
