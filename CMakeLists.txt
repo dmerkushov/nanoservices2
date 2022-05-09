@@ -24,6 +24,7 @@ list(APPEND SRC src/core/serialization/serialization.cpp)
 
 # Testing of the core components
 list(APPEND TEST_SRC src/core/exception/_test_exception.cpp)
+list(APPEND TEST_SRC src/core/serialization/_test_serialization.cpp)
 
 include_directories(BEFORE SYSTEM src/thirdparty/gabime)
 
