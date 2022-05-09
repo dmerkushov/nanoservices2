@@ -91,7 +91,7 @@ static const function<bool()> test_serialization_mapsListsSerializableClasses = 
     outer1.enclosingField[15] = inner1;
     outer1.enclosingField[15].int32Field = 234;
     outer1.enclosingField[15].mapField[32] = "Hallo";
-    outer1.enclosingField[15].vectorField = {0.0, 3.14};
+    outer1.enclosingField[15].vectorField = {0.0, 1.23};
     auto serialized = outer1.__nanoservices2_serializer_serialize();
     MyOuterClass outer2;
     outer2.__nanoservices2_serializer_deserialize(serialized);
@@ -114,7 +114,7 @@ static const function<bool()> test_serialization_mapsListsSerializableClasses = 
             result &= checkPredicate(outer2.enclosingField[15].mapField[32].compare("Hallo") == 0, "mapField[32].compare(\"Hallo\")");
         }
         result &= checkPredicate(outer2.enclosingField[15].vectorField[0] == 0.0, "vectorField[0] == 0.0");
-        result &= checkPredicate(outer2.enclosingField[15].vectorField[1] == 3.14, "vectorField[1] == 3.14");
+        result &= checkPredicate(outer2.enclosingField[15].vectorField[1] == 1.23, "vectorField[1] == 1.23");
     }
 
     return result;
@@ -128,15 +128,15 @@ static const function<bool()> test_serialization_get_record_type_name = []() {
     auto checkName = [](record_type recordType, const char *expected) {
         string actual = get_record_type_name(recordType);
 
-        bool result = actual.compare(expected) == 0;
+        bool checkResult = actual.compare(expected) == 0;
 
-        if(result) {
+        if(checkResult) {
             log::debug("OK: {}", actual);
         } else {
             log::debug("FAILED: expected: \"{}\", actual: \"{}\"", expected, actual);
         }
 
-        return result;
+        return checkResult;
     };
 
     result &= checkName(record_type::NULL_VALUE, "NULL_VALUE");
@@ -151,7 +151,7 @@ static const function<bool()> test_serialization_get_record_type_name = []() {
     result &= checkName(record_type::SIGNED_INT_64, "SIGNED_INT_64");
     result &= checkName(record_type::UNSIGNED_INT_64, "UNSIGNED_INT_64");
     result &= checkName(record_type::FLOAT_32, "FLOAT_32");
-    result &= checkName(record_type::FLOAT_64 , "FLOAT_64");
+    result &= checkName(record_type::FLOAT_64, "FLOAT_64");
     result &= checkName(record_type::LIST, "LIST");
     result &= checkName(record_type::MAP, "MAP");
 
