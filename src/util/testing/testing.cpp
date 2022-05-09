@@ -13,30 +13,30 @@ using namespace nanoservices;
 const string testPassedIndicator = fmt::format(fmt::bg(fmt::terminal_color::green) | fmt::fg(fmt::terminal_color::bright_white) | fmt::emphasis::bold, " PASSED ");
 const string testFailedIndicator = fmt::format(fmt::bg(fmt::terminal_color::red) | fmt::fg(fmt::terminal_color::bright_white) | fmt::emphasis::bold, " FAILED ");
 
-void ns_testing_context::run_tests() {
+void ns_testing_context::run_tests() const {
     log::info("==== Performing tests");
 
     map<string, bool, less<>> testResults;
 
-    for(auto item : _tests) {
-        log::info("---- Performing item: {}", item.first);
+    for(const auto &[testName, testFunc] : _tests) {
+        log::info("---- Performing item: {}", testName);
 
         bool result;
 
         try {
-            result = item.second();
+            result = testFunc();
         } catch(exception const &e) {
-            log::warn(".... Test {} failed due to an exception derived from std::exception: {}: {}", item.first, nanoservices::internal::demangle_type_name(typeid(e).name()), e.what());
+            log::warn(".... Test {} failed due to an exception derived from std::exception: {}: {}", testName, nanoservices::internal::demangle_type_name(typeid(e).name()), e.what());
             result = false;
         } catch(...) {
-            log::warn(".... Test {} failed due to a thrown non-an-std::exception", item.first);
+            log::warn(".... Test {} failed due to a thrown non-an-std::exception", testName);
             result = false;
         }
-        testResults[item.first] = result;
+        testResults[testName] = result;
         if(result) {
-            log::info(".... Test {} {}", item.first, testPassedIndicator);
+            log::info(".... Test {} {}", testName, testPassedIndicator);
         } else {
-            log::info(".... Test {} {}", item.first, testFailedIndicator);
+            log::info(".... Test {} {}", testName, testFailedIndicator);
         }
     }
 
@@ -46,11 +46,11 @@ void ns_testing_context::run_tests() {
     uint32_t passedCount = 0;
     uint32_t failedCount = 0;
 
-    for(auto testResult : testResults) {
+    for(const auto &[testName, testResult] : testResults) {
         totalCount++;
-        testResult.second ? passedCount++ : failedCount++;
+        testResult ? passedCount++ : failedCount++;
 
-        log::info("{} {}", testResult.second ? testPassedIndicator : testFailedIndicator, testResult.first);
+        log::info("{} {}", testResult ? testPassedIndicator : testFailedIndicator, testName);
     }
 
     log::info("==== Performing tests finished: total {} tests, {} ({:.2f}%) passed, {} ({:.2f}%) failed",

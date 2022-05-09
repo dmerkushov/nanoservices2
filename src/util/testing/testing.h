@@ -27,7 +27,7 @@ public:
         return 0;
     }
 
-    void run_tests();
+    void run_tests() const;
 
     static std::shared_ptr<ns_testing_context> main_instance() {
         static auto instance = std::make_shared<ns_testing_context>();
