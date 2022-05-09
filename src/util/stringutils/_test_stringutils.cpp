@@ -15,7 +15,7 @@ static const std::function<bool()> test_strutils_fmt_sharedptrstring_formatter =
 NSTEST_ADD(test_strutils_fmt_sharedptrstring_formatter)
 
 static const std::function<bool()> test_strutils_splitString = []() {
-    auto check_against = [](vector<string> check, shared_ptr<vector<shared_ptr<string>>> in) {
+    auto compareVectors = [](vector<string> check, shared_ptr<vector<shared_ptr<string>>> in) {
         if(check.size() != in->size()) {
             return false;
         }
@@ -29,17 +29,17 @@ static const std::function<bool()> test_strutils_splitString = []() {
 
     auto str = make_shared<string>("My String  is quite long, and good enough");
 
-    auto doCheck = [&str, &check_against](char delimiter, bool trimTokens, bool dropEmptyTokens, vector<string> check) {
+    auto doCheck = [&str, &compareVectors](char delimiter, bool trimTokens, bool dropEmptyTokens, vector<string> check) {
         auto split = splitString(str, delimiter, trimTokens, dropEmptyTokens);
-        auto check_result = check_against(check, split);
+        auto checkResult = compareVectors(check, split);
         log::debug("delimiter: '{}' trimTokens: {:<5} dropEmptyTokens: {:<5} doCheck: {:<65} -> {:<65}: {}",
                    delimiter,
                    trimTokens,
                    dropEmptyTokens,
                    fmt::format("{}", check),
                    fmt::format("{}", *split),
-                   check_result ? "OK" : "FAILED");
-        return check_result;
+                   checkResult ? "OK" : "FAILED");
+        return checkResult;
     };
 
     log::debug("Input string: \"{}\"", str);
