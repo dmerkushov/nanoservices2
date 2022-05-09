@@ -10,7 +10,7 @@
 using namespace std;
 using namespace nanoservices;
 
-function<bool()> test_demangle_type_name = []() {
+static const function<bool()> test_demangle_type_name = []() {
     auto performCheck = [](const char *typeid_name, bool expectException, const char *check) {
         string checkStr(check);
 
@@ -19,7 +19,7 @@ function<bool()> test_demangle_type_name = []() {
         shared_ptr<string> singleDemangle;
         try {
             singleDemangle = internal::demangle_type_name(typeid_name, true);
-        } catch(ns_exception &nse) {
+        } catch(ns_exception const &nse) {
             singleDemangle = nse.message();
             exceptionThrown = true;
         }
